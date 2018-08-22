@@ -10,7 +10,8 @@
 #include <algorithm>
 #include <date/date.h>
 
-namespace wolf::extras {
+namespace wolf {
+namespace extras {
 
 namespace {
 
@@ -54,8 +55,7 @@ std::string convert_time(const std::uint64_t &input) {
 }
 
 
-
-
+}
 }
 
 #endif //WOLF_CONVERT_TIME_H

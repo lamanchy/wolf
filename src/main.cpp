@@ -1,11 +1,13 @@
+#include <plugins/tcp_in.h>
 #include <base/plugin.h>
 #include <base/pipeline.h>
 #include <plugins/cout.h>
 #include <plugins/generator.h>
-#include <plugins/tcp_in.h>
 #include <serializers/line.h>
 #include <plugins/string_to_json.h>
-#include <plugins/kafka_out.h>
+
+//#include <plugins/kafka_out.h>
+
 #include <plugins/collate.h>
 #include <date/tz.h>
 #include <plugins/ysoft/add_local_info.h>
@@ -20,7 +22,8 @@ int main(int argc, char *argv[]) {
 
   plugin::pointer common_processing = create<add_local_info>()->register_output(
       create<json_to_string>()->register_output(
-          create<kafka_out>("test", 1)
+          create<cout>()
+//          create<kafka_out>("test", 1)
       )
   );
 
