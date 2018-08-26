@@ -7,8 +7,9 @@ set(CMAKE_CXX_STANDARD 11)
 if(UNIX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 elseif(WIN32)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus -DBOOST_DATE_TIME_NO_LIB -DBOOST_REGEX_NO_LIB")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus -DBOOST_DATE_TIME_NO_LIB -DBOOST_REGEX_NO_LIB -DCPPKAFKA_STATIC -DLIBRDKAFKA_STATICLIB")
 endif()
+
 
 include_directories(include)
 include_directories(src)
@@ -26,12 +27,12 @@ add_executable(wolf src/main.cpp ${SOURCE_FILES})
 
 if(WIN32)
     set(LIBRARIES
-#            ${CMAKE_SOURCE_DIR}/lib/re2.lib
-#            ${CMAKE_SOURCE_DIR}/lib/cppkafka.lib
-#            ${CMAKE_SOURCE_DIR}/lib/rdkafka.lib
-            C:/Users/lamanchy/CLionProjects/wolf/lib/zlibstaticd.lib
-            C:/Users/lamanchy/CLionProjects/wolf/lib/stxxl.lib
-            #            ${CMAKE_SOURCE_DIR}/lib/rdkafka++.lib
+            ${CMAKE_SOURCE_DIR}/lib/re2.lib
+            ${CMAKE_SOURCE_DIR}/lib/cppkafka.lib
+            ${CMAKE_SOURCE_DIR}/lib/rdkafka.lib
+            ${CMAKE_SOURCE_DIR}/lib/zlibstaticd.lib
+            ${CMAKE_SOURCE_DIR}/lib/stxxl.lib
+            ${CMAKE_SOURCE_DIR}/lib/rdkafka++.lib
             )
 elseif(UNIX)
     set(LIBRARIES

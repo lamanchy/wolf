@@ -6,7 +6,7 @@
 #include <serializers/line.h>
 #include <plugins/string_to_json.h>
 
-//#include <plugins/kafka_out.h>
+#include <plugins/kafka_out.h>
 
 #include <plugins/collate.h>
 #include <date/tz.h>
@@ -19,13 +19,17 @@
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
+  std::cout << 1 << std::endl;
+  std::this_thread::sleep_for(std::chrono::seconds(1));
 
   plugin::pointer common_processing = create<add_local_info>()->register_output(
       create<json_to_string>()->register_output(
-          create<cout>()
-//          create<kafka_out>("test", 1)
+//          create<cout>()
+          create<kafka_out>("test", 1)
       )
   );
+
+    std::cout << 1 << std::endl;
 
 
   pipeline p = pipeline(argc, argv).register_plugin(

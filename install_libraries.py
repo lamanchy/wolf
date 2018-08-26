@@ -28,7 +28,7 @@ def install_lib(name, *args):
 
     os.chdir(build_path)
 
-    cmake = r"C:\Program Files\CMake\bin\cmake.exe"
+    # cmake = r"C:\Program Files\CMake\bin\cmake.exe"
     cmake = r"C:\Program Files\JetBrains\CLion 2018.2.1\bin\cmake\win\bin\cmake.exe"
     make = r"C:/Program_Files/mingw-w64/x86_64-8.1.0-posix-sjlj-rt_v6-rev0/mingw64/bin/mingw32-make.exe"
     c_compiler = r"C:/Program_Files/mingw-w64/x86_64-8.1.0-posix-sjlj-rt_v6-rev0/mingw64/bin/gcc.exe"
@@ -41,7 +41,7 @@ def install_lib(name, *args):
                         # "-DCMAKE_C_COMPILER=" + c_compiler,
                         # "-DCMAKE_CXX_COMPILER=" + cpp_compiler,
                         # "-DCMAKE_MAKE_PROGRAM=" + make,
-                        "-G", "MinGW Makefiles",
+                        # "-G", "MinGW Makefiles",
                         "-G", "Visual Studio 15 2017 Win64",
                         lib_path,
                     ] + list(args))
@@ -60,8 +60,16 @@ install_lib("taojson")
 install_lib("zlib")
 install_lib("cxxopts")
 install_lib("stxxl")
-install_lib("librdkafka")
-install_lib("cppkafka", "-DRDKAFKA_ROOT_DIR=" + os.path.join("..", ".."), "-DCPPKAFKA_BUILD_SHARED=OFF", "-DCPPKAFKA_DISABLE_TESTS=ON")
+install_lib("librdkafka",
+            "-DRDKAFKA_BUILD_STATIC=ON",
+            )
+install_lib("cppkafka",
+            "-DRDKAFKA_ROOT_DIR=" + BASE_DIR,
+            "-DBOOST_ROOT=" + BASE_DIR,
+            "-DCPPKAFKA_RDKAFKA_STATIC_LIB=ON",
+            "-DCPPKAFKA_BUILD_SHARED=OFF",
+            "-DCPPKAFKA_DISABLE_TESTS=ON",
+            )
 
 try:
     os.makedirs(include_path)

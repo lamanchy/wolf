@@ -10,7 +10,6 @@
 
 #include <base/plugin.h>
 #include <cppkafka/cppkafka.h>
-#include <optional>
 #include <base/mutexed_plugin.h>
 
 
