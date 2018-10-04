@@ -5,3 +5,5 @@
 /lib
 /include
 /share
+
+/cmake-build-debug

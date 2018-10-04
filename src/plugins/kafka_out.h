@@ -25,7 +25,7 @@ protected:
   using configuration = cppkafka::Configuration;
 
   void start() override {
-    p = std::make_unique<producer>(config);
+    p = std::unique_ptr<producer>(new producer(config));
     p->set_max_buffer_size(1000);
   }
 
