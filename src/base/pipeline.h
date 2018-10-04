@@ -27,7 +27,7 @@ public:
 
   pipeline &operator=(pipeline &&) = default;
 
-  pipeline register_plugin(pointer plugin) {
+  pipeline register_plugin(const pointer &plugin) {
     plugins.push_back(plugin);
     return std::move(*this);
   }
@@ -138,14 +138,13 @@ private:
   }
 
   bool plugins_running() {
-    // TODO fuck fuck fuck
     std::vector<bool> results = for_each_plugin<bool>([](plugin &p) { return p.is_running(); } );
     return std::any_of(results.begin(), results.end(), [](bool r) { return r; } );
   }
 
   void wait() {
     while (plugins_running()) {
-      sleep(1);
+      std::this_thread::sleep_for(std::chrono::seconds(1));
       if (interrupt_received) {
         break;
       }

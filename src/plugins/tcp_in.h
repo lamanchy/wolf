@@ -5,6 +5,7 @@
 #ifndef WOLF_TCP_IN_H
 #define WOLF_TCP_IN_H
 
+#include <asio.hpp>
 #include <base/threaded_plugin.h>
 #include <ctime>
 #include <iostream>
@@ -12,7 +13,6 @@
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include <asio.hpp>
 
 namespace wolf {
 
