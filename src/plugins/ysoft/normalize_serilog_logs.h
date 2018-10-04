@@ -15,9 +15,13 @@ protected:
   void process(json &&message) override {
     message["@timestamp"] = extras::convert_time(message["timestamp"].as<std::string>());
     message.erase("timestamp");
-    message["level"] = normalize_level(message["level"].as<std::string>());
+    message["level"] = normalize_level(message["level"].get_string());
     auto logId = message.find("logId");
-    // TODO finish lowering of logId
+    if (logId != nullptr) {
+      std::string id = logId->get_string();
+      id[0] = static_cast<char>(tolower(id[0]));
+      logId->assign_string(id);
+    }
     output(std::move(message));
   }
 

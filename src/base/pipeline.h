@@ -53,9 +53,9 @@ private:
     opts.add_options()
         ("h,help", "Print help");
 
-    opts.add_options("Pipeline options")
-        ("t,threads", "Number of processors", cxxopts::value<unsigned>(number_of_processors))
-        ("b,buffer_size", "Size of buffer in records", cxxopts::value<unsigned>(plugin::buffer_size));
+  //    opts.add_options("Pipeline options")
+//        ("t,threads", "Number of processors", cxxopts::value<unsigned>(number_of_processors))
+//        ("b,buffer_size", "Size of buffer in records", cxxopts::value<unsigned>(plugin::buffer_size));
 
 
     for_each_plugin([this](plugin &p) { p.register_options(opts); });

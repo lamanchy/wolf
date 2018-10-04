@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by lamanchy on 8/19/18.
 //
@@ -11,14 +13,27 @@
 namespace wolf {
 
 class add_local_info : public plugin {
+public:
+  add_local_info(std::string group) : group(group) {}
+
 protected:
   void process(json &&message) override {
     message["host"] = asio::ip::host_name();
-    message["group"] = "default";
-    message["component"] = "default";
-    message["type"] = "logs";
+    message["group"] = group;
+    auto component = message.find("component");
+    if (component == nullptr) {
+      message["component"] = "default";
+    }
+
+    std::string level = message["level"].get_string();
+    if (level == "DEBUG" or level == "TRACE") {
+      return;
+    }
     output(std::move(message));
   }
+
+private:
+  std::string group;
 };
 
 }

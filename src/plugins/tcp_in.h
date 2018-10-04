@@ -20,19 +20,19 @@ namespace wolf {
 template<typename Serializer>
 class tcp_in : public threaded_plugin {
 public:
-  explicit tcp_in(std::string name) : threaded_plugin(name) { }
+  explicit tcp_in(std::string name, unsigned short tcp_port) : threaded_plugin(name), tcp_port(tcp_port) { }
 
   tcp_in() : threaded_plugin() { }
 
   void register_options(options &opts) override {
-    opts.add_options("Tcp input " + name)
-        (name + "_tcp_port", "Port for tcp plugin named " + name, cxxopts::value<unsigned short>(tcp_port));
+//    opts.add_options("Tcp input " + name)
+//        (name + "_tcp_port", "Port for tcp plugin named " + name, cxxopts::value<unsigned short>(tcp_port));
   }
 
   void validate_options(parse_result &result) override {
-    if (result.count(name + "_tcp_port") == 0) {
-      throw std::runtime_error("Parameter " + name + "_tcp_port not specified");
-    }
+//    if (result.count(name + "_tcp_port") == 0) {
+//      throw std::runtime_error("Parameter " + name + "_tcp_port not specified");
+//    }
   }
 
   void run() override {

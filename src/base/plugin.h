@@ -13,6 +13,7 @@
 #include <atomic>
 #include <gzip/compress.hpp>
 #include <cxxopts.hpp>
+#include <thread>
 #include "json.h"
 
 namespace wolf {
@@ -28,20 +29,39 @@ public:
     return register_named_output("default", plugin);
   }
 
-  bool operator==(const plugin& other) const {
+  bool operator==(const plugin &other) const {
     return id == other.id;
   }
 
-  bool operator<(const plugin& other) const {
+  bool operator<(const plugin &other) const {
     return id < other.id;
   }
+
+  virtual void print_name() {
+    std::cout << "a" << std::endl;
+  }
+
+
+  plugin(const plugin &) = delete;
+
+  plugin(plugin && other) {
+    *this = std::move(other);
+  };
+
+  plugin &operator=(const plugin &) = delete;
+
+  plugin &operator=(plugin && other) {
+    id = std::move(other.id);
+    name = std::move(other.name);
+    return *this;
+  };
 
 protected:
   plugin(std::string name) : name(std::move(name)) {
     id = id_counter++;
   }
 
-  plugin () : plugin("plugin") { }
+  plugin() : plugin("plugin") {}
 
   std::string name;
 
@@ -49,7 +69,7 @@ protected:
     throw std::runtime_error("You have to overwrite create method, to create shared_ptr on created plugin");
   }
 
-  virtual void process(json &&message) { }
+  virtual void process(json &&message) {}
 
   virtual void prepare(json &&message) {
     process(std::move(message));
@@ -59,9 +79,9 @@ protected:
     return false;
   }
 
-  virtual void start() { }
+  virtual void start() {}
 
-  virtual void stop() { }
+  virtual void stop() {}
 
   virtual bool is_full() {
     return false;
@@ -75,15 +95,15 @@ protected:
     outputs.at(output_type)->receive(std::move(message));
   }
 
-  virtual void register_options(options &opts) { }
+  virtual void register_options(options &opts) {}
 
-  virtual void validate_options(parse_result &result) { }
+  virtual void validate_options(parse_result &result) {}
 
+  static unsigned buffer_size;
 private:
   friend class pipeline;
 
   static thread_local bool is_thread_processor;
-  static unsigned buffer_size;
 
   void process_back_queue_front() {
 //      const unsigned batch_size = 64;
@@ -114,6 +134,7 @@ private:
   std::timed_mutex front_queue_mutex;
   std::mutex front_processing_mutex;
   stxxl::queue<char> persistent_queue;
+//  std::queue<char> persistent_queue;
   std::mutex persistent_queue_mutex;
   std::queue<json> back_queue;
   std::queue<json> back_processing_queue;
@@ -159,20 +180,19 @@ private:
   void buffer(json &&message) {
     front_queue_mutex.lock();
     front_queue.push(message);
+//    while (front_queue.size() >= plugin::buffer_size - 1) {
+//      front_queue_mutex.unlock();
+//      std::this_thread::yield();
+//      front_queue_mutex.lock();
+//    }
+
+//    if (front_queue.size() < plugin::buffer_size - 1) front_queue.push(message);
     if (front_queue.size() >= plugin::buffer_size) {
       empty_front_queue(); // unlocks fqm
       return;
     }
     front_queue_mutex.unlock();
   }
-
-  plugin(plugin const &) = delete;
-
-  plugin(plugin &&) = default;
-
-  plugin &operator=(plugin const &) = delete;
-
-  plugin &operator=(plugin &&) = default;
 
   constexpr static unsigned string_serializer_divisor = 126;
   constexpr static char string_serializer_end = 127;
@@ -202,7 +222,7 @@ private:
 };
 
 template<typename T, typename... Args>
-std::shared_ptr<T> create(Args&&... args) {
+std::shared_ptr<T> create(Args &&... args) {
   return std::shared_ptr<T>(new T(std::forward<Args>(args)...));
 }
 

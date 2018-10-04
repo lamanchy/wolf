@@ -10,6 +10,11 @@
 namespace wolf {
 
 class json_to_string : public plugin {
+public:
+  void print_name() override {
+    std::cout << "jts" << std::endl;
+  }
+
 protected:
   void process(json &&message) override {
     output(json(tao::json::to_string(message)));

@@ -8,9 +8,15 @@ namespace wolf {
 
 class cout : public plugin {
 public:
-  unsigned long i = 0;
+  void print_name() override {
+    std::cout << "cout" << std::endl;
+  }
 
-public:
+  ~cout() {
+    std::cout << std::flush;
+  }
+
+protected:
   void process(json &&message) override {
 //    tao::json::from_string(tao::json::to_string(message))["pi"].get_unsigned();
 //    assert(i == 0);
@@ -21,10 +27,8 @@ public:
 //    assert(message["happy"] == true);
   }
 
-  ~cout() {
-    std::cout << std::flush;
-  }
-
+private:
+  unsigned long i = 0;
 };
 
 }

@@ -18,8 +18,8 @@ namespace wolf {
 
 class kafka_out : public plugin {
 public:
-  kafka_out(std::string topic, unsigned partitions)
-      : topic(std::move(topic)), partitions(partitions) { }
+  kafka_out(std::string topic, unsigned partitions, std::string broker_list)
+      : topic(std::move(topic)), partitions(partitions), broker_list(broker_list) { }
 
 protected:
   using producer = cppkafka::BufferedProducer<std::string>;
@@ -35,14 +35,14 @@ protected:
   }
 
   void register_options(options &opts) override {
-    opts.add_options("Kafka output")
-        ("x,broker_list", "Broker list", cxxopts::value<std::string>(broker_list));
+//    opts.add_options("Kafka output")
+//        ("x,broker_list", "Broker list", cxxopts::value<std::string>(broker_list));
   }
 
   void validate_options(parse_result &result) override {
-    if (result.count("broker_list") == 0) {
-      throw std::runtime_error("broker_list option not specified");
-    }
+//    if (result.count("broker_list") == 0) {
+//      throw std::runtime_error("broker_list option not specified");
+//    }
 
     config = {
         { "metadata.broker.list", broker_list }
