@@ -15,6 +15,8 @@
 #include <plugins/ysoft/normalize_log4j2_logs.h>
 #include <plugins/tcp_out.h>
 #include <plugins/lambda.h>
+#include <whereami/whereami.h>
+#include <extras/logger.h>
 
 //template<typename T,
 //    class = typename std::enable_if
@@ -48,8 +50,47 @@
 //
 //};
 
+std::string get_dir_path() {
+
+  char *path = NULL;
+  int length, dirname_length;
+  std::string dir_path;
+
+  length = wai_getExecutablePath(NULL, 0, &dirname_length);
+  if (length > 0) {
+    path = (char *) malloc(length + 1);
+    if (!path)
+      abort();
+    wai_getExecutablePath(path, length, &dirname_length);
+    path[length] = '\0';
+
+//    printf("executable path: %s\n", path);
+    char separator = path[dirname_length];
+    path[dirname_length] = '\0';
+//    printf("  dirname: %s\n", path);
+//    printf("  basename: %s\n", path + dirname_length + 1);
+    dir_path = std::string(path) + separator;
+    free(path);
+  } else {
+    throw std::runtime_error("coulndt get path");
+  }
+  return dir_path;
+}
+
 int main(int argc, char *argv[]) {
   using namespace wolf;
+
+  Logger::setupLogger(get_dir_path());
+  Logger &logger = Logger::getLogger();
+  logger.info("Configuring STXXL");
+  stxxl::config *cfg = stxxl::config::get_instance();
+  // create a disk_config structure.
+  stxxl::disk_config disk(get_dir_path() + "queue.tmp", 0, "wincall");
+  disk.autogrow = true;
+  disk.unlink_on_open = true;
+  disk.delete_on_exit = true;
+  disk.direct = stxxl::disk_config::DIRECT_TRY;
+  cfg->add_disk(disk);
 
 //  json_to_string jts = json_to_string();
 //  test_create();
@@ -68,7 +109,9 @@ int main(int argc, char *argv[]) {
 //      create<kafka_out>("test", 1)
 //  );
 
+  logger.info("Parsing command line arguments");
   cxxopts::Options opts(argv[0], " - example command line options");
+
 
   std::string output, output_ip, group;
   opts.add_options()
@@ -77,9 +120,10 @@ int main(int argc, char *argv[]) {
       ("group", "Define the group name", cxxopts::value<std::string>(group)->default_value("default"));
   opts.parse(argc, argv);
 
-  std::cout << "output:    " << output << std::endl;
-  std::cout << "output_ip: " << output_ip << std::endl;
-  std::cout << "group:     " << group << std::endl;
+  logger.info("Parsed arguments:");
+  logger.info("output:    " + output);
+  logger.info("output_ip: " + output_ip);
+  logger.info("group:     " + group);
 
   std::function<plugin::pointer(std::string)> out;
   plugin::pointer tcp = create<tcp_out>(output_ip, "9070");
@@ -91,14 +135,12 @@ int main(int argc, char *argv[]) {
   } else {
     throw std::runtime_error("output is not kafka nor logstash but " + output);
   }
-
+//  out = [&](std::string type) { return create<cout>(); };
 
   plugin::pointer common_processing =
       create<add_local_info>(group)->register_output(
           create<json_to_string>()->register_output(
               out("unified_logs")
-//              create<tcp_out>("localhost", "1234")
-//              create<kafka_out>("unified_logs-wolf", 1, "10.0.11.162:9092")
           )
       );
 
@@ -129,23 +171,26 @@ int main(int argc, char *argv[]) {
       )
   ).register_plugin(
       create<tcp_in<line>>("metrics", 9557)->register_output(
+//      create<generator>()->register_output(
           create<lambda>(
               [group](json &message) {
                 message.assign_object(
                     {
                         {"message", message},
-                        {"group",   group},
-                        {"type",    "metrics"}
+                        {"group", group},
+                        {"type", "metrics"}
                     });
               })->register_output(
               create<json_to_string>()
                   ->register_output(
-                  out("metrics")
-              )
+                      out("metrics")
+                  )
           )
       )
   );
+  logger.info("Starting");
   p.run();
+  logger.info("Stopped");
 
 //  pipeline p = pipeline(argc, argv).register_plugin(
 //      create<generator>()->register_output(

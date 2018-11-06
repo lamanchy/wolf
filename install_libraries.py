@@ -38,6 +38,8 @@ def install_lib(name, *args):
     subprocess.call([
                         cmake,
                         "-DCMAKE_INSTALL_PREFIX=" + BASE_DIR,
+                        '-DCMAKE_CXX_FLAGS_RELEASE=/MT /O2 /DNDEBUG',
+                        '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG',
                         # "-DCMAKE_C_COMPILER=" + c_compiler,
                         # "-DCMAKE_CXX_COMPILER=" + cpp_compiler,
                         # "-DCMAKE_MAKE_PROGRAM=" + make,
@@ -45,7 +47,8 @@ def install_lib(name, *args):
                         "-G", "Visual Studio 15 2017 Win64",
                         lib_path,
                     ] + list(args))
-    subprocess.call([cmake, "--build", build_path, "--target", "install"])
+
+    subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", "Release"])
 
     os.chdir(BASE_DIR)
     shutil.rmtree(build_path)
@@ -91,6 +94,6 @@ def copy_headers(name):
             shutil.copy2(s, d)
 
 
-copy_headers(os.path.join("asio", "asio", "include"))
-copy_headers(os.path.join("gzip-hpp", "include"))
-copy_headers(os.path.join("date", "include"))
+# copy_headers(os.path.join("asio", "asio", "include"))
+# copy_headers(os.path.join("gzip-hpp", "include"))
+# copy_headers(os.path.join("date", "include"))

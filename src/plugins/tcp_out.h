@@ -5,14 +5,13 @@
 #ifndef WOLF_TCP_OUT_H
 #define WOLF_TCP_OUT_H
 
-
 #include <base/plugin.h>
 #include <asio.hpp>
 
 namespace wolf {
 
 class tcp_out : public plugin {
-public:
+ public:
   tcp_out(std::string host, std::string port)
       : plugin(), io_context_(), socket_(io_context_), host(host), port(port) {
     std::cout << "tcp plugin created" << std::endl;
@@ -20,7 +19,7 @@ public:
     std::cout << "tcp socket created" << std::endl;
   }
 
-protected:
+ protected:
   void process(json &&message) override {
 
     lock.lock();
@@ -39,7 +38,7 @@ protected:
   }
 
   void stop() override {
-    std::cout << "stop" << std::endl;
+    should_connect = false;
     socket_.close();
   }
 
@@ -47,7 +46,7 @@ protected:
     return is_full_;
   }
 
-private:
+ private:
   void do_write() {
     while (true) {
       try {
@@ -69,7 +68,7 @@ private:
   }
 
   void do_connect() {
-    while (true) {
+    while (should_connect) {
       try {
         asio::ip::tcp::resolver resolver(io_context_);
         auto endpoints = resolver.resolve(host, port);
@@ -92,12 +91,12 @@ private:
   std::deque<std::string> write_msgs_;
   std::mutex lock;
   std::atomic<bool> is_full_{false};
+  std::atomic<bool> should_connect{true};
 
   std::string host;
   std::string port;
 };
 
 }
-
 
 #endif //WOLF_TCP_OUT_H

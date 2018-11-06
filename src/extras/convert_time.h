@@ -54,6 +54,9 @@ std::string convert_time(const std::uint64_t &input) {
   return format("%FT%TZ", zt);
 }
 
+std::string convert_time(const std::uint64_t &seconds, const std::uint64_t &nanos) {
+  return convert_time(seconds*1000 + nanos/1000000);
+}
 
 }
 }

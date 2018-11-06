@@ -2,8 +2,7 @@
 #ifndef WOLF_PLUGIN_H
 #define WOLF_PLUGIN_H
 
-#include <ciso646>
-#include <utility>
+#include <asio.hpp>
 #include <tao/json.hpp>
 #include <chrono>
 #include <gzip/decompress.hpp>

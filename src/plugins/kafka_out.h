@@ -26,10 +26,20 @@ protected:
 
   void start() override {
     p = std::unique_ptr<producer>(new producer(config));
-    p->set_max_buffer_size(1000);
+    p->set_max_buffer_size(0);
+    p->set_flush_method(producer::FlushMethod::Async);
+
+    flusher = std::thread([&](){
+      while (running) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        p->flush();
+      }
+    });
   }
 
   void stop() override {
+    running = false;
+    flusher.join();
     p->flush();
   }
 
@@ -47,6 +57,10 @@ protected:
         { "metadata.broker.list", broker_list }
         ,
         { "compression.type", "lz4" }
+//        ,
+//        { "topic.metadata.refresh.interval.ms", 20000 }
+        ,
+        {"debug", "broker,topic,msg"}
     };
   }
 
@@ -58,7 +72,8 @@ protected:
   }
 
   bool is_full() override {
-    return p->get_pending_acks() > 1000;
+//    std::cout << "is_full " << std::to_string(p->get_pending_acks()) << std::endl;
+    return p->get_pending_acks() > 64000;
   }
 private:
 
@@ -72,7 +87,8 @@ private:
   std::string broker_list;
   unsigned partitions;
   std::atomic<unsigned> current_partition{0};
-
+  std::atomic<bool> running{true};
+  std::thread flusher;
 };
 
 }

@@ -29,6 +29,14 @@ protected:
     if (level == "DEBUG" or level == "TRACE") {
       return;
     }
+
+    if (message["message"].get_string().size() > 32000) {
+      std::string m = message["message"].get_string();
+      m.resize(3200);
+      m += "... truncated";
+      message["message"] = m;
+    }
+
     output(std::move(message));
   }
 
