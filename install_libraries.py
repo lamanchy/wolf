@@ -1,8 +1,8 @@
 import os
 import shutil
 import subprocess
-
 import errno
+import sys
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(BASE_DIR)
@@ -11,11 +11,18 @@ build_path = os.path.join(BASE_DIR, "build")
 include_path = os.path.join(BASE_DIR, "include")
 
 
+def is_linux():
+    return sys.platform == "linux" or sys.platform == "linux2"
+
+def is_win():
+    return not is_linux()
+
+
 def install_lib(name, *args):
     lib_path = os.path.join(BASE_DIR, "submodules",  name)
     try:
         shutil.rmtree(build_path)
-    except WindowsError:
+    except OSError:
         pass
 
     os.mkdir(build_path)
@@ -28,27 +35,33 @@ def install_lib(name, *args):
 
     os.chdir(build_path)
 
-    # cmake = r"C:\Program Files\CMake\bin\cmake.exe"
-    cmake = r"C:\Program Files\JetBrains\CLion 2018.2.1\bin\cmake\win\bin\cmake.exe"
     make = r"C:/Program_Files/mingw-w64/x86_64-8.1.0-posix-sjlj-rt_v6-rev0/mingw64/bin/mingw32-make.exe"
     c_compiler = r"C:/Program_Files/mingw-w64/x86_64-8.1.0-posix-sjlj-rt_v6-rev0/mingw64/bin/gcc.exe"
     cpp_compiler = r"C:/Program_Files/mingw-w64/x86_64-8.1.0-posix-sjlj-rt_v6-rev0/mingw64/bin/g++.exe"
 
     # subprocess.call(["set", r"PATH=C:\Program_Files\mingw-w64\x86_64-8.1.0-posix-sjlj-rt_v6-rev0\mingw64\bin;%PATH%"])
+
+    cmake = r"C:\Program Files\JetBrains\CLion 2018.2.1\bin\cmake\win\bin\cmake.exe"
+    cmake = "/snap/clion/44/bin/cmake/linux/bin/cmake"
+    build_type = "Debug"
+    build_type = "Release"
+    compiler = "Visual Studio 15 2017 Win64"
+    compiler = "CodeBlocks - Unix Makefiles"
+
     subprocess.call([
                         cmake,
                         "-DCMAKE_INSTALL_PREFIX=" + BASE_DIR,
-                        '-DCMAKE_CXX_FLAGS_RELEASE=/MT /O2 /DNDEBUG',
-                        '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG',
+                        '-DCMAKE_CXX_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
+                        '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
+                        '-DCMAKE_BUILD_TYPE=' + build_type,
                         # "-DCMAKE_C_COMPILER=" + c_compiler,
                         # "-DCMAKE_CXX_COMPILER=" + cpp_compiler,
                         # "-DCMAKE_MAKE_PROGRAM=" + make,
-                        # "-G", "MinGW Makefiles",
-                        "-G", "Visual Studio 15 2017 Win64",
+                        "-G", compiler,
                         lib_path,
                     ] + list(args))
 
-    subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", "Release"])
+    subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", build_type])
 
     os.chdir(BASE_DIR)
     shutil.rmtree(build_path)
@@ -89,11 +102,16 @@ def copy_headers(name):
         s = os.path.join(lib_path, item)
         d = os.path.join(include_path, item)
         if os.path.isdir(s):
+            try:
+                shutil.rmtree(d)
+            except OSError:
+                pass
             shutil.copytree(s, d)
         else:
             shutil.copy2(s, d)
 
 
-# copy_headers(os.path.join("asio", "asio", "include"))
-# copy_headers(os.path.join("gzip-hpp", "include"))
-# copy_headers(os.path.join("date", "include"))
+copy_headers(os.path.join("asio", "asio", "include"))
+copy_headers(os.path.join("gzip-hpp", "include"))
+copy_headers(os.path.join("date", "include"))
+

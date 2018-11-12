@@ -5,7 +5,7 @@ SET(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH "Build dir" FORCE)
 
 set(CMAKE_CXX_STANDARD 11)
 if(UNIX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wl,--no-as-needed -ldl")
 elseif(WIN32)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus -DBOOST_DATE_TIME_NO_LIB -DBOOST_REGEX_NO_LIB -DCPPKAFKA_STATIC -DLIBRDKAFKA_STATICLIB")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
@@ -42,13 +42,12 @@ elseif(UNIX)
     set(LIBRARIES
             ${CMAKE_SOURCE_DIR}/lib/libre2.a
             ${CMAKE_SOURCE_DIR}/lib/libcppkafka.a
-            ${CMAKE_SOURCE_DIR}/lib/librdkafka.so
-            ${CMAKE_SOURCE_DIR}/lib/libstxxl_debug.a
+            ${CMAKE_SOURCE_DIR}/lib/librdkafka.a
+            ${CMAKE_SOURCE_DIR}/lib/libstxxl.a
             ${CMAKE_SOURCE_DIR}/lib/libz.a
-            ${CMAKE_SOURCE_DIR}/lib/librdkafka++.a)
+            ${CMAKE_SOURCE_DIR}/lib/librdkafka++.a
+            )
 endif()
-
-message(${LIBRARIES})
 
 target_link_libraries(wolf ${LIBRARIES})
 # target_link_libraries(kafka_benchmark ${LIBRARIES})

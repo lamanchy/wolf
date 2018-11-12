@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
   logger.info("Configuring STXXL");
   stxxl::config *cfg = stxxl::config::get_instance();
   // create a disk_config structure.
-  stxxl::disk_config disk(get_dir_path() + "queue.tmp", 0, "wincall");
+  stxxl::disk_config disk(get_dir_path() + "queue.tmp", 0, get_dir_path()[get_dir_path().size()-1] == '/' ? "syscall" : "wincall");
   disk.autogrow = true;
   disk.unlink_on_open = true;
   disk.delete_on_exit = true;
