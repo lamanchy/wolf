@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
                       create<collate>()
                           ->register_output(
 //                              create<cout>()
-                          create<http_out>("localhost", "8086", "/write?db=metric_db")
+                          create<http_out>(output_ip, "8086", "/write?db=metric_db")
                       )
                   )
               )

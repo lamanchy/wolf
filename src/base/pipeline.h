@@ -14,7 +14,7 @@ public:
   using options = plugin::options;
   using parse_result = plugin::parse_result;
 
-  pipeline(int argc, char *argv[], bool persistent) :
+  pipeline(int argc, char *argv[], bool persistent = true) :
       opts(argv[0], " - example command line options"),
       argc(argc),
       argv(argv),
