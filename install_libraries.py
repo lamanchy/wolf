@@ -4,11 +4,23 @@ import subprocess
 import errno
 import sys
 
+
+
+cmake = r"C:\Program Files\JetBrains\CLion 2018.2.1\bin\cmake\win\bin\cmake.exe"
+cmake = "/snap/clion/44/bin/cmake/linux/bin/cmake"
+build_type = "Debug"
+build_type = "Release"
+compiler = "Visual Studio 15 2017 Win64"
+compiler = "CodeBlocks - Unix Makefiles"
+
+
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(BASE_DIR)
 build_path = os.path.join(BASE_DIR, "build")
+target_path = os.path.join(BASE_DIR, "build-" + build_type)
 
-include_path = os.path.join(BASE_DIR, "include")
+include_path = os.path.join(target_path, "include")
 
 
 def is_linux():
@@ -41,16 +53,10 @@ def install_lib(name, *args):
 
     # subprocess.call(["set", r"PATH=C:\Program_Files\mingw-w64\x86_64-8.1.0-posix-sjlj-rt_v6-rev0\mingw64\bin;%PATH%"])
 
-    cmake = r"C:\Program Files\JetBrains\CLion 2018.2.1\bin\cmake\win\bin\cmake.exe"
-    cmake = "/snap/clion/44/bin/cmake/linux/bin/cmake"
-    build_type = "Debug"
-    build_type = "Release"
-    compiler = "Visual Studio 15 2017 Win64"
-    compiler = "CodeBlocks - Unix Makefiles"
 
     subprocess.call([
                         cmake,
-                        "-DCMAKE_INSTALL_PREFIX=" + BASE_DIR,
+                        "-DCMAKE_INSTALL_PREFIX=" + target_path,
                         '-DCMAKE_CXX_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
                         '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
                         '-DCMAKE_BUILD_TYPE=' + build_type,
@@ -80,7 +86,7 @@ install_lib("librdkafka",
             "-DRDKAFKA_BUILD_STATIC=ON",
             )
 install_lib("cppkafka",
-            "-DRDKAFKA_ROOT_DIR=" + BASE_DIR,
+            "-DRDKAFKA_ROOT_DIR=" + target_path,
             "-DBOOST_ROOT=" + BASE_DIR,
             "-DCPPKAFKA_RDKAFKA_STATIC_LIB=ON",
             "-DCPPKAFKA_BUILD_SHARED=OFF",

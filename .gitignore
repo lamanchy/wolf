@@ -3,6 +3,8 @@
 /bin
 /build
 /lib
+/build-Debug
+/build-Release
 /include
 /share
 
