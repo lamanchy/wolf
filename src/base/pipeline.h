@@ -14,10 +14,11 @@ public:
   using options = plugin::options;
   using parse_result = plugin::parse_result;
 
-  pipeline(int argc, char *argv[]) :
+  pipeline(int argc, char *argv[], bool persistent) :
       opts(argv[0], " - example command line options"),
       argc(argc),
-      argv(argv) { }
+      argv(argv),
+      persistent(persistent) { }
 
   pipeline(pipeline const &) = delete;
 
@@ -47,6 +48,7 @@ private:
 
   int argc;
   char **argv;
+  bool const persistent;
   options opts;
 
   void evaluate_options() {
@@ -80,6 +82,7 @@ private:
   std::vector<T> for_each_plugin(const std::function<T(plugin &)>& function) {
     std::set<plugin::id_type> visited;
     std::queue<pointer> to_process;
+    std::queue<pointer> to_do;
     std::for_each(plugins.begin(), plugins.end(), [&to_process](pointer &ptr) { to_process.push(ptr); });
     std::vector<T> results;
 
@@ -88,10 +91,14 @@ private:
       auto it = visited.find(ptr->id);
       if (it == visited.end()) {
         visited.insert(ptr->id);
-        results.push_back(function(*ptr));
+        to_do.push(ptr);
         for (auto &pair : ptr->outputs) to_process.push(pair.second);
       }
       to_process.pop();
+    }
+    while (!to_do.empty()) {
+      results.push_back(function(*to_do.front()));
+      to_do.pop();
     }
     return results;
   }
@@ -107,7 +114,8 @@ private:
   void process() {
     plugin::is_thread_processor = true;
     while (plugins_running()) {
-      for_each_plugin([](plugin &p) { while (p.process_buffer()) { }; });
+      for_each_plugin([](plugin &p) { while(p.process_buffer()) { }; });
+//      if (!std::all_of(res.begin(), res.end(), [](bool r) { return r; }))
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
       // TODO build up sleep time
 //      std::this_thread::yield();

@@ -5,7 +5,7 @@ namespace wolf {
 
 thread_local bool plugin::is_thread_processor = false;
 
-unsigned plugin::buffer_size = 1024;
+unsigned plugin::buffer_size = 128;
 
 std::atomic<plugin::id_type> plugin::id_counter{0};
 
@@ -36,7 +36,7 @@ void plugin::empty_front_queue() {
 }
 
 bool plugin::process_buffer() {
-  if (is_full()) return false;
+  if (are_outputs_full()) return false;
   back_queue_mutex.lock();
   if (back_queue.empty()) {
     if (swappable) {

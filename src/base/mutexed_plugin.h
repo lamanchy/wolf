@@ -16,7 +16,6 @@ protected:
     process(std::move(message));
   }
 
-private:
   std::mutex lock;
 };
 

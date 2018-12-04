@@ -20,7 +20,9 @@ protected:
   void process(json &&message) override {
 //    tao::json::from_string(tao::json::to_string(message))["pi"].get_unsigned();
 //    assert(i == 0);
-    std::cout << message.get_string() << "\n";
+//    if (i++ % 10000 == 0) {
+//      std::cout << i << "\n";
+//    }
 //    assert(message.is_object());
 //    assert(message["happy"].is_boolean());
 //    assert(message["pi"] == i++);
@@ -28,7 +30,7 @@ protected:
   }
 
 private:
-  unsigned long i = 0;
+  std::atomic<unsigned long> i{0};
 };
 
 }

@@ -17,6 +17,9 @@
 #include <plugins/lambda.h>
 #include <whereami/whereami.h>
 #include <extras/logger.h>
+#include <plugins/kafka_in.h>
+#include <plugins/http_out.h>
+#include <plugins/stats.h>
 
 //template<typename T,
 //    class = typename std::enable_if
@@ -85,7 +88,8 @@ int main(int argc, char *argv[]) {
   logger.info("Configuring STXXL");
   stxxl::config *cfg = stxxl::config::get_instance();
   // create a disk_config structure.
-  stxxl::disk_config disk(get_dir_path() + "queue.tmp", 0, get_dir_path()[get_dir_path().size()-1] == '/' ? "syscall" : "wincall");
+  stxxl::disk_config
+      disk(get_dir_path() + "queue.tmp", 0, get_dir_path()[get_dir_path().size() - 1] == '/' ? "syscall" : "wincall");
   disk.autogrow = true;
   disk.unlink_on_open = true;
   disk.delete_on_exit = true;
@@ -112,7 +116,6 @@ int main(int argc, char *argv[]) {
   logger.info("Parsing command line arguments");
   cxxopts::Options opts(argv[0], " - example command line options");
 
-
   std::string output, output_ip, group;
   opts.add_options()
       ("output", "Type of output, kafka/logstash", cxxopts::value<std::string>(output)->default_value("kafka"))
@@ -124,6 +127,7 @@ int main(int argc, char *argv[]) {
   logger.info("output:    " + output);
   logger.info("output_ip: " + output_ip);
   logger.info("group:     " + group);
+
 
   std::function<plugin::pointer(std::string)> out;
   plugin::pointer tcp = create<tcp_out>(output_ip, "9070");
@@ -143,7 +147,6 @@ int main(int argc, char *argv[]) {
               out("unified_logs")
           )
       );
-
 
   pipeline p = pipeline(argc, argv).register_plugin(
       create<tcp_in<line>>("nlog", 9556)->register_output(
@@ -171,7 +174,6 @@ int main(int argc, char *argv[]) {
       )
   ).register_plugin(
       create<tcp_in<line>>("metrics", 9557)->register_output(
-//      create<generator>()->register_output(
           create<lambda>(
               [group](json &message) {
                 message.assign_object(
@@ -191,26 +193,6 @@ int main(int argc, char *argv[]) {
   logger.info("Starting");
   p.run();
   logger.info("Stopped");
-
-//  pipeline p = pipeline(argc, argv).register_plugin(
-//      create<generator>()->register_output(
-//          create<json_to_string>()->register_output(
-//              create<cout>()
-//          )
-//      )
-//  );
-//  p.run();
-
-//  create<kafka_out>(
-//      "test", // topic name
-//      console_parameter<int>("p,partitions", "Number of topics partitions"),// from console -p 4
-//      event_parameter<std::string>([](json & event) { return event["key"] }; ) // key parameter
-//  );
-//  create<kafka_out>(
-//      console_parameter<std::string>("t,topic", "Topic name"),
-//      event_parameter<int>([](json & event) { return event["partition"] }; ), // partition
-//      "key"
-//  );
 
 
   return 0;

@@ -13,6 +13,7 @@
 #include <gzip/compress.hpp>
 #include <cxxopts.hpp>
 #include <thread>
+#include <extras/logger.h>
 #include "json.h"
 
 namespace wolf {
@@ -23,6 +24,8 @@ public:
   using id_type = unsigned;
   using options = cxxopts::Options;
   using parse_result = cxxopts::ParseResult;
+  
+  Logger &logger = Logger::getLogger();
 
   pointer register_output(pointer plugin) {
     return register_named_output("default", plugin);
@@ -83,6 +86,16 @@ protected:
   virtual void stop() {}
 
   virtual bool is_full() {
+    return false;
+  }
+
+  virtual bool are_outputs_full() {
+    if (is_full()) {
+      return true;
+    }
+    for (auto &output : outputs) {
+      if (output.second->are_outputs_full()) return true;
+    }
     return false;
   }
 
@@ -178,12 +191,17 @@ private:
 
   void buffer(json &&message) {
     front_queue_mutex.lock();
+
+    while (front_queue.size() >= plugin::buffer_size - 2) {
+      front_queue_mutex.unlock();
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      if (plugin::is_thread_processor and not is_full()) {
+        prepare(std::move(message));
+        return;
+      }
+      front_queue_mutex.lock();
+    }
     front_queue.push(message);
-//    while (front_queue.size() >= plugin::buffer_size - 1) {
-//      front_queue_mutex.unlock();
-//      std::this_thread::yield();
-//      front_queue_mutex.lock();
-//    }
 
 //    if (front_queue.size() < plugin::buffer_size - 1) front_queue.push(message);
     if (front_queue.size() >= plugin::buffer_size) {
