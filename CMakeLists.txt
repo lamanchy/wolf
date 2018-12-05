@@ -31,6 +31,14 @@ set(SOURCE_FILES
 
 if (WIN32)
     if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
+        set(LIBRARIES
+                ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/re2.lib
+                ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/cppkafka.lib
+                ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/rdkafka.lib
+                ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/zlibstaticd.lib
+                ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/stxxl_debug.lib
+                ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/rdkafka++.lib
+                )
     else ()
         set(LIBRARIES
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/re2.lib

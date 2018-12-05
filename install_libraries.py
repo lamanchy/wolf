@@ -6,7 +6,7 @@ import sys
 
 
 
-cmake = r"C:\Program Files\JetBrains\CLion 2018.2.1\bin\cmake\win\bin\cmake.exe"
+cmake = r"C:\Program Files\JetBrains\CLion 2018.3\bin\cmake\win\bin\cmake.exe"
 cmake = "/snap/clion/44/bin/cmake/linux/bin/cmake"
 build_type = "Debug"
 build_type = "Release"
@@ -53,12 +53,13 @@ def install_lib(name, *args):
 
     # subprocess.call(["set", r"PATH=C:\Program_Files\mingw-w64\x86_64-8.1.0-posix-sjlj-rt_v6-rev0\mingw64\bin;%PATH%"])
 
-
     subprocess.call([
                         cmake,
                         "-DCMAKE_INSTALL_PREFIX=" + target_path,
                         '-DCMAKE_CXX_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
                         '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
+                        '-DCMAKE_CXX_FLAGS_DEBUG=/MTd' if is_win() else '',
+                        '-DCMAKE_C_FLAGS_DEBUG=/MTd' if is_win() else '',
                         '-DCMAKE_BUILD_TYPE=' + build_type,
                         # "-DCMAKE_C_COMPILER=" + c_compiler,
                         # "-DCMAKE_CXX_COMPILER=" + cpp_compiler,
