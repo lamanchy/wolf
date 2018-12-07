@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
   logger.info("bootstrap_servers:    " + bootstrap_servers);
   logger.info("output_ip: " + output_ip);
 
-  pipeline p = pipeline(argc, argv).register_plugin(
+  pipeline p = pipeline(argc, argv, false).register_plugin(
       create<kafka_in>("^metrics-.*", bootstrap_servers, "metrics_forwarder")->register_output(
           create<string_to_json>()->register_output(
               create<lambda>(

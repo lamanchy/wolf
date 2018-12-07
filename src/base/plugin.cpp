@@ -5,6 +5,8 @@ namespace wolf {
 
 thread_local bool plugin::is_thread_processor = false;
 
+bool plugin::persistent = true;
+
 unsigned plugin::buffer_size = 128;
 
 std::atomic<plugin::id_type> plugin::id_counter{0};

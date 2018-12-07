@@ -116,6 +116,7 @@ private:
   friend class pipeline;
 
   static thread_local bool is_thread_processor;
+  static bool persistent;
 
   void process_back_queue_front() {
 //      const unsigned batch_size = 64;
@@ -192,14 +193,16 @@ private:
   void buffer(json &&message) {
     front_queue_mutex.lock();
 
-    while (front_queue.size() >= plugin::buffer_size - 2) {
-      front_queue_mutex.unlock();
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      if (plugin::is_thread_processor and not is_full()) {
-        prepare(std::move(message));
-        return;
+    if (!plugin::persistent) {
+      while (front_queue.size() >= plugin::buffer_size - 2) {
+        front_queue_mutex.unlock();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        if (plugin::is_thread_processor and not is_full()) {
+          prepare(std::move(message));
+          return;
+        }
+        front_queue_mutex.lock();
       }
-      front_queue_mutex.lock();
     }
     front_queue.push(message);
 

@@ -17,8 +17,9 @@ public:
   pipeline(int argc, char *argv[], bool persistent = true) :
       opts(argv[0], " - example command line options"),
       argc(argc),
-      argv(argv),
-      persistent(persistent) { }
+      argv(argv) {
+    plugin::persistent = persistent;
+  }
 
   pipeline(pipeline const &) = delete;
 
@@ -48,7 +49,6 @@ private:
 
   int argc;
   char **argv;
-  bool const persistent;
   options opts;
 
   void evaluate_options() {
@@ -80,6 +80,7 @@ private:
 
   template<typename T>
   std::vector<T> for_each_plugin(const std::function<T(plugin &)>& function) {
+    // TODO this must be done better, yuck
     std::set<plugin::id_type> visited;
     std::queue<pointer> to_process;
     std::queue<pointer> to_do;

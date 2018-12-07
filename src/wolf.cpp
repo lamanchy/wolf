@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
           )
       );
 
-  pipeline p = pipeline(argc, argv).register_plugin(
+  pipeline p = pipeline(argc, argv, true).register_plugin(
       create<tcp_in<line>>("nlog", 9556)->register_output(
           create<string_to_json>()->register_output(
               create<normalize_nlog_logs>()->register_output(
