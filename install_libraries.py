@@ -1,10 +1,8 @@
+import errno
 import os
 import shutil
 import subprocess
-import errno
 import sys
-
-
 
 cmake = r"C:\Program Files\JetBrains\CLion 2018.3\bin\cmake\win\bin\cmake.exe"
 cmake = "/snap/clion/44/bin/cmake/linux/bin/cmake"
@@ -12,8 +10,6 @@ build_type = "Debug"
 build_type = "Release"
 compiler = "Visual Studio 15 2017 Win64"
 compiler = "CodeBlocks - Unix Makefiles"
-
-
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.chdir(BASE_DIR)
@@ -26,12 +22,13 @@ include_path = os.path.join(target_path, "include")
 def is_linux():
     return sys.platform == "linux" or sys.platform == "linux2"
 
+
 def is_win():
     return not is_linux()
 
 
 def install_lib(name, *args):
-    lib_path = os.path.join(BASE_DIR, "submodules",  name)
+    lib_path = os.path.join(BASE_DIR, "submodules", name)
     try:
         shutil.rmtree(build_path)
     except OSError:
@@ -72,7 +69,6 @@ def install_lib(name, *args):
 
     os.chdir(BASE_DIR)
     shutil.rmtree(build_path)
-
 
 
 print "BOOST HAS TO BE INSTALLED MANUALLY, boost headers in include/boost/....h"
@@ -121,4 +117,3 @@ def copy_headers(name):
 copy_headers(os.path.join("asio", "asio", "include"))
 copy_headers(os.path.join("gzip-hpp", "include"))
 copy_headers(os.path.join("date", "include"))
-
