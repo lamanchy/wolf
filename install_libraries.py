@@ -37,14 +37,9 @@ def install_lib(name, *args):
     except OSError:
         pass
 
-    os.mkdir(build_path)
-
     print "installing " + name
 
-    os.chdir(lib_path)
-
-    subprocess.call(["git", "clean", "-fd"])
-
+    os.mkdir(build_path)
     os.chdir(build_path)
 
     make = r"C:/Program_Files/mingw-w64/x86_64-8.1.0-posix-sjlj-rt_v6-rev0/mingw64/bin/mingw32-make.exe"
@@ -54,23 +49,29 @@ def install_lib(name, *args):
     # subprocess.call(["set", r"PATH=C:\Program_Files\mingw-w64\x86_64-8.1.0-posix-sjlj-rt_v6-rev0\mingw64\bin;%PATH%"])
 
 
-    subprocess.call([
-                        cmake,
-                        "-DCMAKE_INSTALL_PREFIX=" + target_path,
-                        '-DCMAKE_CXX_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
-                        '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
-                        '-DCMAKE_BUILD_TYPE=' + build_type,
-                        # "-DCMAKE_C_COMPILER=" + c_compiler,
-                        # "-DCMAKE_CXX_COMPILER=" + cpp_compiler,
-                        # "-DCMAKE_MAKE_PROGRAM=" + make,
-                        "-G", compiler,
-                        lib_path,
-                    ] + list(args))
+    # subprocess.call([
+    #                     cmake,
+    #                     "-DCMAKE_INSTALL_PREFIX=" + target_path,
+    #                     '-DCMAKE_CXX_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
+    #                     '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
+    #                     '-DCMAKE_BUILD_TYPE=' + build_type,
+    #                     # "-DCMAKE_C_COMPILER=" + c_compiler,
+    #                     # "-DCMAKE_CXX_COMPILER=" + cpp_compiler,
+    #                     # "-DCMAKE_MAKE_PROGRAM=" + make,
+    #                     "-G", compiler,
+    #                     lib_path,
+    #                 ] + list(args))
+    #
+    # subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", build_type])
 
-    subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", build_type])
+    os.chdir(lib_path)
+
+    subprocess.call(["git", "clean", "-fd"])
+    subprocess.call(["git", "reset", "--hard", "HEAD"])
 
     os.chdir(BASE_DIR)
     shutil.rmtree(build_path)
+
 
 
 
