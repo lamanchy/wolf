@@ -39,6 +39,7 @@ if (WIN32)
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/stxxl_debug.lib
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/rdkafka++.lib
                 )
+        set(POSTFIX windows-debug)
     else ()
         set(LIBRARIES
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/re2.lib
@@ -48,6 +49,7 @@ if (WIN32)
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/stxxl.lib
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/rdkafka++.lib
                 )
+        set(POSTFIX windows)
     endif ()
 elseif (UNIX)
     if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
@@ -59,6 +61,7 @@ elseif (UNIX)
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/libz.a
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/librdkafka++.a
                 )
+        set(POSTFIX linux-debug)
     else ()
         set(LIBRARIES
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/libre2.a
@@ -68,11 +71,17 @@ elseif (UNIX)
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/libz.a
                 ${CMAKE_SOURCE_DIR}/build-${CMAKE_BUILD_TYPE}/lib/librdkafka++.a
                 )
+        set(POSTFIX linux)
     endif ()
 endif ()
 
-foreach (executable wolf metrics_forwarder)
+set(TARGETS wolf metrics_forwarder)
+
+foreach (executable ${TARGETS})
     add_executable(${executable} src/${executable}.cpp ${SOURCE_FILES})
     target_link_libraries(${executable} ${LIBRARIES})
 endforeach ()
 
+foreach(target ${TARGETS})
+    install(TARGETS ${target} DESTINATION ${target}-${POSTFIX}/)
+endforeach()
