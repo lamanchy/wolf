@@ -21,37 +21,6 @@
 #include <plugins/http_out.h>
 #include <plugins/stats.h>
 
-//template<typename T,
-//    class = typename std::enable_if
-//        <
-//            !std::is_lvalue_reference<T>::value
-//        >::type
-//>
-//wolf::plugin::pointer test_create(T &&plugin) {
-//  return std::make_shared<T>(std::move(plugin));
-//}
-//
-//class a {
-//public:
-//  a() = default;
-//
-//  a(const a &) = delete;
-//
-//  virtual void print_name() {
-//    std::cout << "a" << std::endl;
-//  }
-//
-//};
-//
-//class b : public a {
-//public:
-//  b() = default;
-//
-//  void print_name() override {
-//    std::cout << "b" << std::endl;
-//  }
-//
-//};
 
 std::string get_dir_path() {
 

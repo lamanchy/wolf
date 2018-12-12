@@ -61,6 +61,7 @@ class http_out : public threaded_plugin {
     asio::streambuf result;
     asio::steady_timer timer;
     tcp::resolver::results_type resolve_results;
+    Logger &logger = Logger::getLogger();
 
    public:
     // Resolver and socket require an io_context
@@ -117,6 +118,14 @@ class http_out : public threaded_plugin {
               std::placeholders::_1));
     }
 
+    void retry() {
+      timer.expires_after(std::chrono::seconds(1));
+      timer.async_wait(std::bind(
+          &session::reconnect,
+          shared_from_this(),
+          std::placeholders::_1));
+    }
+
     void reconnect(asio::error_code ec) {
       asio::async_connect(
           socket_,
@@ -130,13 +139,8 @@ class http_out : public threaded_plugin {
 
     void on_connect(asio::error_code ec) {
       if (ec) {
-        std::cerr << "connect" << ": " << ec.message() << "\n";
-        timer.expires_after(std::chrono::seconds(1));
-        timer.async_wait(std::bind(
-            &session::reconnect,
-            shared_from_this(),
-            std::placeholders::_1));
-
+        logger.warn("http out connect error: " + ec.message());
+        retry();
         return;
       }
 
@@ -156,7 +160,8 @@ class http_out : public threaded_plugin {
 //      boost::ignore_unused(bytes_transferred);
 
       if (ec) {
-        std::cerr << "write" << ": " << ec.message() << "\n";
+        logger.warn("http out write error: " + ec.message());
+        retry();
         return;
       }
 
@@ -176,7 +181,8 @@ class http_out : public threaded_plugin {
 //      boost::ignore_unused(bytes_transferred);
 
       if (ec) {
-        std::cerr << "read" << ": " << ec.message() << "\n";
+        logger.warn("http out read error: " + ec.message());
+        retry();
         return;
       }
 
@@ -187,7 +193,7 @@ class http_out : public threaded_plugin {
 
       // not_connected happens sometimes so don't bother reporting it.
       if (ec && ec != asio::error::not_connected) {
-        std::cerr << "shutdown" << ": " << ec.message() << "\n";
+        logger.warn("http out shutdown error, not retrying: " + ec.message());
         return;
       }
       // If we get here then the connection is closed gracefully
@@ -195,10 +201,6 @@ class http_out : public threaded_plugin {
     }
 
   };
-
-
-//    std::make_shared<session>(ioc)->run(host, port, target, version);
-//    ioc.run();
 
 };
 

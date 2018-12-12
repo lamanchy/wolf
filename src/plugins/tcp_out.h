@@ -14,9 +14,7 @@ class tcp_out : public plugin {
  public:
   tcp_out(std::string host, std::string port)
       : plugin(), io_context_(), socket_(io_context_), host(host), port(port) {
-    std::cout << "tcp plugin created" << std::endl;
     socket_ = asio::ip::tcp::socket(io_context_);
-    std::cout << "tcp socket created" << std::endl;
   }
 
  protected:
@@ -53,7 +51,7 @@ class tcp_out : public plugin {
         asio::write(socket_, asio::buffer(write_msgs_.front().data(),
                                           write_msgs_.front().length()));
       } catch (std::exception &e) {
-        std::cout << "WARNING sending of tcp message failed: " << e.what() << std::endl;
+        logger.warn("sending of tcp message failed: " + std::string(e.what()));
         do_connect();
         continue;
       }
@@ -74,7 +72,7 @@ class tcp_out : public plugin {
         auto endpoints = resolver.resolve(host, port);
         asio::connect(socket_, endpoints);
       } catch (std::exception &e) {
-        std::cout << "tcp connect failed: " << e.what() << std::endl;
+        logger.warn("tcp connect failed: " + std::string(e.what()));
         std::this_thread::sleep_for(std::chrono::seconds(1));
         continue;
       }

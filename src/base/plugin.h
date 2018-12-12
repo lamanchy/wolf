@@ -39,11 +39,6 @@ public:
     return id < other.id;
   }
 
-  virtual void print_name() {
-    std::cout << "a" << std::endl;
-  }
-
-
   plugin(const plugin &) = delete;
 
   plugin(plugin && other) {

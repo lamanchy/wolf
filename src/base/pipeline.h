@@ -13,6 +13,7 @@ public:
   using pointer = plugin::pointer;
   using options = plugin::options;
   using parse_result = plugin::parse_result;
+  Logger & logger = Logger::getLogger();
 
   pipeline(int argc, char *argv[], bool persistent = true) :
       opts(argv[0], " - example command line options"),
@@ -66,14 +67,14 @@ private:
       parse_result result = opts.parse(argc, argv);
 
       if (result.count("help")) {
-        std::cout << opts.help(opts.groups()) << std::endl;
+        logger.info(opts.help(opts.groups()));
         exit(0);
       }
 
       for_each_plugin([& result] (plugin &p) {p.validate_options(result); });
 
     } catch (const cxxopts::OptionException &e) {
-      std::cerr << "error parsing options: " << e.what() << std::endl;
+      logger.error("error parsing options: " + std::string(e.what()));
       exit(1);
     }
   }
@@ -125,7 +126,7 @@ private:
       for_each_plugin([](plugin &p) { while (p.process_buffer()) { }; });
     });
 
-    std::cerr << "ending processor" << std::endl;
+    logger.info("ending processor");
   }
 
   static void catch_signal(int signal) {

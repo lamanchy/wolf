@@ -42,7 +42,7 @@ public:
       io_context.run();
     }
     catch (std::exception &e) {
-      std::cerr << e.what() << std::endl;
+      logger.error("Tcp in run failed:" + std::string(e.what()));
     }
   }
 

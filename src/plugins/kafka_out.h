@@ -72,7 +72,6 @@ protected:
   }
 
   bool is_full() override {
-//    std::cout << "is_full " << std::to_string(p->get_pending_acks()) << std::endl;
     return p->get_pending_acks() > 64000;
   }
 private:

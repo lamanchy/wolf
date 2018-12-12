@@ -8,10 +8,6 @@ namespace wolf {
 
 class cout : public plugin {
 public:
-  void print_name() override {
-    std::cout << "cout" << std::endl;
-  }
-
   ~cout() {
     std::cout << std::flush;
   }
