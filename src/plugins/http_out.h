@@ -76,7 +76,7 @@ class http_out : public threaded_plugin {
       // Set up an HTTP GET request message
       request = "";
       request += "POST " + url + " HTTP/1.1\n";
-      request += "Host: " + host + ":" + port + "\n";
+      request += "Host: " + std::string("localhost") + ":" + port + "\n";
       request += "User-Agent: wolf/1.0\n";
       request += "Accept: */*\n";
       request += "Content-Length: " + std::to_string(content.length()) + "\n";
@@ -99,19 +99,20 @@ class http_out : public threaded_plugin {
 
     void on_resolve(
         asio::error_code ec,
-        tcp::resolver::results_type results) {
+        const tcp::resolver::results_type &results) {
       resolve_results = results;
 
       if (ec) {
-        std::cerr << "resolve" << ": " << ec.message() << "\n";
+        logger.warn("http out resolve error: " + ec.message());
+        retry();
         return;
       }
 
       // Make the connection on the IP address we get from a lookup
       asio::async_connect(
           socket_,
-          results.begin(),
-          results.end(),
+          resolve_results.begin(),
+          resolve_results.end(),
           std::bind(
               &session::on_connect,
               shared_from_this(),
