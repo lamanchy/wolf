@@ -1,13 +1,10 @@
 #include <base/plugin.h>
 #include <base/pipeline.h>
-#include <plugins/cout.h>
 #include <plugins/generator.h>
 #include <plugins/tcp_in.h>
 #include <serializers/line.h>
 #include <plugins/string_to_json.h>
 #include <plugins/kafka_out.h>
-#include <plugins/collate.h>
-#include <date/tz.h>
 #include <plugins/ysoft/add_local_info.h>
 #include <plugins/json_to_string.h>
 #include <plugins/ysoft/normalize_nlog_logs.h>
@@ -16,11 +13,6 @@
 #include <plugins/tcp_out.h>
 #include <plugins/lambda.h>
 #include <whereami/whereami.h>
-#include <extras/logger.h>
-#include <plugins/kafka_in.h>
-#include <plugins/http_out.h>
-#include <plugins/stats.h>
-
 
 std::string get_dir_path() {
 
@@ -97,7 +89,6 @@ int main(int argc, char *argv[]) {
   logger.info("output_ip: " + output_ip);
   logger.info("group:     " + group);
 
-
   std::function<plugin::pointer(std::string)> out;
   plugin::pointer tcp = create<tcp_out>(output_ip, "9070");
 
@@ -117,7 +108,9 @@ int main(int argc, char *argv[]) {
           )
       );
 
-  pipeline p = pipeline(argc, argv, true).register_plugin(
+  pipeline p = pipeline(argc, argv, true);
+
+  p.register_plugin(
       create<tcp_in<line>>("nlog", 9556)->register_output(
           create<string_to_json>()->register_output(
               create<normalize_nlog_logs>()->register_output(
@@ -125,7 +118,9 @@ int main(int argc, char *argv[]) {
               )
           )
       )
-  ).register_plugin(
+  );
+
+  p.register_plugin(
       create<tcp_in<line>>("log4j2", 9555)->register_output(
           create<string_to_json>()->register_output(
               create<normalize_log4j2_logs>()->register_output(
@@ -133,7 +128,9 @@ int main(int argc, char *argv[]) {
               )
           )
       )
-  ).register_plugin(
+  );
+
+  p.register_plugin(
       create<tcp_in<line>>("serilog", 9559)->register_output(
           create<string_to_json>()->register_output(
               create<normalize_serilog_logs>()->register_output(
@@ -141,7 +138,9 @@ int main(int argc, char *argv[]) {
               )
           )
       )
-  ).register_plugin(
+  );
+
+  p.register_plugin(
       create<tcp_in<line>>("metrics", 9557)->register_output(
           create<lambda>(
               [group](json &message) {
@@ -162,7 +161,6 @@ int main(int argc, char *argv[]) {
   logger.info("Starting");
   p.run();
   logger.info("Stopped");
-
 
   return 0;
 }

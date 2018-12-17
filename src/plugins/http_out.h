@@ -80,7 +80,7 @@ class http_out : public threaded_plugin {
       request += "User-Agent: wolf/1.0\n";
       request += "Accept: */*\n";
       request += "Content-Length: " + std::to_string(content.length()) + "\n";
-      request += "Content-Type: application/x-www-form-urlencoded\n\n";
+      request += "Content-Type: application/x-ndjson\n\n";
 
       request += content;
 
@@ -168,12 +168,13 @@ class http_out : public threaded_plugin {
 
 
       // Receive the HTTP response
-      asio::async_read(socket_, asio::streambuf::mutable_buffers_type(result.prepare(64)),
-                       std::bind(
-                           &session::on_read,
-                           shared_from_this(),
-                           std::placeholders::_1,
-                           std::placeholders::_2));
+      socket_.async_read_some(asio::streambuf::mutable_buffers_type(result.prepare(64)),
+                              std::bind(
+                                  &session::on_read,
+                                  shared_from_this(),
+                                  std::placeholders::_1,
+                                  std::placeholders::_2)
+          );
     }
 
     void on_read(
@@ -181,13 +182,24 @@ class http_out : public threaded_plugin {
         std::size_t bytes_transferred) {
 //      boost::ignore_unused(bytes_transferred);
 
+//      result.commit(bytes_transferred);
+//
+//      if (bytes_transferred != 0) {
+//        on_write(ec, 0);
+//        std::cout << "next write" << std::endl;
+//
+//        asio::streambuf::const_buffers_type bufs = result.data();
+//        auto str = std::string(asio::buffers_begin(bufs), asio::buffers_begin(bufs) + result.size());
+//        std::cout << "size " << result.size() << ", transfered: " << bytes_transferred << ", string size: " << str.size() << std::endl;
+//        std::cout << str << std::endl;
+//        return;
+//      }
+
       if (ec) {
         logger.warn("http out read error: " + ec.message());
         retry();
         return;
       }
-
-      // Write the message to standard out
 
       // Gracefully close the socket
       socket_.shutdown(tcp::socket::shutdown_both, ec);

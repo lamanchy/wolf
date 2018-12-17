@@ -14,6 +14,7 @@ public:
 
 protected:
   void process(json &&message) override {
+    std::cout << message.get_string() << std::endl;
 //    tao::json::from_string(tao::json::to_string(message))["pi"].get_unsigned();
 //    assert(i == 0);
 //    if (i++ % 10000 == 0) {

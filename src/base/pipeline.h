@@ -30,9 +30,9 @@ public:
 
   pipeline &operator=(pipeline &&) = default;
 
-  pipeline register_plugin(const pointer &plugin) {
+  void register_plugin(const pointer &plugin) {
     plugins.push_back(plugin);
-    return std::move(*this);
+//    return std::move(*this);
   }
 
   void run() {

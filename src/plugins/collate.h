@@ -39,9 +39,11 @@ class collate : public mutexed_threaded_plugin {
 
  private:
   void empty() {
-    output(json(std::move(buffer)));
-    buffer.clear();
-    count = 0;
+    if (buffer.size() > 0) {
+      output(json(std::move(buffer)));
+      buffer.clear();
+      count = 0;
+    }
   }
 
   std::string buffer;

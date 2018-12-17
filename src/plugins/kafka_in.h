@@ -60,14 +60,18 @@ class kafka_in : public threaded_plugin {
         if (msg.get_error()) {
           // Ignore EOF notifications from rdkafka
           if (!msg.is_eof()) {
-            std::cout << "[+] Received error notification: " << msg.get_error() << std::endl;
+            logger.warn("Received error notification: " + msg.get_error().to_string());
           }
         } else {
           // Print the key (if any)
-          if (msg.get_key()) {
-            std::cout << msg.get_key() << " -> ";
-          }
+//          if (msg.get_key()) {
+//            std::cout << msg.get_key() << " -> ";
+//          }
+
           json j = json(std::string(msg.get_payload()));
+          j.metadata = {
+              {"topic", msg.get_topic()}
+          };
           output(std::move(j));
 
 //                        consumer.commit(msg);
