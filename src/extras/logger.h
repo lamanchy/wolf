@@ -12,13 +12,14 @@
 #include <chrono>
 #include <date/date.h>
 #include <mutex>
+#include "get_executable_path.h"
 
 class Logger {
  public:
   static Logger &getLogger() {
     if (!initialized) {
-      std::cerr << "Logging must be initialized before use!" << std::endl;
-      exit(1);
+      setupLogger(wolf::extras::get_executable_path());
+      std::cout << "Logging into directory with executable" << std::endl;
     }
     static Logger instance(logging_dir);
     return instance;
