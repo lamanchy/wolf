@@ -21,7 +21,7 @@ namespace wolf {
 template<typename Serializer>
 class tcp_in : public threaded_plugin {
 public:
-  explicit tcp_in(std::string name, unsigned short tcp_port) : threaded_plugin(name), tcp_port(tcp_port) { }
+  explicit tcp_in(unsigned short tcp_port) : tcp_port(tcp_port) { }
 
   tcp_in() : threaded_plugin() { }
 

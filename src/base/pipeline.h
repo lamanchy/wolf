@@ -5,6 +5,7 @@
 #include <thread>
 #include "plugin.h"
 #include <cxxopts.hpp>
+#include <extras/get_executable_path.h>
 
 namespace wolf {
 
@@ -20,6 +21,10 @@ public:
       argc(argc),
       argv(argv) {
     plugin::persistent = persistent;
+
+    if (not initialized) {
+      initialize();
+    }
   }
 
   pipeline(pipeline const &) = delete;
@@ -43,14 +48,34 @@ public:
     stop();
   }
 
+  cxxopts::OptionAdder add_options() {
+    return opts.add_options("Custom options");
+  }
+
 private:
   std::vector<pointer> plugins;
   std::vector<std::thread> processors;
   unsigned number_of_processors = std::thread::hardware_concurrency();
+  static bool initialized;
 
   int argc;
   char **argv;
   options opts;
+
+  void initialize() {
+    initialized = true;
+    std::string path = extras::get_executable_path();
+
+    logger.info("Configuring STXXL");
+    stxxl::config *cfg = stxxl::config::get_instance();
+    // create a disk_config structure.
+    stxxl::disk_config disk(path + "queue.tmp", 0, path[path.size() - 1] == '/' ? "syscall" : "wincall");
+    disk.autogrow = true;
+    disk.unlink_on_open = true;
+    disk.delete_on_exit = true;
+    disk.direct = stxxl::disk_config::DIRECT_TRY;
+    cfg->add_disk(disk);
+  }
 
   void evaluate_options() {
     opts.add_options()
@@ -169,6 +194,7 @@ private:
 };
 
 std::atomic<int> pipeline::interrupt_received{0};
+bool pipeline::initialized{false};
 
 }
 

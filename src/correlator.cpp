@@ -18,27 +18,8 @@
 int main(int argc, char *argv[]) {
   using namespace wolf;
 
-
-//  json_to_string jts = json_to_string();
-//  test_create();
-
-//  std::shared_ptr<plugin> test = test_create(std::move(jts));
-//  test->print_name();
-
-//  test->print_name();
-
-//  pipeline test = pipeline(argc, argv).add(
-//      create<tcp_in<line>>("nlog"),
-//      create<string_to_json>(),
-//      create<normalize_nlog_logs>(),
-//      create<add_local_info>(),
-//      create<json_to_string>(),
-//      create<kafka_out>("test", 1)
-//  );
-
-  pipeline p = pipeline(argc, argv, true);
+  pipeline p = pipeline(argc, argv, false);
   Logger & logger = p.logger;
-
   logger.info("Parsing command line arguments");
   cxxopts::Options opts(argv[0], " - example command line options");
 
@@ -72,6 +53,7 @@ int main(int argc, char *argv[]) {
               out("unified_logs")
           )
       );
+
 
   p.register_plugin(
       create<tcp_in<line>>("nlog", 9556)->register_output(

@@ -15,7 +15,6 @@ protected:
   virtual void run() { }
 
   threaded_plugin() : plugin() { }
-  threaded_plugin(std::string name) : plugin(name) { }
 
 public:
   void start() override {

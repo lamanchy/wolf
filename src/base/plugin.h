@@ -48,19 +48,18 @@ public:
   plugin &operator=(const plugin &) = delete;
 
   plugin &operator=(plugin && other) {
-    id = std::move(other.id);
-    name = std::move(other.name);
+    id = other.id;
     return *this;
   };
 
-protected:
-  plugin(std::string name) : name(std::move(name)) {
-    id = id_counter++;
+  void mark_as_processor() {
+    plugin::is_thread_processor = true;
   }
 
-  plugin() : plugin("plugin") {}
-
-  std::string name;
+protected:
+  plugin() {
+    id = id_counter++;
+  }
 
   static pointer create() {
     throw std::runtime_error("You have to overwrite create method, to create shared_ptr on created plugin");
