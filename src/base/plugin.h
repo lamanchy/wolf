@@ -67,6 +67,17 @@ protected:
 
   virtual void process(json &&message) {}
 
+  virtual void safe_prepare(json &&message) {
+//    try {
+//      logger.info("safe prepare");
+//      logger.info(message.get_string());
+      prepare(std::move(message));
+//      logger.info("safe prepare ended");
+//    } catch (std::exception & ex) {
+//      logger.error("error when processing message: " + std::string(ex.what()));
+//    }
+  }
+
   virtual void prepare(json &&message) {
     process(std::move(message));
   }
@@ -121,14 +132,14 @@ private:
 //      }
 //      back_queue_mutex.unlock();
 //      while (not q.empty()) {
-//        process(q.front());
+//        safe_prepare(q.front());
 //        q.pop();
 //      }
 
     json message = std::move(back_queue.front());
     back_queue.pop();
     back_queue_mutex.unlock();
-    prepare(std::move(message));
+    safe_prepare(std::move(message));
   }
 
   bool process_buffer();
@@ -178,7 +189,7 @@ private:
 
   void receive(json &&message) {
     if (plugin::is_thread_processor and not is_full()) {
-      prepare(std::move(message));
+      safe_prepare(std::move(message));
     } else {
       buffer(std::move(message));
     }
@@ -192,7 +203,7 @@ private:
         front_queue_mutex.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         if (plugin::is_thread_processor and not is_full()) {
-          prepare(std::move(message));
+          safe_prepare(std::move(message));
           return;
         }
         front_queue_mutex.lock();

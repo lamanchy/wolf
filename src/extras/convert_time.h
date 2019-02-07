@@ -30,6 +30,25 @@ bool is_number(const std::string &s) {
 }
 
 
+std::chrono::time_point<std::chrono::system_clock> string_to_time(const std::string & input) {
+  using namespace std;
+  using namespace std::chrono;
+  using namespace date;
+
+  istringstream stream{input};
+  sys_time<milliseconds> t;
+  stream >> parse("%FT%TZ", t);
+  if (not stream.fail() and stream.rdbuf()->in_avail() == 0) {
+    return t;
+  }
+  throw runtime_error("failed to parse " + input);
+}
+
+std::uint64_t convert_time(const std::chrono::duration<uint64_t> input) {
+  return static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(input).count());
+}
+
+
 std::string convert_time(const std::string &input) {
   using namespace std;
   using namespace std::chrono;

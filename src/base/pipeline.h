@@ -5,7 +5,6 @@
 #include <thread>
 #include "plugin.h"
 #include <cxxopts.hpp>
-#include <extras/get_executable_path.h>
 
 namespace wolf {
 

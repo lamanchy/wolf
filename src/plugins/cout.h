@@ -1,5 +1,5 @@
-#ifndef WOLF_STDOUT_H
-#define WOLF_STDOUT_H
+#ifndef WOLF_COUT_H
+#define WOLF_COUT_H
 
 
 #include <base/plugin.h>
@@ -32,4 +32,4 @@ private:
 
 }
 
-#endif //WOLF_STDOUT_H
+#endif //WOLF_COUT_H

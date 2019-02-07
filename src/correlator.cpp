@@ -13,96 +13,38 @@
 #include <plugins/tcp_out.h>
 #include <plugins/lambda.h>
 #include <whereami/whereami.h>
-
+#include <plugins/cout.h>
+#include <plugins/cin.h>
+#include <plugins/stream_sort.h>
+#include <plugins/elapsed.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
 
   pipeline p = pipeline(argc, argv, false);
-  Logger & logger = p.logger;
+  Logger &logger = p.logger;
   logger.info("Parsing command line arguments");
   cxxopts::Options opts(argv[0], " - example command line options");
 
-  std::string output, output_ip, group;
-  opts.add_options()
-      ("output", "Type of output, kafka/logstash", cxxopts::value<std::string>(output)->default_value("kafka"))
-      ("output_ip", "Ip address of output", cxxopts::value<std::string>(output_ip)->default_value("10.0.11.162"))
-      ("group", "Define the group name", cxxopts::value<std::string>(group)->default_value("default"));
-  opts.parse(argc, argv);
-
-  logger.info("Parsed arguments:");
-  logger.info("output:    " + output);
-  logger.info("output_ip: " + output_ip);
-  logger.info("group:     " + group);
-
-  std::function<plugin::pointer(std::string)> out;
-  plugin::pointer tcp = create<tcp_out>(output_ip, "9070");
-
-  if (output == "kafka") {
-    out = [&](std::string type) { return create<kafka_out>(type + "-" + group, 1, output_ip + ":9092"); };
-  } else if (output == "logstash") {
-    out = [&](std::string type) { return tcp; };
-  } else {
-    throw std::runtime_error("output is not kafka nor logstash but " + output);
-  }
-//  out = [&](std::string type) { return create<cout>(); };
-
-  plugin::pointer common_processing =
-      create<add_local_info>(group)->register_output(
-          create<json_to_string>()->register_output(
-              out("unified_logs")
-          )
-      );
-
-
   p.register_plugin(
-      create<tcp_in<line>>("nlog", 9556)->register_output(
+      create<cin>()->register_output(
           create<string_to_json>()->register_output(
-              create<normalize_nlog_logs>()->register_output(
-                  common_processing
-              )
-          )
-      )
-  );
-
-  p.register_plugin(
-      create<tcp_in<line>>("log4j2", 9555)->register_output(
-          create<string_to_json>()->register_output(
-              create<normalize_log4j2_logs>()->register_output(
-                  common_processing
-              )
-          )
-      )
-  );
-
-  p.register_plugin(
-      create<tcp_in<line>>("serilog", 9559)->register_output(
-          create<string_to_json>()->register_output(
-              create<normalize_serilog_logs>()->register_output(
-                  common_processing
-              )
-          )
-      )
-  );
-
-  p.register_plugin(
-      create<tcp_in<line>>("metrics", 9557)->register_output(
-          create<lambda>(
-              [group](json &message) {
-                message.assign_object(
-                    {
-                        {"message", message},
-                        {"group", group},
-                        {"type", "metrics"}
-                    });
-              })->register_output(
-              create<json_to_string>()
-                  ->register_output(
-                      out("metrics")
+              create<stream_sort>(
+                  [](const json &lhs, const json &rhs) -> bool {
+                    return lhs.find("@timestamp")->get_string() > rhs.find("@timestamp")->get_string();
+                  },
+                  stream_sort::ready_after(std::chrono::seconds(0))
+              )->register_output(
+                  create<elapsed>()->register_output(
+                      create<json_to_string>()->register_output(
+                          create<cout>()
+                      )
                   )
+              )
           )
       )
   );
+
   logger.info("Starting");
   p.run();
   logger.info("Stopped");

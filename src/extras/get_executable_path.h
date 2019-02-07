@@ -6,11 +6,11 @@
 #include <string>
 #include <whereami/whereami.h>
 #include <stdexcept>
+
 namespace wolf {
 namespace extras {
 
-
-std::string get_executable_path() {
+inline std::string get_executable_path() {
   char *path = nullptr;
   int length, dirname_length;
   std::string dir_path;
@@ -33,9 +33,7 @@ std::string get_executable_path() {
   return dir_path;
 }
 
-
 }
 }
-
 
 #endif //WOLF_GET_EXECUTABLE_PATH_H
