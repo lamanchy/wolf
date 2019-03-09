@@ -14,7 +14,6 @@ namespace wolf {
 class pipeline {
 public:
   using pointer = plugin::pointer;
-  using parse_result = plugin::parse_result;
   Logger & logger = Logger::getLogger();
 
   pipeline(int argc, char *argv[], bool persistent = true) : opts(argc, argv) {

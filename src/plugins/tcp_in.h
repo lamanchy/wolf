@@ -23,19 +23,6 @@ class tcp_in : public threaded_plugin {
 public:
   explicit tcp_in(unsigned short tcp_port) : tcp_port(tcp_port) { }
 
-  tcp_in() : threaded_plugin() { }
-
-  void register_options(options &opts) override {
-//    opts.add_options("Tcp input " + name)
-//        (name + "_tcp_port", "Port for tcp plugin named " + name, cxxopts::value<unsigned short>(tcp_port));
-  }
-
-  void validate_options(parse_result &result) override {
-//    if (result.count(name + "_tcp_port") == 0) {
-//      throw std::runtime_error("Parameter " + name + "_tcp_port not specified");
-//    }
-  }
-
   void run() override {
     try {
       tcp_server server(this, io_context, tcp_port);

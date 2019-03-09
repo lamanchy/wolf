@@ -73,52 +73,39 @@ int main(int argc, char *argv[]) {
       );
 
   p.register_plugin(
-      create<tcp_in<line>>("nlog", 9556)->register_output(
-          create<string_to_json>()->register_output(
-              create<normalize_nlog_logs>()->register_output(
-                  common_processing
-              )
-          )
-      )
+      create<tcp_in<line>>(9556),
+      create<string_to_json>(),
+      create<normalize_nlog_logs>(),
+      common_processing
   );
 
   p.register_plugin(
-      create<tcp_in<line>>("log4j2", 9555)->register_output(
-          create<string_to_json>()->register_output(
-              create<normalize_log4j2_logs>()->register_output(
-                  common_processing
-              )
-          )
-      )
+      create<tcp_in<line>>(9555),
+      create<string_to_json>(),
+      create<normalize_log4j2_logs>(),
+      common_processing
   );
 
   p.register_plugin(
-      create<tcp_in<line>>("serilog", 9559)->register_output(
-          create<string_to_json>()->register_output(
-              create<normalize_serilog_logs>()->register_output(
-                  common_processing
-              )
-          )
-      )
+      create<tcp_in<line>>(9559),
+      create<string_to_json>(),
+      create<normalize_serilog_logs>(),
+      common_processing
   );
 
   p.register_plugin(
-      create<tcp_in<line>>("metrics", 9557)->register_output(
-          create<lambda>(
-              [group](json &message) {
-                message.assign_object(
-                    {
-                        {"message", message},
-                        {"group", group},
-                        {"type", "metrics"}
-                    });
-              })->register_output(
-              create<json_to_string>()
-                  ->register_output(
-                      out("metrics")
-                  )
-          )
-      )
+      create<tcp_in<line>>(9557),
+      create<lambda>(
+          [group](json &message) {
+            message.assign_object(
+                {
+                    {"message", message},
+                    {"group", group},
+                    {"type", "metrics"}
+                });
+          }),
+      create<json_to_string>(),
+      out("metrics")
   );
   logger.info("Starting");
   p.run();

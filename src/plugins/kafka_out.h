@@ -18,7 +18,17 @@ namespace wolf {
 class kafka_out : public plugin {
 public:
   kafka_out(std::string topic, unsigned partitions, std::string broker_list)
-      : topic(std::move(topic)), partitions(partitions), broker_list(broker_list) { }
+      : topic(std::move(topic)), partitions(partitions), broker_list(broker_list) {
+    config = {
+        { "metadata.broker.list", broker_list }
+        ,
+        { "compression.type", "lz4" }
+//        ,
+//        { "topic.metadata.refresh.interval.ms", 20000 }
+        ,
+        {"debug", "broker,topic,msg"}
+    };
+  }
 
 protected:
   using producer = cppkafka::BufferedProducer<std::string>;
@@ -41,22 +51,6 @@ protected:
     running = false;
     flusher.join();
     p->flush();
-  }
-
-  void validate_options(parse_result &result) {
-//    if (result.count("broker_list") == 0) {
-//      throw std::runtime_error("broker_list option not specified");
-//    }
-
-    config = {
-        { "metadata.broker.list", broker_list }
-        ,
-        { "compression.type", "lz4" }
-//        ,
-//        { "topic.metadata.refresh.interval.ms", 20000 }
-        ,
-        {"debug", "broker,topic,msg"}
-    };
   }
 
   void process(json && message) override {
