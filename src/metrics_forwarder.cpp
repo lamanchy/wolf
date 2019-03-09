@@ -1,4 +1,4 @@
-#include <base/plugin.h>
+#include <base/plugins/plugin.h>
 #include <base/pipeline.h>
 #include <plugins/generator.h>
 #include <plugins/kafka_out.h>
@@ -11,8 +11,6 @@
 #include <plugins/http_out.h>
 #include <plugins/string_to_json.h>
 #include <plugins/stats.h>
-
-
 
 int main(int argc, char *argv[]) {
   using namespace wolf;

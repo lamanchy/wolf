@@ -5,7 +5,7 @@
 #ifndef WOLF_CIN_H
 #define WOLF_CIN_H
 
-#include <base/threaded_plugin.h>
+#include <base/plugins/threaded_plugin.h>
 
 namespace wolf {
 

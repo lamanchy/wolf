@@ -6,8 +6,8 @@
 #define WOLF_KAFKA_IN_H
 
 #include <cppkafka/cppkafka.h>
-#include <base/mutexed_plugin.h>
-#include <base/threaded_plugin.h>
+#include <base/plugins/mutexed_plugin.h>
+#include <base/plugins/threaded_plugin.h>
 #include <stdio.h>
 
 namespace wolf {

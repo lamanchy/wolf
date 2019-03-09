@@ -1,4 +1,4 @@
-#include <base/plugin.h>
+#include <base/plugins/plugin.h>
 #include <base/pipeline.h>
 #include <plugins/generator.h>
 #include <plugins/tcp_in.h>
@@ -13,7 +13,6 @@
 #include <plugins/tcp_out.h>
 #include <plugins/lambda.h>
 #include <whereami/whereami.h>
-
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -37,7 +36,7 @@ int main(int argc, char *argv[]) {
 //  );
 
   pipeline p = pipeline(argc, argv, true);
-  Logger & logger = p.logger;
+  Logger &logger = p.logger;
 
   logger.info("Parsing command line arguments");
   cxxopts::Options opts(argv[0], " - example command line options");

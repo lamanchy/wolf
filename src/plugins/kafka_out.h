@@ -8,9 +8,9 @@
 #define WOLF_KAFKA_OUT_H
 
 
-#include <base/plugin.h>
+#include <base/plugins/plugin.h>
 #include <cppkafka/cppkafka.h>
-#include <base/mutexed_plugin.h>
+#include <base/plugins/mutexed_plugin.h>
 
 
 namespace wolf {
@@ -43,12 +43,7 @@ protected:
     p->flush();
   }
 
-  void register_options(options &opts) override {
-//    opts.add_options("Kafka output")
-//        ("x,broker_list", "Broker list", cxxopts::value<std::string>(broker_list));
-  }
-
-  void validate_options(parse_result &result) override {
+  void validate_options(parse_result &result) {
 //    if (result.count("broker_list") == 0) {
 //      throw std::runtime_error("broker_list option not specified");
 //    }

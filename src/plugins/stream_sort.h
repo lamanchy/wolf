@@ -9,7 +9,7 @@
 #ifndef WOLF_STREAM_SORT_H
 #define WOLF_STREAM_SORT_H
 
-#include <base/mutexed_threaded_plugin.h>
+#include <base/plugins/mutexed_threaded_plugin.h>
 namespace wolf {
 
 class stream_sort : public mutexed_threaded_plugin {

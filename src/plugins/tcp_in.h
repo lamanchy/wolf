@@ -6,7 +6,7 @@
 #define WOLF_TCP_IN_H
 
 #include <asio.hpp>
-#include <base/threaded_plugin.h>
+#include <base/plugins/threaded_plugin.h>
 #include <ctime>
 #include <iostream>
 #include <string>

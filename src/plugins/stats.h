@@ -5,7 +5,7 @@
 #ifndef WOLF_STATS_H
 #define WOLF_STATS_H
 
-#include <base/threaded_plugin.h>
+#include <base/plugins/threaded_plugin.h>
 namespace wolf {
 
 class stats : public threaded_plugin {

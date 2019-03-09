@@ -5,7 +5,7 @@
 #ifndef WOLF_HTTP_OUT_H
 #define WOLF_HTTP_OUT_H
 
-#include <base/threaded_plugin.h>
+#include <base/plugins/threaded_plugin.h>
 
 #include <asio/connect.hpp>
 #include <asio/ip/tcp.hpp>

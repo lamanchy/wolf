@@ -2,7 +2,7 @@
 #define WOLF_GENERATOR_H
 
 
-#include <base/threaded_plugin.h>
+#include <base/plugins/threaded_plugin.h>
 
 namespace wolf {
 
@@ -11,7 +11,7 @@ class generator : public threaded_plugin {
   unsigned count = 10;
 
 public:
-  void register_options(options &opts) override {
+  void register_options(options &opts) {
 //    opts.add_options("Generator")
 //        ("c,count", "Number of generated messages", cxxopts::value<unsigned>(count));
   }

@@ -5,7 +5,7 @@
 #ifndef WOLF_TCP_OUT_H
 #define WOLF_TCP_OUT_H
 
-#include <base/plugin.h>
+#include <base/plugins/plugin.h>
 #include <asio.hpp>
 
 namespace wolf {

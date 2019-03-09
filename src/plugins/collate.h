@@ -5,7 +5,7 @@
 #ifndef WOLF_COLLATE_H
 #define WOLF_COLLATE_H
 
-#include <base/mutexed_threaded_plugin.h>
+#include <base/plugins/mutexed_threaded_plugin.h>
 
 namespace wolf {
 

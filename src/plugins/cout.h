@@ -2,7 +2,7 @@
 #define WOLF_COUT_H
 
 
-#include <base/plugin.h>
+#include <base/plugins/plugin.h>
 
 namespace wolf {
 

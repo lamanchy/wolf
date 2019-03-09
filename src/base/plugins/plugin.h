@@ -14,7 +14,7 @@
 #include <cxxopts.hpp>
 #include <thread>
 #include <extras/logger.h>
-#include "json.h"
+#include "base/json.h"
 
 namespace wolf {
 
@@ -22,8 +22,6 @@ class plugin : public std::enable_shared_from_this<plugin> {
 public:
   using pointer = std::shared_ptr<plugin>;
   using id_type = unsigned;
-  using options = cxxopts::Options;
-  using parse_result = cxxopts::ParseResult;
   
   Logger &logger = Logger::getLogger();
 
@@ -59,10 +57,6 @@ public:
 protected:
   plugin() {
     id = id_counter++;
-  }
-
-  static pointer create() {
-    throw std::runtime_error("You have to overwrite create method, to create shared_ptr on created plugin");
   }
 
   virtual void process(json &&message) {}
@@ -111,10 +105,6 @@ protected:
   void output(const std::string &output_type, json &&message) {
     outputs.at(output_type)->receive(std::move(message));
   }
-
-  virtual void register_options(options &opts) {}
-
-  virtual void validate_options(parse_result &result) {}
 
   static unsigned buffer_size;
 private:
@@ -250,7 +240,6 @@ template<typename T, typename... Args>
 std::shared_ptr<T> create(Args &&... args) {
   return std::shared_ptr<T>(new T(std::forward<Args>(args)...));
 }
-
 }
 
 #endif //WOLF_PLUGIN_H

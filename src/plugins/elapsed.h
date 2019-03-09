@@ -5,7 +5,7 @@
 #ifndef WOLF_ELAPSED_H
 #define WOLF_ELAPSED_H
 
-#include <base/mutexed_threaded_plugin.h>
+#include <base/plugins/mutexed_threaded_plugin.h>
 #include <extras/convert_time.h>
 namespace wolf {
 

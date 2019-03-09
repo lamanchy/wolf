@@ -3,22 +3,21 @@
 
 #include <csignal>
 #include <thread>
-#include "plugin.h"
+#include "base/plugins/plugin.h"
+#include "base/options/option.h"
 #include <cxxopts.hpp>
+#include <base/options/constant.h>
+#include <base/options/command.h>
 
 namespace wolf {
 
 class pipeline {
 public:
   using pointer = plugin::pointer;
-  using options = plugin::options;
   using parse_result = plugin::parse_result;
   Logger & logger = Logger::getLogger();
 
-  pipeline(int argc, char *argv[], bool persistent = true) :
-      opts(argv[0], " - example command line options"),
-      argc(argc),
-      argv(argv) {
+  pipeline(int argc, char *argv[], bool persistent = true) : opts(argc, argv) {
     plugin::persistent = persistent;
 
     if (not initialized) {
@@ -34,9 +33,29 @@ public:
 
   pipeline &operator=(pipeline &&) = default;
 
+  template<typename T, typename... Args>
+  std::shared_ptr<T> option(Args &&... args) {
+    return opts.option<T>(std::forward<Args>(args)...);
+  }
+
   void register_plugin(const pointer &plugin) {
     plugins.push_back(plugin);
-//    return std::move(*this);
+  }
+
+  template <typename... Args>
+  void register_plugin(const pointer &plugin, Args &&... args) {
+    plugins.push_back(plugin);
+    plugin->register_output(chain_register_output(args...));
+  }
+
+  const pointer &chain_register_output(const pointer &plugin) {
+    return plugin;
+  }
+
+  template <typename... Args>
+  const pointer &chain_register_output(const pointer &plugin, Args &&... args) {
+    plugin->register_output(chain_register_output(args...));
+    return plugin;
   }
 
   void run() {
@@ -47,19 +66,14 @@ public:
     stop();
   }
 
-  cxxopts::OptionAdder add_options() {
-    return opts.add_options("Custom options");
-  }
 
 private:
   std::vector<pointer> plugins;
   std::vector<std::thread> processors;
+  options opts;
   unsigned number_of_processors = std::thread::hardware_concurrency();
   static bool initialized;
 
-  int argc;
-  char **argv;
-  options opts;
 
   void initialize() {
     initialized = true;
@@ -77,29 +91,11 @@ private:
   }
 
   void evaluate_options() {
-    opts.add_options()
-        ("h,help", "Print help");
+    auto opt = opts.option<command<bool>>("help", "Prints help");
 
-  //    opts.add_options("Pipeline options")
-//        ("t,threads", "Number of processors", cxxopts::value<unsigned>(number_of_processors))
-//        ("b,buffer_size", "Size of buffer in records", cxxopts::value<unsigned>(plugin::buffer_size));
-
-
-    for_each_plugin([this](plugin &p) { p.register_options(opts); });
-
-    try {
-      parse_result result = opts.parse(argc, argv);
-
-      if (result.count("help")) {
-        logger.info(opts.help(opts.groups()));
-        exit(0);
-      }
-
-      for_each_plugin([& result] (plugin &p) {p.validate_options(result); });
-
-    } catch (const cxxopts::OptionException &e) {
-      logger.error("error parsing options: " + std::string(e.what()));
-      exit(1);
+    if (opt->get_value()) {
+      opts.print_help();
+      exit(0);
     }
   }
 
