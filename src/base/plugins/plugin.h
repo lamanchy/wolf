@@ -1,3 +1,4 @@
+#include <utility>
 
 #ifndef WOLF_PLUGIN_H
 #define WOLF_PLUGIN_H
@@ -26,7 +27,7 @@ public:
   Logger &logger = Logger::getLogger();
 
   pointer register_output(pointer plugin) {
-    return register_named_output("default", plugin);
+    return register_named_output("default", std::move(plugin));
   }
 
   bool operator==(const plugin &other) const {
@@ -106,6 +107,13 @@ protected:
     outputs.at(output_type)->receive(std::move(message));
   }
 
+  pointer register_named_output(std::string output_name, pointer plugin) {
+    auto it = outputs.find(output_name);
+    if (it != outputs.end()) throw std::runtime_error("plugin already registered output named: " + output_name);
+    outputs.emplace(std::make_pair(output_name, plugin));
+    return shared_from_this();
+  }
+
   static unsigned buffer_size;
 private:
   friend class pipeline;
@@ -158,13 +166,6 @@ private:
 
   static std::atomic<id_type> id_counter;
   id_type id;
-
-  pointer register_named_output(std::string output_name, pointer plugin) {
-    auto it = outputs.find(output_name);
-    if (it != outputs.end()) throw std::runtime_error("plugin already registered output named: " + output_name);
-    outputs.emplace(std::make_pair(output_name, plugin));
-    return shared_from_this();
-  }
 
 //  json get_buffer_stats() {
 //    std::lock_guard<std::mutex> bqlg(back_queue_mutex);
