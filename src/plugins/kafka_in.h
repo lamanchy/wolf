@@ -15,7 +15,12 @@ namespace wolf {
 class kafka_in : public threaded_plugin {
  public:
   kafka_in(std::string topic, std::string broker_list, std::string group_id)
-      : topic(std::move(topic)), broker_list(broker_list), group_id(group_id) {}
+      : topic(std::move(topic)), broker_list(broker_list), group_id(group_id) {
+
+    config = {
+        {"metadata.broker.list", broker_list}
+    };
+  }
 
  protected:
 
@@ -78,21 +83,6 @@ class kafka_in : public threaded_plugin {
         }
       }
     }
-  }
-
-  void register_options(options &opts) override {
-//    opts.add_options("Kafka output")
-//        ("x,broker_list", "Broker list", cxxopts::value<std::string>(broker_list));
-  }
-
-  void validate_options(parse_result &result) override {
-//    if (result.count("broker_list") == 0) {
-//      throw std::runtime_error("broker_list option not specified");
-//    }
-
-    config = {
-        {"metadata.broker.list", broker_list}
-    };
   }
 
   cppkafka::Configuration config;
