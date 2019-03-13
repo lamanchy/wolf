@@ -6,7 +6,7 @@
 
 namespace wolf {
 
-class cout : public plugin {
+class cout : public mutexed_plugin {
 public:
   ~cout() {
     std::cout << std::flush;

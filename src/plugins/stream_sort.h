@@ -29,29 +29,29 @@ class stream_sort : public mutexed_threaded_plugin {
   ) : priority_queue(priority_queue_t(cmp)), is_ready(std::move(is_ready)) { }
 
  protected:
-
   using priority_queue_t = std::priority_queue<
       json,
       std::deque<json>,
       std::function<bool(const json &lhs, const json &rhs)>
   >;
-
-  void run() override {
+  
+  void setup() override {
     mark_as_processor();
-    while (running) {
-      lock.lock();
-      while (!priority_queue.empty() && is_ready(priority_queue.top())) {
-        // TODO can it be std::moved outside? (can, but with custom implementation)
-        json j = priority_queue.top();
-        priority_queue.pop();
+  }
+  
+  void unlocked_loop() override {
+    lock.lock();
+    while (!priority_queue.empty() && is_ready(priority_queue.top())) {
+      // TODO can it be std::moved outside? (can, but with custom implementation)
+      json j = priority_queue.top();
+      priority_queue.pop();
 
-        lock.unlock();
-        output(std::move(j));
-        lock.lock();
-      }
       lock.unlock();
-      std::this_thread::sleep_for(std::chrono::seconds(1));
+      output(std::move(j));
+      lock.lock();
     }
+    lock.unlock();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
   void process(json &&message) override {

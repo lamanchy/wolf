@@ -167,8 +167,7 @@ private:
   }
 
   bool plugins_running() {
-    std::vector<bool> results = for_each_plugin<bool>([](plugin &p) { return p.is_running(); } );
-    return std::any_of(results.begin(), results.end(), [](bool r) { return r; } );
+    return std::any_of(plugins.begin(), plugins.end(), [](pointer &p) { return p->is_running(); });
   }
 
   void wait() {

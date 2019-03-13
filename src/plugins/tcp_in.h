@@ -23,7 +23,8 @@ class tcp_in : public threaded_plugin {
 public:
   explicit tcp_in(unsigned short tcp_port) : tcp_port(tcp_port) { }
 
-  void run() override {
+ protected:
+  void setup() override {
     try {
       tcp_server server(this, io_context, tcp_port);
       io_context.run();

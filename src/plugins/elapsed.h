@@ -11,38 +11,9 @@ namespace wolf {
 
 class elapsed : public mutexed_threaded_plugin {
  protected:
-  void run() override {
-    while (running) {
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-      std::lock_guard<std::mutex> lg(lock);
-
-      for (auto it = storage.begin(); it != storage.end();) {
-
-        if (
-            (
-                std::chrono::system_clock::now().time_since_epoch().count() -
-                    it->second.metadata["elapsed_inserted_time"].get_signed()
-            ) > std::chrono::nanoseconds(std::chrono::seconds(max_seconds_to_keep)).count()
-            ) {
-          output({
-                     {"start_time", it->second["@timestamp"]},
-                     {"type", "metrics"},
-                     {"status", "expired"},
-                     {"start_host", it->second["host"]},
-                     {"group", it->second["group"]},
-                     {"elapsedId", it->second["elapsedId"]},
-                     {"uniqueId", it->second["uniqueId"]},
-                 });
-          storage.erase(it++);
-        } else {
-          ++it;
-        }
-      }
-    }
-  }
-
   void process(json &&message) override {
     std::string key = get_key(message);
+
     if (message["position"].get_string() == "start") {
       if (storage.find(key) == storage.end()) {
         message.metadata["elapsed_inserted_time"] = std::chrono::system_clock::now().time_since_epoch().count();
@@ -72,8 +43,31 @@ class elapsed : public mutexed_threaded_plugin {
     }
   }
 
-  bool is_full() override {
-    return false;
+  void locked_loop() override {
+    for (auto it = storage.begin(); it != storage.end();) {
+      if ((
+              std::chrono::system_clock::now().time_since_epoch().count() -
+                  it->second.metadata["elapsed_inserted_time"].get_signed()
+          ) > std::chrono::nanoseconds(std::chrono::seconds(max_seconds_to_keep)).count()
+          ) {
+        output({
+                   {"start_time", it->second["@timestamp"]},
+                   {"type", "metrics"},
+                   {"status", "expired"},
+                   {"start_host", it->second["host"]},
+                   {"group", it->second["group"]},
+                   {"elapsedId", it->second["elapsedId"]},
+                   {"uniqueId", it->second["uniqueId"]},
+               });
+        storage.erase(it++);
+      } else {
+        ++it;
+      }
+    }
+  }
+
+  void unlocked_loop() override {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
  private:

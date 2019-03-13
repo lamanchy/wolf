@@ -22,13 +22,12 @@ class http_out : public threaded_plugin {
       host(host), port(port), url(url) {};
 
  protected:
-  void run() override {
-    while (running) {
-      if (ioc.run_one() == 0) {
-        i = 0;
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        ioc.restart();
-      }
+
+  void loop() override {
+    if (ioc.run_one() == 0) {
+      i = 0;
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      ioc.restart();
     }
   }
 

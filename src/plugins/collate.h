@@ -11,12 +11,12 @@ namespace wolf {
 
 class collate : public mutexed_threaded_plugin {
  protected:
-  void run() override {
-    while (running) {
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-      std::lock_guard<std::mutex> lg(lock);
-      empty();
-    }
+
+  void locked_loop() override {
+    empty();
+  }
+  void unlocked_loop() override {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
   void process(json &&message) override {

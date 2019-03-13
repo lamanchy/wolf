@@ -18,6 +18,7 @@
 #include <re2/set.h>
 #include <plugins/regex.h>
 #include <plugins/ysoft/get_elapsed_preevents.h>
+#include <plugins/ysoft/count_logs.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -33,6 +34,11 @@ int main(int argc, char *argv[]) {
               create<cout>()
               )
           ),
+      create<count_logs>(std::vector<std::string>({"logId", "host"}))->register_stats_output(
+          create<json_to_string>()->register_output(
+              create<cout>()
+          )
+      ),
       create<json_to_string>(),
       create<cout>()
   );

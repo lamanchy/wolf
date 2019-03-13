@@ -11,16 +11,12 @@ namespace wolf {
 
 class cin : public threaded_plugin {
  protected:
-
-  void run() override {
-//    Plugin::is_thread_processor = true;
-//    sleep(100);
-//    running = false;
+  void setup() override {
     for (std::string line; std::getline(std::cin, line);) {
       output(json(line));
     }
-    running = false;
-    }
+    end_loop();
+  }
 };
 
 }

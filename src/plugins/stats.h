@@ -10,13 +10,10 @@ namespace wolf {
 
 class stats : public threaded_plugin {
  protected:
-  void run() override {
-    while (running) {
-      logger.info("Speed " + std::to_string(i*60/1000) + "k events per minute.");
-      i = 0;
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-
+  void loop() override {
+    logger.info("Speed " + std::to_string(i*60/1000) + "k events per minute.");
+    i = 0;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
   void process(json &&message)
