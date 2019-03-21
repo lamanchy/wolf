@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
   p.register_plugin(
       create<cin>(),
       create<string_to_json>(),
-      create<regex>(std::vector<std::pair<std::string, std::string>>(regex::parse_file("/home/lamanchy/CLionProjects/wolf/cmake-build-debug/parsers"))),
+      create<regex>(std::vector<std::pair<std::string, std::string>>(regex::parse_file("/home/lamanchy/CLionProjects/wolf/tests/parsers"))),
       create<get_elapsed_preevents>(std::vector<get_elapsed_preevents::elapsed_config>({{"start_stuff", "stop_stuff", "myId", "stuff_elapsed"}}))->register_metrics_output(
           create<json_to_string>()->register_output(
               create<cout>()

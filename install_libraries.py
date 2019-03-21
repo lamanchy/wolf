@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import shutil
 import subprocess
@@ -58,7 +60,7 @@ def get_libs():
         os.chdir("..")
 
     if is_linux():
-        subprocess.call(["wget", "https://dl.bintray.com/boostorg/release/1.69.0/source/%s.tar.gz" % boost_version])
+        subprocess.call(["wget", "-q", "https://dl.bintray.com/boostorg/release/1.69.0/source/%s.tar.gz" % boost_version])
         subprocess.call(["tar", "-xf", "%s.tar.gz" % boost_version])
     else:
         raise NotImplemented("fuck fuck")

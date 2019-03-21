@@ -10,6 +10,11 @@ elseif (WIN32)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 endif ()
 
+message(INFO Building libraries)
+file(LOCK ${CMAKE_SOURCE_DIR}/lib DIRECTORY)
+execute_process(COMMAND ${CMAKE_SOURCE_DIR}/install_libraries.py)
+file(LOCK ${CMAKE_SOURCE_DIR}/lib DIRECTORY RELEASE)
+
 set(SOURCE_FILES
         src/base/plugins/plugin.h
         src/base/plugins/plugin.cpp

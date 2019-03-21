@@ -12,8 +12,6 @@ fi
 
 for build_type in Debug Release
 do
-    python ${basepath}/install_libraries.py
-
     build_path=${basepath}/build/${build_path_part}/${build_type}
 
     mkdir -p ${build_path}
@@ -23,7 +21,7 @@ do
 
     cmake --build ${build_path} -- -j 4
 
-#    python ${basepath}/tests/end_to_end_tests.py || exit 1
+    python ${basepath}/tests/end_to_end_tests.py ${build_path_part} || exit 1
 
     cmake --build ${build_path} --target install -- -j 4
 done

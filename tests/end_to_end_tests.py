@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import json
 import re
 import unittest
@@ -6,8 +8,16 @@ from os.path import isfile
 from subprocess import Popen, PIPE
 from threading import Lock
 
+import sys
+
 build_lock = Lock()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+build_path_part = 'local'
+if len(sys.argv) == 2:
+    build_path_part = sys.argv[1]
+    sys.argv.pop(1)
 
 
 class BaseTest(object):
@@ -22,7 +32,8 @@ class BaseTest(object):
     # build_lock.release()
 
     def setUp(self):
-        parser = os.path.join(BASE_DIR, 'install', 'parser-linux-debug', 'parser')
+        global build_path_part
+        parser = os.path.join(BASE_DIR, 'build', build_path_part, 'Debug', 'parser')
         assert isfile(parser)
         self.wolf = Popen(parser, shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 

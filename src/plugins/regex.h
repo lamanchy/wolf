@@ -49,7 +49,7 @@ class regex : public plugin {
 
         auto it = line.find(':');
         if (it == std::string::npos) {
-          Logger::getLogger().error("Cannot parsing file " + file_path + ", ':' is missing");
+          Logger::getLogger().error("Cannot parsing file " + file_path + ", ':' is missing on line " + line);
           exit(1);
         }
         result.emplace_back(line.substr(0, it), line.substr(it+1));
