@@ -49,12 +49,19 @@ class count_logs : public mutexed_threaded_plugin {
     output(std::move(message));
   }
 
+  void setup() override {
+    mark_as_processor();
+  }
+
   void unlocked_loop() override {
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    for (int i = 0; i < 10; i++)
+      if (running)
+        std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
   void locked_loop() override {
     for (auto & item : storage) {
+//      std::cout << "outputtting stuff" << tao::json::to_string(item.second) << std::endl;
       stats_output(std::move(item.second));
     }
     storage.clear();

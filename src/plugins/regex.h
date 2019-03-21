@@ -85,6 +85,8 @@ class regex : public plugin {
       for (auto & pair : regex.NamedCapturingGroups()) {
         message[pair.first] = std::string(submatches[pair.second].data(), submatches[pair.second].length());
       }
+    } else {
+      message["logId"] = "default";
     }
     output(std::move(message));
   }

@@ -19,7 +19,7 @@ class Logger {
   static Logger &getLogger() {
     if (!initialized) {
       setupLogger(wolf::extras::get_executable_path());
-      std::cout << "Logging into directory with executable" << std::endl;
+      do_log(std::cout, "INFO", "Logging into directory with executable");
     }
     static Logger instance(logging_dir);
     return instance;
@@ -80,7 +80,7 @@ class Logger {
   std::mutex lock;
 
 
-  void do_log(std::ostream &stream, const std::string &level, std::string const &message) {
+  static void do_log(std::ostream &stream, const std::string &level, std::string const &message) {
     stream << date::format("%F %T", std::chrono::system_clock::now()) << " " << level << " " << message << std::endl;
   }
 

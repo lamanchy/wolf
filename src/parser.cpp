@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
               create<cout>()
               )
           ),
-      create<count_logs>(std::vector<std::string>({"logId", "host"}))->register_stats_output(
+      create<count_logs>(std::vector<std::string>({"logId", "host", "group"}))->register_stats_output(
           create<json_to_string>()->register_output(
               create<cout>()
           )

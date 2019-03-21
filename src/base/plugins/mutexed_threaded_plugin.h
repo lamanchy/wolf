@@ -24,11 +24,9 @@ class mutexed_threaded_plugin : public threaded_plugin {
       setup();
     }
     while (is_running()) {
-      {
-        std::lock_guard<std::mutex> lg(lock);
-        locked_loop();
-      }
       unlocked_loop();
+      std::lock_guard<std::mutex> lg(lock);
+      locked_loop();
     }
   }
 

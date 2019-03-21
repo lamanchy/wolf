@@ -61,8 +61,8 @@ private:
           message_.prepare(65536);
 
       socket_.async_read_some(mutableBuffer, boost::bind(&tcp_connection::handle_write, this->shared_from_this(),
-                                                         asio::placeholders::error,
-                                                         asio::placeholders::bytes_transferred));
+                                                         boost::placeholders::_1,
+                                                         boost::placeholders::_2));
     }
 
   private:
