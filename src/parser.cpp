@@ -25,22 +25,31 @@ int main(int argc, char *argv[]) {
 
   pipeline p = pipeline(argc, argv, true);
 
-  p.register_plugin(
-      create<cin>(),
-      create<string_to_json>(),
-      create<regex>(std::vector<std::pair<std::string, std::string>>(regex::parse_file("/home/lamanchy/CLionProjects/wolf/tests/parsers"))),
-      create<get_elapsed_preevents>(std::vector<get_elapsed_preevents::elapsed_config>({{"start_stuff", "stop_stuff", "myId", "stuff_elapsed"}}))->register_metrics_output(
-          create<json_to_string>()->register_output(
-              create<cout>()
-              )
-          ),
-      create<count_logs>(std::vector<std::string>({"logId", "host", "group"}))->register_stats_output(
-          create<json_to_string>()->register_output(
-              create<cout>()
+  std::vector<get_elapsed_preevents::elapsed_config> elapsed_config = {
+      {"start_stuff", "stop_stuff", "myId", "stuff_elapsed"}
+  };
+
+  plugin::pointer output =
+      create<json_to_string>()->register_output(
+          create<tcp_out<line>>(
+              p.option<constant<std::string>>("localhost"),
+              p.option<command<std::string>>("output_port", "Output port")
           )
+      );
+
+  p.register_plugin(
+      create<tcp_in<line>>(
+          p.option<command<unsigned short>>("input_port", "Input port")
+          ),
+      create<string_to_json>(),
+      create<regex>(regex::parse_file("../../../tests/parsers")),
+      create<get_elapsed_preevents>(elapsed_config)->register_metrics_output(
+          output
       ),
-      create<json_to_string>(),
-      create<cout>()
+      create<count_logs>(std::vector<std::string>({"logId", "host", "group"}))->register_stats_output(
+          output
+      ),
+      output
   );
 
   p.run();

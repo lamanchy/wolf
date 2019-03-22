@@ -51,7 +51,7 @@ class Logger {
 
   void warn(std::string const &message) {
     std::lock_guard<std::mutex> lg(lock);
-    do_log(std::cerr, "WARN ", message);
+    do_log(std::cout, "WARN ", message);
     do_log(info_file_, "WARN ", message);
     do_log(trace_file_, "WARN ", message);
   }

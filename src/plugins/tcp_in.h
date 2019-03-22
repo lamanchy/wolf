@@ -21,12 +21,12 @@ namespace wolf {
 template<typename Serializer>
 class tcp_in : public threaded_plugin {
 public:
-  explicit tcp_in(unsigned short tcp_port) : tcp_port(tcp_port) { }
+  explicit tcp_in(const not_event_option<unsigned short> &port) : port(port->get_value()) { }
 
  protected:
   void setup() override {
     try {
-      tcp_server server(this, io_context, tcp_port);
+      tcp_server server(this, io_context, port);
       io_context.run();
     }
     catch (std::exception &e) {
@@ -40,7 +40,7 @@ public:
   }
 
 private:
-  unsigned short tcp_port{};
+  unsigned short port{};
   asio::io_context io_context;
 
   class tcp_connection
@@ -84,7 +84,7 @@ private:
             [this](json &&message) {
               message.metadata = {
                   {"source", "tcp"},
-                  {"port", p->tcp_port}
+                  {"port", p->port}
               };
               p->output(std::move(message));
             });

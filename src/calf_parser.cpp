@@ -13,27 +13,10 @@
 #include <plugins/tcp_out.h>
 #include <plugins/lambda.h>
 #include <whereami/whereami.h>
+#include <serializers/plain.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
-
-
-//  json_to_string jts = json_to_string();
-//  test_create();
-
-//  std::shared_ptr<plugin> test = test_create(std::move(jts));
-//  test->print_name();
-
-//  test->print_name();
-
-//  pipeline test = pipeline(argc, argv).add(
-//      create<tcp_in<line>>("nlog"),
-//      create<string_to_json>(),
-//      create<normalize_nlog_logs>(),
-//      create<add_local_info>(),
-//      create<json_to_string>(),
-//      create<kafka_out>("test", 1)
-//  );
 
   pipeline p = pipeline(argc, argv, true);
   Logger &logger = p.logger;
@@ -54,7 +37,10 @@ int main(int argc, char *argv[]) {
   logger.info("group:     " + group);
 
   std::function<plugin::pointer(std::string)> out;
-  plugin::pointer tcp = create<tcp_out>(output_ip, "9070");
+  plugin::pointer tcp = create<tcp_out<line>>(
+      p.option<constant<std::string>>(output_ip),
+      p.option<constant<std::string>>("9070")
+    );
 
   if (output == "kafka") {
     out = [&](std::string type) { return create<kafka_out>(type + "-" + group, 1, output_ip + ":9092"); };
@@ -73,28 +59,28 @@ int main(int argc, char *argv[]) {
       );
 
   p.register_plugin(
-      create<tcp_in<line>>(9556),
+      create<tcp_in<line>>(p.option<constant<unsigned short>>(9556)),
       create<string_to_json>(),
       create<normalize_nlog_logs>(),
       common_processing
   );
 
   p.register_plugin(
-      create<tcp_in<line>>(9555),
+      create<tcp_in<line>>(p.option<constant<unsigned short>>(9555)),
       create<string_to_json>(),
       create<normalize_log4j2_logs>(),
       common_processing
   );
 
   p.register_plugin(
-      create<tcp_in<line>>(9559),
+      create<tcp_in<line>>(p.option<constant<unsigned short>>(9559)),
       create<string_to_json>(),
       create<normalize_serilog_logs>(),
       common_processing
   );
 
   p.register_plugin(
-      create<tcp_in<line>>(9557),
+      create<tcp_in<line>>(p.option<constant<unsigned short>>(9557)),
       create<lambda>(
           [group](json &message) {
             message.assign_object(

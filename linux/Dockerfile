@@ -5,5 +5,5 @@ RUN apt update -y && \
     python -m pip install cmake
 # cmake installed with pip, because it is newer version
 
-ENTRYPOINT ["/bin/bash", "/wolf/linux/build-wolf.sh"]
-CMD ["docker"]
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["/wolf/linux/build-wolf.sh docker"]
