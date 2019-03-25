@@ -24,7 +24,6 @@ class tcp_out : public plugin {
 
  protected:
   void process(json &&message) override {
-
     lock.lock();
     bool write_in_progress = !write_msgs_.empty();
     write_msgs_.push_back(s.serialize(std::move(message)));
@@ -34,13 +33,6 @@ class tcp_out : public plugin {
     if (!write_in_progress) {
       do_write();
     }
-  }
-
-  void start() override {
-    std::thread{[this]() {
-      std::lock_guard<std::mutex> lg(lock);
-      do_connect();
-    }}.detach();
   }
 
   void stop() override {
@@ -81,16 +73,13 @@ class tcp_out : public plugin {
   }
 
   void do_connect() {
-    for (int i = 0; i < 10; i++) {
-      try {
-        asio::ip::tcp::resolver resolver(io_context_);
-        auto endpoints = resolver.resolve(host, port);
-        asio::connect(socket_, endpoints);
-        break;
-      } catch (std::exception &e) {
-        logger.warn("tcp connect failed: " + std::string(e.what()));
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      }
+    try {
+      asio::ip::tcp::resolver resolver(io_context_);
+      auto endpoints = resolver.resolve(host, port);
+      asio::connect(socket_, endpoints);
+    } catch (std::exception &e) {
+      logger.warn("tcp connect failed: " + std::string(e.what()));
+      std::this_thread::sleep_for(std::chrono::seconds(1));
     }
   }
 
