@@ -3,7 +3,6 @@
 import json
 import re
 import os
-import signal
 import socket
 import unittest
 from os.path import isfile
@@ -40,7 +39,7 @@ class WolfTestBase(unittest.TestCase):
     def tcp_listen(self, port):
         host = ''  # Symbolic name meaning all available interfaces
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(1.0)
+        s.settimeout(2.0)
 
         try:
             s.bind((host, port))
