@@ -14,9 +14,17 @@ namespace wolf {
 
 class add_local_info : public plugin {
 public:
-  add_local_info(std::string group) : group(group) {}
+  add_local_info(std::string group, std::string max_loglevel) : group(group), max_loglevel(max_loglevel) {  }
 
 protected:
+
+  void start() override {
+    auto it = std::find(loglevels.begin(), loglevels.end(), max_loglevel);
+    if (it == loglevels.end()) {
+      throw std::invalid_argument(max_loglevel + "is not valid loglevel");
+    }
+  }
+
   void process(json &&message) override {
     message["host"] = asio::ip::host_name();
     message["group"] = group;
@@ -26,8 +34,9 @@ protected:
     }
 
     std::string level = message["level"].get_string();
-    if (level == "DEBUG" or level == "TRACE") {
-      return;
+    for (const std::string & loglevel : loglevels) {
+      if (loglevel == level) break;
+      if (loglevel == max_loglevel) return;
     }
 
     if (message["message"].get_string().size() > 32000) {
@@ -42,6 +51,8 @@ protected:
 
 private:
   std::string group;
+  std::string max_loglevel;
+  std::vector<std::string> loglevels = {"OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "ALL"};
 };
 
 }

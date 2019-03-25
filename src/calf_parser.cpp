@@ -14,6 +14,7 @@
 #include <plugins/lambda.h>
 #include <whereami/whereami.h>
 #include <serializers/plain.h>
+#include <plugins/cout.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -24,17 +25,16 @@ int main(int argc, char *argv[]) {
   logger.info("Parsing command line arguments");
   cxxopts::Options opts(argv[0], " - example command line options");
 
-  std::string output, output_ip, group;
-  opts.add_options()
-      ("output", "Type of output, kafka/logstash", cxxopts::value<std::string>(output)->default_value("kafka"))
-      ("output_ip", "Ip address of output", cxxopts::value<std::string>(output_ip)->default_value("10.0.11.162"))
-      ("group", "Define the group name", cxxopts::value<std::string>(group)->default_value("default"));
-  opts.parse(argc, argv);
+  std::string output = p.option<command<std::string>>("output", "Type of output, kafka/logstash")->get_value();
+  std::string output_ip = p.option<command<std::string>>("output_ip", "Ip address of output")->get_value();
+  std::string group = p.option<command<std::string>>("group", "Define the group name")->get_value();
+  std::string max_loglevel = p.option<command<std::string>>("max_loglevel", "Define max loglevel, one of OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL")->get_value();
 
   logger.info("Parsed arguments:");
-  logger.info("output:    " + output);
-  logger.info("output_ip: " + output_ip);
-  logger.info("group:     " + group);
+  logger.info("output:       " + output);
+  logger.info("output_ip:    " + output_ip);
+  logger.info("group:        " + group);
+  logger.info("max_loglevel: " + max_loglevel);
 
   std::function<plugin::pointer(std::string)> out;
   plugin::pointer tcp = create<tcp_out<line>>(
@@ -46,13 +46,16 @@ int main(int argc, char *argv[]) {
     out = [&](std::string type) { return create<kafka_out>(type + "-" + group, 1, output_ip + ":9092"); };
   } else if (output == "logstash") {
     out = [&](std::string type) { return tcp; };
-  } else {
+  } else if (!p.will_print_help()) {
     throw std::runtime_error("output is not kafka nor logstash but " + output);
+  } else {
+    // just to fill out with something
+    out = [&](std::string type) { return create<cout>(); };
   }
-//  out = [&](std::string type) { return create<cout>(); };
+
 
   plugin::pointer common_processing =
-      create<add_local_info>(group)->register_output(
+      create<add_local_info>(group, max_loglevel)->register_output(
           create<json_to_string>()->register_output(
               out("unified_logs")
           )

@@ -18,10 +18,22 @@ class options {
   options(int argc, char *argv[]) :
       g_opts(argv[0], " - example command line options"),
       argc(argc),
-      argv(argv) {}
+      argv(argv) {
+    g_opts.add_options()("h,help", "Prints help");
+    cxxopts::Options opts("");
+    opts.add_options("")("h,help", "Prints help", cxxopts::value<bool>(_should_print_help));
+    opts.allow_unrecognised_options();
+    auto r = options::parse_opts(opts, argc, argv);
+    std::cout << r.count("h,help") << std::endl;
+  }
 
   void print_help() {
     Logger::getLogger().info(g_opts.help(g_opts.groups()));
+  }
+
+  bool should_print_help() {
+    std::cout << _should_print_help << std::endl;
+    return _should_print_help;
   }
 
   template<typename T, typename... Args>
@@ -33,7 +45,8 @@ class options {
     opt->add_options(opts.add_options());
 
     opts.allow_unrecognised_options();
-    opt->validate_options(options::parse_opts(opts, argc, argv));
+    if (!should_print_help())
+      opt->validate_options(options::parse_opts(opts, argc, argv));
     all_options.push_back(opt);
     return opt;
   }
@@ -43,6 +56,7 @@ class options {
   char **argv;
   cxxopts::Options g_opts;
   std::vector<std::shared_ptr<base_option>> all_options;
+  bool _should_print_help;
 
   static cxxopts::ParseResult parse_opts(cxxopts::Options &opts, int argc, char **argv) {
     try {
