@@ -86,9 +86,13 @@ for build_type in ["Debug", "Release"]:
     def copy_headers(name, extend=""):
         print "copying %s header files" % name
         lib_path = os.path.join("submodules", name)
+        destination_path = os.path.join(include_path, extend)
+        if not os.path.exists(destination_path):
+            os.mkdir(destination_path)
+
         for item in os.listdir(lib_path):
             s = os.path.join(lib_path, item)
-            d = os.path.join(os.path.join(include_path, extend), item)
+            d = os.path.join(destination_path, item)
             if os.path.isdir(s):
                 try:
                     shutil.rmtree(d)
