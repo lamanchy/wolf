@@ -170,5 +170,6 @@ for build_type in ["Debug", "Release"]:
 
 try:
     shutil.rmtree("submodules")
-except OSError:
+except OSError as e:
+    print e
     pass

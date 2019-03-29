@@ -41,7 +41,7 @@ class stream_sort : public mutexed_threaded_plugin {
   
   void unlocked_loop() override {
     lock.lock();
-    while (!priority_queue.empty() && is_ready(priority_queue.top())) {
+    while (not priority_queue.empty() and is_ready(priority_queue.top())) {
       // TODO can it be std::moved outside? (can, but with custom implementation)
       json j = priority_queue.top();
       priority_queue.pop();

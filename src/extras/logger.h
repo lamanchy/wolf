@@ -17,7 +17,7 @@
 class Logger {
  public:
   static Logger &getLogger() {
-    if (!initialized) {
+    if (not initialized) {
       setupLogger(wolf::extras::get_executable_path());
       do_log(std::cout, "INFO", "Logging into directory with executable");
     }
@@ -67,7 +67,7 @@ class Logger {
   explicit Logger(const std::string &logging_dir)
       : info_file_(logging_dir + "wolf.log", std::ofstream::out | std::ofstream::app),
         trace_file_(logging_dir + "trace.log", std::ofstream::out | std::ofstream::app) {
-    if (!info_file_ || !trace_file_) {
+    if (not info_file_ or not trace_file_) {
       std::cerr << "Couldn't create log files!" << std::endl;
       exit(1);
     }

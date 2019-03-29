@@ -1,8 +1,8 @@
-#include <utility>
-
 #ifndef WOLF_PLUGIN_H
 #define WOLF_PLUGIN_H
 
+#include <iso646.h>
+#include <utility>
 #include <asio.hpp>
 #include <tao/json.hpp>
 #include <chrono>
@@ -20,10 +20,10 @@
 namespace wolf {
 
 class plugin : public std::enable_shared_from_this<plugin> {
-public:
+ public:
   using pointer = std::shared_ptr<plugin>;
   using id_type = unsigned;
-  
+
   Logger &logger = Logger::getLogger();
 
   pointer register_output(pointer plugin) {
@@ -40,13 +40,13 @@ public:
 
   plugin(const plugin &) = delete;
 
-  plugin(plugin && other) {
+  plugin(plugin &&other) {
     *this = std::move(other);
   };
 
   plugin &operator=(const plugin &) = delete;
 
-  plugin &operator=(plugin && other) {
+  plugin &operator=(plugin &&other) {
     id = other.id;
     return *this;
   };
@@ -55,7 +55,7 @@ public:
     plugin::is_thread_processor = true;
   }
 
-protected:
+ protected:
   plugin() {
     id = id_counter++;
   }
@@ -66,7 +66,7 @@ protected:
 //    try {
 //      logger.info("safe prepare");
 //      logger.info(message.get_string());
-      prepare(std::move(message));
+    prepare(std::move(message));
 //      logger.info("safe prepare ended");
 //    } catch (std::exception & ex) {
 //      logger.error("error when processing message: " + std::string(ex.what()));
@@ -115,7 +115,7 @@ protected:
   }
 
   static unsigned buffer_size;
-private:
+ private:
   friend class pipeline;
 
   static thread_local bool is_thread_processor;
@@ -189,7 +189,7 @@ private:
   void buffer(json &&message) {
     front_queue_mutex.lock();
 
-    if (!plugin::persistent) {
+    if (not plugin::persistent) {
       while (front_queue.size() >= plugin::buffer_size - 2) {
         front_queue_mutex.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));

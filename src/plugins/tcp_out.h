@@ -25,12 +25,12 @@ class tcp_out : public plugin {
  protected:
   void process(json &&message) override {
     lock.lock();
-    bool write_in_progress = !write_msgs_.empty();
+    bool write_in_progress = not write_msgs_.empty();
     write_msgs_.push_back(s.serialize(std::move(message)));
     check_if_full();
     lock.unlock();
 
-    if (!write_in_progress) {
+    if (not write_in_progress) {
       do_write();
     }
   }

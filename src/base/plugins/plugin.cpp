@@ -1,6 +1,5 @@
 #include "plugin.h"
 
-
 namespace wolf {
 
 thread_local bool plugin::is_thread_processor = false;
@@ -108,7 +107,6 @@ bool plugin::process_buffer() {
       persistent_queue.pop();
     }
     persistent_queue_mutex.unlock();
-
 
     std::string decompressed(gzip::decompress(tmp_back_buffer1.data(), size));
     tmp_back_buffer1.clear();

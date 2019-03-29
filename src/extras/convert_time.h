@@ -23,8 +23,8 @@ const std::vector<std::string> parsers = {
 
 
 bool is_number(const std::string &s) {
-  return !s.empty() && std::find_if(s.begin(),
-                                    s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+  return not s.empty() and std::find_if(s.begin(),
+                                    s.end(), [](char c) { return not std::isdigit(c); }) == s.end();
 }
 
 }

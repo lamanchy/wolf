@@ -130,14 +130,22 @@ class CalfParserTest(WolfTestBase):
             "threadId": "5"})
 
     def test_debug_filtering(self):
-        self.tcp_write(self.nlog_port, {
-            "time": "2018-08-19 10:21:04.951",
-            "level": "DEBUG",
-            "loggerName": "RemoteProxies.ServerLocator",
-            "threadId": "5",
-            "message": "0"  # a 1 000 000 zeros
-        })
-
+        self.tcp_write(self.nlog_port, [
+            {
+                "time": "2018-08-19 10:21:04.951",
+                "level": "DEBUG",
+                "loggerName": "RemoteProxies.ServerLocator",
+                "threadId": "5",
+                "message": "0"
+            },
+            {
+                "time": "2018-08-19 10:22:04.951",
+                "level": "INFO",
+                "loggerName": "RemoteProxies.ServerLocator",
+                "threadId": "5",
+                "message": "0"
+            }
+        ])  # TODO fix this
         assert len(self.tcp_listeners_results[self.output_port]) == 0
 
 

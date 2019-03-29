@@ -18,7 +18,7 @@ inline std::string get_executable_path() {
   length = wai_getExecutablePath(nullptr, 0, &dirname_length);
   if (length > 0) {
     path = (char *) malloc(length + 1);
-    if (!path)
+    if (not path)
       abort();
     wai_getExecutablePath(path, length, &dirname_length);
     path[length] = '\0';

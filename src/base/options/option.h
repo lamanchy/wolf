@@ -45,7 +45,7 @@ class options {
     opt->add_options(opts.add_options());
 
     opts.allow_unrecognised_options();
-    if (!should_print_help())
+    if (not should_print_help())
       opt->validate_options(options::parse_opts(opts, argc, argv));
     all_options.push_back(opt);
     return opt;

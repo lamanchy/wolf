@@ -91,7 +91,7 @@ private:
       }
       message_.consume(bytes_transferred);
 
-      if (!error) {
+      if (not error) {
         start();
       }
     }
@@ -123,7 +123,7 @@ private:
 
     void handle_accept(pointer new_connection,
                        const std::error_code &error) {
-      if (!error) {
+      if (not error) {
         new_connection->start();
       }
 

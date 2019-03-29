@@ -64,7 +64,7 @@ class kafka_in : public threaded_plugin {
         // If we managed to get a message
         if (msg.get_error()) {
           // Ignore EOF notifications from rdkafka
-          if (!msg.is_eof()) {
+          if (not msg.is_eof()) {
             logger.warn("Received error notification: " + msg.get_error().to_string());
           }
         } else {

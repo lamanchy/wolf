@@ -29,7 +29,7 @@ class command : public not_event_option_type<T> {
   }
 
   void validate_options(const cxxopts::ParseResult &res) override {
-    if (res.count(name) == 0 && !std::is_same<T, bool>::value) {
+    if (res.count(name) == 0 and not std::is_same<T, bool>::value) {
       throw std::runtime_error("Missing option " + name);
     }
   }

@@ -41,7 +41,7 @@ class regex : public plugin {
       while (std::getline(file, line)) {
 //        rstrip
         line.erase(std::find_if(line.rbegin(), line.rend(), [](int ch) {
-          return !std::isspace(ch);
+          return not std::isspace(ch);
         }).base(), line.end());
 
         if (line.length() == 0) continue;

@@ -5,20 +5,19 @@
 #ifndef WOLF_LINE_H
 #define WOLF_LINE_H
 
-
 #include <base/serializer.h>
 #include <iostream>
 
 namespace wolf {
 
 class line : public serializer {
-public:
+ public:
 
   std::string serialize(json &&json) override {
     return json.as<std::string>() + "\n";
   }
 
-  void deserialize(std::string && string, const std::function<void(json&&)>& fn) override {
+  void deserialize(std::string &&string, const std::function<void(json &&)> &fn) override {
     auto begin = string.begin();
     auto mark = string.begin();
     auto end = string.end();
@@ -42,7 +41,7 @@ public:
       previous += std::string(begin, end);
     }
   }
-private:
+ private:
   std::string previous;
 
 };

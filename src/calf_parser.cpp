@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     out = [&](std::string type) { return create<kafka_out>(type + "-" + group, 1, output_ip + ":9092"); };
   } else if (output == "logstash") {
     out = [&](std::string type) { return tcp; };
-  } else if (!p.will_print_help()) {
+  } else if (not p.will_print_help()) {
     throw std::runtime_error("output is not kafka nor logstash but " + output);
   } else {
     // just to fill out with something

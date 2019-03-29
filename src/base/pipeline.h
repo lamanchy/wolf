@@ -119,7 +119,7 @@ private:
       }
       to_process.pop();
     }
-    while (!to_do.empty()) {
+    while (not to_do.empty()) {
       results.push_back(function(*to_do.front()));
       to_do.pop();
     }
@@ -138,7 +138,7 @@ private:
     plugin::is_thread_processor = true;
     while (plugins_running()) {
       for_each_plugin([](plugin &p) { while(p.process_buffer()) { }; });
-//      if (!std::all_of(res.begin(), res.end(), [](bool r) { return r; }))
+//      if (not std::all_of(res.begin(), res.end(), [](bool r) { return r; }))
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
       // TODO build up sleep time
 //      std::this_thread::yield();
