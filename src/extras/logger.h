@@ -5,6 +5,7 @@
 #ifndef WOLF_LOGGER_H
 #define WOLF_LOGGER_H
 
+#include <iso646.h>
 #include <string>
 #include <iostream>
 #include <fstream>
