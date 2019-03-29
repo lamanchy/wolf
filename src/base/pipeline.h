@@ -65,6 +65,10 @@ public:
     stop();
   }
 
+  bool will_print_help() {
+    return opts.should_print_help();
+  }
+
 
 private:
   std::vector<pointer> plugins;
@@ -90,9 +94,7 @@ private:
   }
 
   void evaluate_options() {
-    auto opt = opts.option<command<bool>>("help", "Prints help");
-
-    if (opt->get_value()) {
+    if (opts.should_print_help()) {
       opts.print_help();
       exit(0);
     }

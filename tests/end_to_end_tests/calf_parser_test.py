@@ -9,7 +9,7 @@ class CalfParserTest(WolfTestBase):
     build_name = 'calf_parser'
     output_ip = 'localhost'
     group = 'testing'
-    parameters = "--output logstash --output_ip %s --group %s" % (output_ip, group)
+    parameters = "--output logstash --output_ip %s --group %s --max_loglevel INFO" % (output_ip, group)
     nlog_port = 9556
     log4j_port = 9555
     serilog_port = 9559

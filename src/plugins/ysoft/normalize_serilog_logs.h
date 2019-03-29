@@ -32,8 +32,7 @@ private:
     if (level == "Information") return "INFO";
     if (level == "Warning") return "WARN";
     if (level == "Error") return "ERROR";
-    if (level == "Fatal") return "TRACE";
-    if (level == "Verbose") return "FATAL";
+    if (level == "Fatal") return "FATAL";
     throw std::runtime_error("Unknown log level " + level);
   }
 };
