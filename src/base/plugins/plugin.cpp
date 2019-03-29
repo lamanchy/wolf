@@ -19,7 +19,7 @@ void plugin::empty_front_queue() {
   front_queue.swap(front_processing_queue);
   front_queue_mutex.unlock();
 
-  while (not front_processing_queue.empty()) {
+  while (!front_processing_queue.empty()) {
     std::string s(serializer::to_string(std::move(front_processing_queue.front())));
     for (char c: get_serialized_size(s.size())) tmp_front_buffer1.push_back(c);
     tmp_front_buffer1.insert(tmp_front_buffer1.end(), s.begin(), s.end());
@@ -45,7 +45,7 @@ bool plugin::process_buffer() {
       front_queue_mutex.lock();
       if (swappable) {
         // is swappable
-        if (not front_queue.empty()) {
+        if (!front_queue.empty()) {
 //          if (front_queue.front()["pi"] < 2500000 - 10000) {
 //            front_queue_mutex.unlock();
 //            std::this_thread::sleep_for(std::chrono::milliseconds(11));

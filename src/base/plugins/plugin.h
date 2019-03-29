@@ -179,7 +179,7 @@ class plugin : public std::enable_shared_from_this<plugin> {
 //  }
 
   void receive(json &&message) {
-    if (plugin::is_thread_processor and not is_full()) {
+    if (plugin::is_thread_processor && !is_full()) {
       safe_prepare(std::move(message));
     } else {
       buffer(std::move(message));
@@ -193,7 +193,7 @@ class plugin : public std::enable_shared_from_this<plugin> {
       while (front_queue.size() >= plugin::buffer_size - 2) {
         front_queue_mutex.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        if (plugin::is_thread_processor and not is_full()) {
+        if (plugin::is_thread_processor && !is_full()) {
           safe_prepare(std::move(message));
           return;
         }

@@ -38,7 +38,7 @@ std::chrono::time_point<std::chrono::system_clock> string_to_time(const std::str
   istringstream stream{input};
   sys_time<milliseconds> t;
   stream >> parse("%FT%TZ", t);
-  if (not stream.fail() and stream.rdbuf()->in_avail() == 0) {
+  if (!stream.fail() && stream.rdbuf()->in_avail() == 0) {
     return t;
   }
   throw runtime_error("failed to parse " + input);
@@ -58,7 +58,7 @@ std::string convert_time(const std::string &input) {
     istringstream stream{input};
     sys_time<milliseconds> t;
     stream >> parse(p, t);
-    if (not stream.fail() and stream.rdbuf()->in_avail() == 0) {
+    if (!stream.fail() && stream.rdbuf()->in_avail() == 0) {
       return format("%FT%TZ", t);
     }
   }

@@ -24,12 +24,12 @@ class line : public serializer {
     while (mark != end) {
       if (*mark == '\n') {
         std::string res;
-        if (not previous.empty()) {
+        if (!previous.empty()) {
           res += previous;
           previous.clear();
         }
         res += std::string(begin, mark);
-        if (not res.empty()) {
+        if (!res.empty()) {
           fn(json(res));
         }
         begin = ++mark;
