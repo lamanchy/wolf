@@ -4,7 +4,7 @@ import os
 import shutil
 import subprocess
 import sys
-
+import zipfile
 
 def is_linux():
     return sys.platform == "linux" or sys.platform == "linux2"
@@ -42,7 +42,7 @@ def get_libs():
         dict(name="stxxl", git="https://github.com/stxxl/stxxl.git", tag="1.4.1"),
         dict(name="zlib", git="https://github.com/madler/zlib.git", tag="v1.2.11"),
         dict(name="gzip-hpp", git="https://github.com/mapbox/gzip-hpp.git", tag="v0.1.0"),
-        dict(name="date", git="https://github.com/HowardHinnant/date.git", tag="v2.4.1"),
+        dict(name="date", git="https://github.com/HowardHinnant/date.git"),  # needs master
         dict(name="cxxopts", git="https://github.com/jarro2783/cxxopts.git"),  # needs master
     ]
 
@@ -63,7 +63,11 @@ def get_libs():
         subprocess.call(["wget", "-q", "https://dl.bintray.com/boostorg/release/1.69.0/source/%s.tar.gz" % boost_version])
         subprocess.call(["tar", "-xf", "%s.tar.gz" % boost_version])
     else:
-        raise NotImplemented("fuck fuck")
+        command = r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe (new-object System.Net.WebClient).DownloadFile('https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.zip', 'boost_1_69_0.zip')"
+        subprocess.call(command, shell=True)
+        boost = zipfile.ZipFile("boost_1_69_0.zip", "r")
+        boost.extractall(".")
+        boost.close()
 
     os.chdir(BASE_DIR)
 
@@ -103,7 +107,12 @@ for build_type in ["Debug", "Release"]:
                 shutil.copy2(s, d)
 
 
-    def install_lib(name, *args):
+    def install_lib(name, args=None, extra_flags=None):
+        if args is None:
+            args = []
+        if extra_flags is None:
+            extra_flags = []
+
         lib_path = os.path.join(BASE_DIR, "submodules", name)
         try:
             shutil.rmtree(build_path)
@@ -124,9 +133,9 @@ for build_type in ["Debug", "Release"]:
         subprocess.call([
                             cmake,
                             "-DCMAKE_INSTALL_PREFIX=" + target_path,
-                            '-DCMAKE_CXX_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
+                            '-DCMAKE_CXX_FLAGS_RELEASE=' + " ".join([('/MT /O2 /DNDEBUG' if is_win() else '')] + extra_flags),
                             '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
-                            '-DCMAKE_CXX_FLAGS_DEBUG=/MTd' if is_win() else '',
+                            '-DCMAKE_CXX_FLAGS_DEBUG' + " ".join(['=/MTd' if is_win() else ''] + extra_flags),
                             '-DCMAKE_C_FLAGS_DEBUG=/MTd' if is_win() else '',
                             '-DCMAKE_BUILD_TYPE=' + build_type,
                             # "-DCMAKE_C_COMPILER=" + c_compiler,
@@ -134,9 +143,10 @@ for build_type in ["Debug", "Release"]:
                             # "-DCMAKE_MAKE_PROGRAM=" + make,
                             "-G", compiler,
                             lib_path,
-                        ] + list(args))
+                        ] + args)
 
-        subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", build_type, "--", "-j", "4"])
+        # subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", build_type, "--", "-j", "4"])
+        subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", build_type])
 
         os.chdir(BASE_DIR)
         shutil.rmtree(build_path)
@@ -148,27 +158,30 @@ for build_type in ["Debug", "Release"]:
     copy_headers(os.path.join(boost_version, "boost"), "boost")
 
     install_lib("re2",
-                "-DRE2_BUILD_TESTING=OFF")
+                ["-DRE2_BUILD_TESTING=OFF"])
     install_lib("taojson",
-                "-DTAOCPP_JSON_BUILD_TESTS=OFF",
-                "-DTAOCPP_JSON_BUILD_EXAMPLES=OFF")
+                ["-DTAOCPP_JSON_BUILD_TESTS=OFF",
+                "-DTAOCPP_JSON_BUILD_EXAMPLES=OFF"])
     install_lib("zlib")
     install_lib("cxxopts")
-    install_lib("stxxl")
+    install_lib("stxxl", [],
+                extra_flags=["/D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=OFF" if is_win() else ""])
     install_lib("librdkafka",
-                "-DRDKAFKA_BUILD_STATIC=ON",
+                ["-DRDKAFKA_BUILD_STATIC=ON",
                 "-DRDKAFKA_BUILD_EXAMPLES=OFF",
-                "-DRDKAFKA_BUILD_TESTS=OFF"
+                "-DRDKAFKA_BUILD_TESTS=OFF"]
                 )
     install_lib("cppkafka",
-                "-DRDKAFKA_ROOT_DIR=" + target_path,
+                ["-DRDKAFKA_ROOT_DIR=" + target_path,
                 "-DBOOST_ROOT=" + BASE_DIR,
                 "-DCPPKAFKA_RDKAFKA_STATIC_LIB=ON",
                 "-DCPPKAFKA_BUILD_SHARED=OFF",
-                "-DCPPKAFKA_DISABLE_TESTS=ON",
+                "-DCPPKAFKA_DISABLE_TESTS=ON",]
                 )
 
 try:
     shutil.rmtree("submodules")
-except OSError:
+except OSError as e:
+    print e
     pass
+

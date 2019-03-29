@@ -75,8 +75,9 @@ class regex : public plugin {
 
       re2::RE2 & regex = *regexes.at(min_i).second;
 
-      int submatches_count = 1 + regex.NumberOfCapturingGroups();
-      re2::StringPiece submatches[submatches_count];
+      const int submatches_count = 1 + regex.NumberOfCapturingGroups();
+      // TODO memory leak?
+      re2::StringPiece* submatches = new re2::StringPiece[submatches_count];
 
       regex.Match(
           message["message"].get_string(), 0, message["message"].get_string().length(),

@@ -26,7 +26,7 @@ protected:
     }
 
     std::string level = message["level"].get_string();
-    if (level == "DEBUG" or level == "TRACE") {
+    if (level == "DEBUG" || level == "TRACE") {
       return;
     }
 

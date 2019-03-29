@@ -19,7 +19,7 @@ public:
   pipeline(int argc, char *argv[], bool persistent = true) : opts(argc, argv) {
     plugin::persistent = persistent;
 
-    if (not initialized) {
+    if (!initialized) {
       initialize();
     }
   }
@@ -107,7 +107,7 @@ private:
     std::for_each(plugins.begin(), plugins.end(), [&to_process](pointer &ptr) { to_process.push(ptr); });
     std::vector<T> results;
 
-    while (not to_process.empty()) {
+    while (!to_process.empty()) {
       pointer &ptr = to_process.front();
       auto it = visited.find(ptr->id);
       if (it == visited.end()) {
