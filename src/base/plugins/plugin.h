@@ -103,11 +103,11 @@ class plugin : public std::enable_shared_from_this<plugin> {
     output("default", std::move(message));
   }
 
-  void output(const std::string &output_type, json &&message) {
+  virtual void output(const std::string &output_type, json &&message) {
     outputs.at(output_type)->receive(std::move(message));
   }
 
-  pointer register_named_output(std::string output_name, pointer plugin) {
+  virtual pointer register_named_output(std::string output_name, pointer plugin) {
     auto it = outputs.find(output_name);
     if (it != outputs.end()) throw std::runtime_error("plugin already registered output named: " + output_name);
     outputs.emplace(std::make_pair(output_name, plugin));

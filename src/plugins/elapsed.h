@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by lamanchy on 5.2.19.
 //
@@ -10,6 +12,14 @@
 namespace wolf {
 
 class elapsed : public mutexed_threaded_plugin {
+ public:
+  elapsed(int max_seconds_to_keep) : max_seconds_to_keep(max_seconds_to_keep) {}
+
+ public:
+  pointer register_expired_output(pointer plugin) {
+    return register_named_output("expired", std::move(plugin));
+  }
+
  protected:
   void process(json &&message) override {
     std::string key = get_key(message);
@@ -46,19 +56,19 @@ class elapsed : public mutexed_threaded_plugin {
   void locked_loop() override {
     for (auto it = storage.begin(); it != storage.end();) {
       if ((
-              std::chrono::system_clock::now().time_since_epoch().count() -
-                  it->second.metadata["elapsed_inserted_time"].get_signed()
-          ) > std::chrono::nanoseconds(std::chrono::seconds(max_seconds_to_keep)).count()
+          std::chrono::system_clock::now().time_since_epoch().count() -
+              it->second.metadata["elapsed_inserted_time"].get_signed()
+      ) > std::chrono::nanoseconds(std::chrono::seconds(max_seconds_to_keep)).count()
           ) {
-        output({
-                   {"start_time", it->second["@timestamp"]},
-                   {"type", "metrics"},
-                   {"status", "expired"},
-                   {"start_host", it->second["host"]},
-                   {"group", it->second["group"]},
-                   {"elapsedId", it->second["elapsedId"]},
-                   {"uniqueId", it->second["uniqueId"]},
-               });
+        expired_output({
+                           {"start_time", it->second["@timestamp"]},
+                           {"type", "metrics"},
+                           {"status", "expired"},
+                           {"start_host", it->second["host"]},
+                           {"group", it->second["group"]},
+                           {"elapsedId", it->second["elapsedId"]},
+                           {"uniqueId", it->second["uniqueId"]},
+                       });
         storage.erase(it++);
       } else {
         ++it;
@@ -70,9 +80,13 @@ class elapsed : public mutexed_threaded_plugin {
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
+  void expired_output(json &&message) {
+    output("expired", std::move(message));
+  }
+
  private:
   std::map<std::string, json> storage;
-  unsigned int max_seconds_to_keep = 5;
+  unsigned int max_seconds_to_keep;
 
   std::string get_key(json &message) {
     return message["uniqueId"].get_string() + "-" + message["elapsedId"].get_string();

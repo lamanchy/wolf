@@ -59,42 +59,42 @@ int main(int argc, char *argv[]) {
       )
   );
 
-  p.register_plugin(
-      create<kafka_in>("^parsed_logs-.*", bootstrap_servers, "logs_forwarder_test1")->register_output(
-//      create<generator>()->register_output(
-          create<lambda>(
-              [](json &message) {
-                const std::string &topic = message.metadata["topic"].get_string();
-                std::string group;
-
-                auto res = topic.find('-');
-                if (res == std::string::npos) {
-                  group = "unknown";
-                } else {
-                  group = topic.substr(res + 1);
-                }
-
-                message.assign_string(
-                    tao::json::to_string(
-                        json({
-                                 {"index", {
-                                     {"_index", "logs-" +
-                                         group + "-" +
-                                         extras::get_time()},
-                                     {"_type", "logs"}
-                                 }}
-                             })
-                    ) + "\n" + std::string(message.get_string() + "\n")
-                );
-              }
-          )->register_output(
-              create<collate>()->register_output(
-                  create<http_out>(es_ip, "9200", "/_bulk")
-//                  create<cout>()
-              )
-          )
-      )
-  );
+//  p.register_plugin(
+//      create<kafka_in>("^parsed_logs-.*", bootstrap_servers, "logs_forwarder_test1")->register_output(
+////      create<generator>()->register_output(
+//          create<lambda>(
+//              [](json &message) {
+//                const std::string &topic = message.metadata["topic"].get_string();
+//                std::string group;
+//
+//                auto res = topic.find('-');
+//                if (res == std::string::npos) {
+//                  group = "unknown";
+//                } else {
+//                  group = topic.substr(res + 1);
+//                }
+//
+//                message.assign_string(
+//                    tao::json::to_string(
+//                        json({
+//                                 {"index", {
+//                                     {"_index", "logs-" +
+//                                         group + "-" +
+//                                         extras::get_time()},
+//                                     {"_type", "logs"}
+//                                 }}
+//                             })
+//                    ) + "\n" + std::string(message.get_string() + "\n")
+//                );
+//              }
+//          )->register_output(
+//              create<collate>()->register_output(
+//                  create<http_out>(es_ip, "9200", "/_bulk")
+////                  create<cout>()
+//              )
+//          )
+//      )
+//  );
 
   p.run();
   return 0;

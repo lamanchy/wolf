@@ -21,6 +21,7 @@
 #include <base/options/command.h>
 #include <base/options/event.h>
 #include <plugins/kafka_in.h>
+#include <base/json_to_influx.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -31,27 +32,79 @@ int main(int argc, char *argv[]) {
       [](const json &lhs, const json &rhs) -> bool {
         return lhs.find("@timestamp")->get_string() > rhs.find("@timestamp")->get_string();
       },
-      stream_sort::ready_after(std::chrono::seconds(60))
+      stream_sort::ready_after(std::chrono::seconds(
+          p.option<command<int>>("stream_sort_seconds", "Seconds to wait with each event")->get_value()
+      ))
   );
 
-  std::string broker_list = p.option<command<std::string>>("broker_list", "List of kafka brokers")->get_value();
+  plugin::pointer in, out, common_processing;
+
+  bool is_test = p.option<command<bool>>("test", "When testing, use stdin/stdout")->get_value();
+  int max_seconds_to_keep =
+      p.option<command<bool>>("max_seconds_to_keep", "How long to wait for end event")->get_value();
+
+
+
+  if (is_test) {
+    in = create<cin>();
+    out = create<cout>();
+  } else {
+    std::string broker_list = p.option<command<std::string>>("broker_list", "List of kafka brokers")->get_value();
+
+    in = create<kafka_in>(
+        p.option<constant<std::string>>("correlation_data-.*")->get_value(),
+        broker_list,
+        p.option<constant<std::string>>("correlator")->get_value()
+    );
+    out = create<lambda>(
+            [](json &message) {
+              message["output"] = "metrics-" + message["group"].get_string();
+            }
+        )->register_output(
+            create<kafka_out>(
+                p.option<event<std::string>>("output"), 12, broker_list
+            )
+        );
+  }
+
+  common_processing = create<lambda>(
+      [](json &message) {
+        message.assign_object({
+                                  {"message", message.get_string()},
+                                  {"type", "metrics"}
+                              });
+      }
+  )->register_output(
+      create<json_to_string>()->register_output(
+          out
+          )
+  );
 
   p.register_plugin(
-      create<kafka_in>(
-          p.option<constant<std::string>>("correlation_data-.*")->get_value(),
-          broker_list,
-          p.option<constant<std::string>>("correlator")->get_value()
-          ),
+      in,
       create<string_to_json>(),
       sort_by_time,
-      create<elapsed>(), // TODO json to influxDB format
-      create<json_to_string>(),
-      create<cout>()
+      create<elapsed>(max_seconds_to_keep)->register_expired_output(
+          create<json_to_influx>(
+              "elapsed",
+              std::vector<std::string>({"elapsedId", "status", "start_host", "group"}),
+              std::vector<std::string>({"uniqueId",}),
+              "start_time"
+          )->register_output(
+              common_processing
+          )
+      ),
+      create<json_to_influx>(
+          "elapsed",
+          std::vector<std::string>({"elapsedId", "status", "start_host", "end_host", "group"}),
+          std::vector<std::string>({"uniqueId", "duration"}),
+          "start_time",
+          !is_test  // add random nanoseconds if not testing
+      ),
+      common_processing
   );
 
-  p.logger.info("Starting");
   p.run();
-  p.logger.info("Stopped");
 
   return 0;
 }

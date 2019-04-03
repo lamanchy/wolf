@@ -112,10 +112,12 @@ class WolfTestBase(unittest.TestCase):
 
     def tearDown(self):
         sleep(1)
+        self.wolf.stdin.close()
         if sys.platform == "win32":
             self.wolf.send_signal(signal.CTRL_BREAK_EVENT)
         else:
             self.wolf.send_signal(SIGINT)
+
         for i in range(30):
             if self.wolf.poll() is None:
                 sleep(0.1)
@@ -201,6 +203,9 @@ class WolfTestBase(unittest.TestCase):
                     json.dumps(o),
                     "\n".join([json.dumps(i) for i in stdout_objects])
                 ))
+            stdout_objects.remove(o)
+
+        assert len(stdout_objects) == 0
 
         for port in self.tcp_listeners.keys():
             for obj in self.tcp_listeners_expecting[port]:
@@ -212,3 +217,7 @@ class WolfTestBase(unittest.TestCase):
                                              )
                 except ValueError:
                     raise ValueError("Couldn't parse output " + self.tcp_listeners_results[port])
+
+                self.tcp_listeners_expecting[port].remove(obj)
+
+            assert len(self.tcp_listeners_expecting[port]) == 0

@@ -43,7 +43,10 @@ int main(int argc, char *argv[]) {
     );
 
   if (output == "kafka") {
-    out = [&](std::string type) { return create<kafka_out>(type + "-" + group, 1, output_ip + ":9092"); };
+    out = [&](std::string type) { return create<kafka_out>(
+        p.option<constant<std::string>>(type + "-" + group),
+        1,
+        output_ip + ":9092"); };
   } else if (output == "logstash") {
     out = [&](std::string type) { return tcp; };
   } else if (not p.will_print_help()) {
@@ -96,9 +99,7 @@ int main(int argc, char *argv[]) {
       create<json_to_string>(),
       out("metrics")
   );
-  logger.info("Starting");
   p.run();
-  logger.info("Stopped");
 
   return 0;
 }
