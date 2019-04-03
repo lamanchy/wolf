@@ -58,7 +58,9 @@ public:
   }
 
   void run() {
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
     std::signal(SIGBREAK, catch_signal);
+#endif
     std::signal(SIGINT, catch_signal);
     evaluate_options();
     start();

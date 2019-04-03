@@ -3,11 +3,12 @@
 import json
 import re
 import os
+import signal
 import socket
+import subprocess
 import unittest
-from _subprocess import CREATE_NEW_PROCESS_GROUP
 from os.path import isfile
-from signal import CTRL_BREAK_EVENT
+from signal import SIGINT
 from subprocess import Popen, PIPE
 from threading import Lock, Thread
 
@@ -100,12 +101,21 @@ class WolfTestBase(unittest.TestCase):
         assert isfile(parser)
         command = parser + " " + self.parameters
 
-        self.wolf = Popen(command.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE, creationflags=CREATE_NEW_PROCESS_GROUP)
+        kwargs = {}
+        try:
+            kwargs['creationflags'] = subprocess.CREATE_NEW_PROCESS_GROUP
+        except AttributeError:
+            pass
+
+        self.wolf = Popen(command.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE, **kwargs)
         self.addCleanup(self._kill_wolf)
 
     def tearDown(self):
         sleep(1)
-        self.wolf.send_signal(CTRL_BREAK_EVENT)
+        if sys.platform == "win32":
+            self.wolf.send_signal(signal.CTRL_BREAK_EVENT)
+        else:
+            self.wolf.send_signal(SIGINT)
         for i in range(30):
             if self.wolf.poll() is None:
                 sleep(0.1)
