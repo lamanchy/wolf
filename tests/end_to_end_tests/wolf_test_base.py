@@ -93,10 +93,12 @@ class WolfTestBase(unittest.TestCase):
 
         global build_path_part
         parser = os.path.join(BASE_DIR, 'build', build_path_part, 'Debug', self.build_name)
+        if sys.platform == "win32":
+            parser += ".exe"
         assert isfile(parser)
         command = parser + " " + self.parameters
 
-        self.wolf = Popen(command.split(" "), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        self.wolf = Popen(command.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
         self.addCleanup(self._kill_wolf)
 
     def tearDown(self):
