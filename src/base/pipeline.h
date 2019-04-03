@@ -63,9 +63,11 @@ public:
 #endif
     std::signal(SIGINT, catch_signal);
     evaluate_options();
+    logger.info("Starting pipeline");
     start();
     wait();
     stop();
+    logger.info("Pipeline stopped");
   }
 
   bool will_print_help() {
@@ -94,6 +96,7 @@ private:
     disk.delete_on_exit = true;
     disk.direct = stxxl::disk_config::DIRECT_TRY;
     cfg->add_disk(disk);
+    logger.info("Pipeline initialized");
   }
 
   void evaluate_options() {
@@ -157,8 +160,11 @@ private:
     ++interrupt_received;
 
     if (interrupt_received >= 2) {
+      Logger::getLogger().error("Second interrup signal received, suicide now.");
       std::quick_exit(EXIT_FAILURE);
     }
+
+    Logger::getLogger().info("interrupt signal received, stopping wolf");
   }
 
   static std::atomic<int> interrupt_received;
