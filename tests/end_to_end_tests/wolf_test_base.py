@@ -5,7 +5,9 @@ import re
 import os
 import socket
 import unittest
+from _subprocess import CREATE_NEW_PROCESS_GROUP
 from os.path import isfile
+from signal import CTRL_BREAK_EVENT
 from subprocess import Popen, PIPE
 from threading import Lock, Thread
 
@@ -98,12 +100,12 @@ class WolfTestBase(unittest.TestCase):
         assert isfile(parser)
         command = parser + " " + self.parameters
 
-        self.wolf = Popen(command.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        self.wolf = Popen(command.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE, creationflags=CREATE_NEW_PROCESS_GROUP)
         self.addCleanup(self._kill_wolf)
 
     def tearDown(self):
         sleep(1)
-        self.wolf.send_signal(2)
+        self.wolf.send_signal(CTRL_BREAK_EVENT)
         for i in range(30):
             if self.wolf.poll() is None:
                 sleep(0.1)
@@ -159,7 +161,7 @@ class WolfTestBase(unittest.TestCase):
         stdout_objects = []
         for line in stdout.split('\n'):
             # logs by wolf are ignored
-            if re.match("^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{9} .*", line):
+            if re.match("^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.*", line):
                 continue
 
             if line.startswith("[STXXL-MSG] "):

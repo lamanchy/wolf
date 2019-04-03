@@ -24,7 +24,6 @@ class options {
     opts.add_options("")("h,help", "Prints help", cxxopts::value<bool>(_should_print_help));
     opts.allow_unrecognised_options();
     auto r = options::parse_opts(opts, argc, argv);
-    std::cout << r.count("h,help") << std::endl;
   }
 
   void print_help() {
@@ -32,7 +31,6 @@ class options {
   }
 
   bool should_print_help() {
-    std::cout << _should_print_help << std::endl;
     return _should_print_help;
   }
 

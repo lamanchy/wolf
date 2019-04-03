@@ -58,6 +58,7 @@ public:
   }
 
   void run() {
+    std::signal(SIGBREAK, catch_signal);
     std::signal(SIGINT, catch_signal);
     evaluate_options();
     start();
