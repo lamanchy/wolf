@@ -65,6 +65,7 @@ public:
     evaluate_options();
     logger.info("Starting pipeline");
     start();
+    logger.info("Pipeline started");
     wait();
     stop();
     logger.info("Pipeline stopped");
@@ -74,6 +75,10 @@ public:
     return opts.should_print_help();
   }
 
+  std::string get_config_path() {
+    return config_path;
+  }
+
 
 private:
   std::vector<pointer> plugins;
@@ -81,11 +86,14 @@ private:
   options opts;
   unsigned number_of_processors = std::thread::hardware_concurrency();
   static bool initialized;
+  static std::string config_path;
 
 
   void initialize() {
     initialized = true;
     std::string path = extras::get_executable_path();
+
+    config_path = this->option<command<std::string>>("config_path", "Path to configs", "", path)->get_value();
 
     logger.info("Configuring STXXL");
     stxxl::config *cfg = stxxl::config::get_instance();
@@ -199,6 +207,7 @@ private:
 
 std::atomic<int> pipeline::interrupt_received{0};
 bool pipeline::initialized{false};
+std::string pipeline::config_path;
 
 }
 
