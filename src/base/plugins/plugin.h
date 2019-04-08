@@ -63,14 +63,11 @@ class plugin : public std::enable_shared_from_this<plugin> {
   virtual void process(json &&message) {}
 
   virtual void safe_prepare(json &&message) {
-//    try {
-//      logger.info("safe prepare");
-//      logger.info(message.get_string());
-    prepare(std::move(message));
-//      logger.info("safe prepare ended");
-//    } catch (std::exception & ex) {
-//      logger.error("error when processing message: " + std::string(ex.what()));
-//    }
+    try {
+      prepare(std::move(message));
+    } catch (std::exception & ex) {
+      logger.error("error when processing message: " + std::string(ex.what()));
+    }
   }
 
   virtual void prepare(json &&message) {
