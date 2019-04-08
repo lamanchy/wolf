@@ -66,7 +66,7 @@ class plugin : public std::enable_shared_from_this<plugin> {
     try {
       prepare(std::move(message));
     } catch (std::exception & ex) {
-      logger.error("error when processing message: " + std::string(ex.what()));
+      logger.error("error in " + std::string(typeid(this).name()) + " when processing message: " + std::string(ex.what()));
     }
   }
 
