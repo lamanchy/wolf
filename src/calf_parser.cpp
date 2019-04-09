@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
   if (output == "kafka") {
     out = [&](std::string type) { return create<kafka_out>(
         p.option<constant<std::string>>(type + "-" + group),
-        1,
+        12,
         output_ip + ":9092"); };
   } else if (output == "logstash") {
     out = [&](std::string type) { return tcp; };
