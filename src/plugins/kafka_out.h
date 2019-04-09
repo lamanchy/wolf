@@ -36,12 +36,12 @@ protected:
 
   void start() override {
     p = std::unique_ptr<producer>(new producer(config));
-    p->set_max_buffer_size(0);
-    p->set_flush_method(producer::FlushMethod::Async);
+    p->set_max_buffer_size(32000);
+    p->set_flush_method(producer::FlushMethod::Sync);
 
     flusher = std::thread([&](){
       while (running) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         p->flush();
       }
     });
@@ -54,7 +54,7 @@ protected:
   }
 
   void process(json && message) override {
-    p->produce(
+    p->add_message(
         p->make_builder(topic->get_value(message))
         .partition(get_partition())
         .payload(std::move(message.as<std::string>())));

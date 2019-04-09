@@ -157,7 +157,7 @@ private:
     while (plugins_running()) {
       for_each_plugin([](plugin &p) { while(p.process_buffer()) { }; });
 //      if (not std::all_of(res.begin(), res.end(), [](bool r) { return r; }))
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
       // TODO build up sleep time
 //      std::this_thread::yield();
     }
