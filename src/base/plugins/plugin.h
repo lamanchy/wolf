@@ -87,9 +87,12 @@ class plugin : public std::enable_shared_from_this<plugin> {
   }
 
   virtual bool are_outputs_full() {
-    if (is_full()) {
+    if (plugin::persistent)
+      return is_full();
+
+    if (is_full())
       return true;
-    }
+
     for (auto &output : outputs) {
       if (output.second->are_outputs_full()) return true;
     }

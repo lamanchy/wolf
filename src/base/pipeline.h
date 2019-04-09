@@ -18,6 +18,10 @@ public:
 
   pipeline(int argc, char *argv[], bool persistent = true) : opts(argc, argv) {
     plugin::persistent = persistent;
+    if (persistent)
+      plugin::buffer_size = 1024;
+    else
+      plugin::buffer_size = 128;
 
     if (!initialized) {
       initialize();
