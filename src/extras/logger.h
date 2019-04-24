@@ -17,11 +17,14 @@
 
 class Logger {
  public:
-  static Logger &getLogger() {
+  static Logger &getLogger(std::string log_dir = "") {
     if (not initialized) {
-      setupLogger(wolf::extras::get_executable_path());
-      do_log(std::cout, "INFO", "Logging into directory with executable");
+      if (log_dir.empty())
+        log_dir = wolf::extras::get_executable_dir();
+
+      setupLogger(log_dir);
     }
+
     static Logger instance(logging_dir);
     return instance;
   }
@@ -65,9 +68,11 @@ class Logger {
   }
 
  private:
-  explicit Logger(const std::string &logging_dir)
-      : info_file_(logging_dir + "wolf.log", std::ofstream::out | std::ofstream::app),
-        trace_file_(logging_dir + "trace.log", std::ofstream::out | std::ofstream::app) {
+  Logger() = default;
+
+  explicit Logger(const std::string &log_dir)
+      : info_file_(log_dir + "wolf.log", std::ofstream::out | std::ofstream::app),
+        trace_file_(log_dir + "trace.log", std::ofstream::out | std::ofstream::app) {
     if (not info_file_ or not trace_file_) {
       std::cerr << "Couldn't create log files!" << std::endl;
       exit(1);

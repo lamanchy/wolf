@@ -11,7 +11,7 @@
 namespace wolf {
 namespace extras {
 
-inline std::string get_executable_path() {
+inline std::string get_executable_dir() {
   char *path = nullptr;
   int length, dirname_length;
   std::string dir_path;

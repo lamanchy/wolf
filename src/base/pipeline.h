@@ -14,9 +14,13 @@ namespace wolf {
 class pipeline {
 public:
   using pointer = plugin::pointer;
-  Logger & logger = Logger::getLogger();
+  Logger & logger;
 
-  pipeline(int argc, char *argv[], bool persistent = true) : opts(argc, argv) {
+  pipeline(int argc, char *argv[], bool persistent = true) :
+    opts(argc, argv),
+    logger(Logger::getLogger(
+        opts.option<command<std::string>>("logging_dir", "Path to configs", "", wolf::extras::get_executable_dir()
+        )->get_value())) {
     plugin::persistent = persistent;
     if (persistent)
       plugin::buffer_size = 1024;
@@ -79,8 +83,8 @@ public:
     return opts.should_print_help();
   }
 
-  std::string get_config_path() {
-    return config_path;
+  std::string get_config_dir() {
+    return config_dir;
   }
 
 
@@ -90,14 +94,14 @@ private:
   options opts;
   unsigned number_of_processors = std::thread::hardware_concurrency();
   static bool initialized;
-  static std::string config_path;
+  static std::string config_dir;
 
 
   void initialize() {
     initialized = true;
-    std::string path = extras::get_executable_path();
+    std::string path = extras::get_executable_dir();
 
-    config_path = this->option<command<std::string>>("config_path", "Path to configs", "", path)->get_value();
+    config_dir = this->option<command<std::string>>("config_dir", "Path to configs", "", path)->get_value();
 
     logger.info("Configuring STXXL");
     stxxl::config *cfg = stxxl::config::get_instance();
@@ -211,7 +215,7 @@ private:
 
 std::atomic<int> pipeline::interrupt_received{0};
 bool pipeline::initialized{false};
-std::string pipeline::config_path;
+std::string pipeline::config_dir;
 
 }
 

@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
           p.option<command<unsigned short>>("input_port", "Input port")
           ),
       create<string_to_json>(),
-      create<regex>(regex::parse_file(p.get_config_path() + "/parsers")),
+      create<regex>(regex::parse_file(p.get_config_dir() + "/parsers")),
       create<get_elapsed_preevents>(elapsed_config)->register_metrics_output(
           output
       ),
