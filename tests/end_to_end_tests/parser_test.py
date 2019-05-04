@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from wolf_test_base import WolfTestBase
@@ -7,7 +8,11 @@ class ParserTest(WolfTestBase):
     build_name = 'parser'
     input_port = 1111
     output_port = 1112
-    parameters = "--input_port %s --output_port %s" % (input_port, output_port)
+    parameters = "--input_port %s --output_port %s --config_dir %s" % (
+        input_port,
+        output_port,
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + os.path.sep
+    )
 
     def setUp(self):
         super(ParserTest, self).setUp()

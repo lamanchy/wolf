@@ -16,8 +16,10 @@ class elapsed : public mutexed_threaded_plugin {
   elapsed(int max_seconds_to_keep) : max_seconds_to_keep(max_seconds_to_keep) {}
 
  public:
-  pointer register_expired_output(pointer plugin) {
-    return register_named_output("expired", std::move(plugin));
+
+  template <typename... Args>
+  pointer register_expired_output(pointer plugin, Args &&... args) {
+    return register_named_output("expired", std::move(plugin), args...);
   }
 
  protected:

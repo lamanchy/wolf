@@ -16,8 +16,9 @@ class count_logs : public mutexed_threaded_plugin {
  public:
   explicit count_logs(std::vector<std::string> fields) : fields(std::move(fields)) {}
 
-  pointer register_stats_output(pointer plugin) {
-    return register_named_output("stats", std::move(plugin));
+  template <typename... Args>
+  pointer register_stats_output(pointer plugin, Args &&... args) {
+    return register_named_output("stats", std::move(plugin), args...);
   }
 
  protected:

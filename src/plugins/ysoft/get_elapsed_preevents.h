@@ -18,6 +18,58 @@ class get_elapsed_preevents : public plugin {
     std::string start_logId, end_logId, uniqueId, name;
   };
 
+  static std::vector<elapsed_config> parse_file(const std::string &file_path) {
+    std::ifstream file(file_path);
+    std::string line;
+    std::vector<elapsed_config> result;
+
+    if (file.is_open()) {
+      while (std::getline(file, line)) {
+        elapsed_config config;
+
+//        rstrip
+        line.erase(std::find_if(line.rbegin(), line.rend(), [](int ch) {
+          return not std::isspace(ch);
+        }).base(), line.end());
+
+        if (line.length() == 0) continue;
+        if (line[0] == '#') continue;
+
+        auto it = line.find(':');
+        if (it == std::string::npos) {
+          Logger::getLogger().error("Cannot parsing file " + file_path + ", ':' is missing on line " + line);
+          exit(1);
+        }
+        config.start_logId = line.substr(0, it);
+        line = line.substr(it+1);
+
+        it = line.find(':');
+        if (it == std::string::npos) {
+          Logger::getLogger().error("Cannot parsing file " + file_path + ", ':' is missing on line " + line);
+          exit(1);
+        }
+        config.end_logId = line.substr(0, it);
+        line = line.substr(it+1);
+
+        it = line.find(':');
+        if (it == std::string::npos) {
+          Logger::getLogger().error("Cannot parsing file " + file_path + ", ':' is missing on line " + line);
+          exit(1);
+        }
+        config.uniqueId = line.substr(0, it);
+        config.name = line.substr(it+1);
+
+        result.push_back(config);
+      }
+      file.close();
+    } else {
+      Logger::getLogger().error("Cannot open file " + file_path + " for regexes.");
+      exit(1);
+    }
+
+    return result;
+  }
+
   explicit get_elapsed_preevents(std::vector<elapsed_config> configs) : configs(std::move(configs)) { }
 
  protected:
@@ -57,8 +109,9 @@ class get_elapsed_preevents : public plugin {
   }
 
  public:
-  pointer register_metrics_output(pointer plugin) {
-    return register_named_output("metrics", std::move(plugin));
+  template <typename... Args>
+  pointer register_preevents_output(pointer plugin, Args &&... args) {
+    return register_named_output("metrics", std::move(plugin), args...);
   }
 
 };

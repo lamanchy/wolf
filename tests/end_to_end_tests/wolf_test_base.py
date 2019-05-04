@@ -219,5 +219,3 @@ class WolfTestBase(unittest.TestCase):
                     raise ValueError("Couldn't parse output " + self.tcp_listeners_results[port])
 
                 self.tcp_listeners_expecting[port].remove(obj)
-
-            assert len(self.tcp_listeners_expecting[port]) == 0
