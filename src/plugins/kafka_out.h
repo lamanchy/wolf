@@ -7,22 +7,19 @@
 #ifndef WOLF_KAFKA_OUT_H
 #define WOLF_KAFKA_OUT_H
 
-
 #include <base/plugins/plugin.h>
 #include <cppkafka/cppkafka.h>
 #include <base/plugins/mutexed_plugin.h>
 
-
 namespace wolf {
 
 class kafka_out : public plugin {
-public:
+ public:
   kafka_out(option<std::string> topic, unsigned partitions, std::string broker_list)
       : topic(std::move(topic)), partitions(partitions), broker_list(broker_list) {
     config = {
-        { "metadata.broker.list", broker_list }
-        ,
-        { "compression.type", "lz4" }
+        {"metadata.broker.list", broker_list},
+        {"compression.type", "lz4"}
 //        ,
 //        { "topic.metadata.refresh.interval.ms", 20000 }
         ,
@@ -30,7 +27,7 @@ public:
     };
   }
 
-protected:
+ protected:
   using producer = cppkafka::BufferedProducer<std::string>;
   using configuration = cppkafka::Configuration;
 
@@ -39,7 +36,7 @@ protected:
     p->set_max_buffer_size(32000);
     p->set_flush_method(producer::FlushMethod::Sync);
 
-    flusher = std::thread([&](){
+    flusher = std::thread([&]() {
       while (running) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         p->flush();
@@ -53,17 +50,17 @@ protected:
     p->flush();
   }
 
-  void process(json && message) override {
+  void process(json &&message) override {
     p->add_message(
         p->make_builder(topic->get_value(message))
-        .partition(get_partition())
-        .payload(std::move(message.as<std::string>())));
+            .partition(get_partition())
+            .payload(std::move(message.as<std::string>())));
   }
 
   bool is_full() override {
     return p->get_pending_acks() > 64000;
   }
-private:
+ private:
 
   unsigned get_partition() {
     return current_partition++ % partitions;

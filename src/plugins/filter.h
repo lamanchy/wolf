@@ -16,7 +16,7 @@ class filter : public plugin {
  public:
   filter(std::function<bool(const json &)> condition) : condition(std::move(condition)) {}
 
-  template <typename... Args>
+  template<typename... Args>
   pointer filtered(pointer plugin, Args &&... args) {
     return register_named_output("filtered", std::move(plugin), args...);
   }

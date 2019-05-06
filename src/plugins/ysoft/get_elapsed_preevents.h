@@ -41,7 +41,7 @@ class get_elapsed_preevents : public plugin {
           exit(1);
         }
         config.start_logId = line.substr(0, it);
-        line = line.substr(it+1);
+        line = line.substr(it + 1);
 
         it = line.find(':');
         if (it == std::string::npos) {
@@ -49,7 +49,7 @@ class get_elapsed_preevents : public plugin {
           exit(1);
         }
         config.end_logId = line.substr(0, it);
-        line = line.substr(it+1);
+        line = line.substr(it + 1);
 
         it = line.find(':');
         if (it == std::string::npos) {
@@ -57,7 +57,7 @@ class get_elapsed_preevents : public plugin {
           exit(1);
         }
         config.uniqueId = line.substr(0, it);
-        config.name = line.substr(it+1);
+        config.name = line.substr(it + 1);
 
         result.push_back(config);
       }
@@ -70,7 +70,7 @@ class get_elapsed_preevents : public plugin {
     return result;
   }
 
-  explicit get_elapsed_preevents(std::vector<elapsed_config> configs) : configs(std::move(configs)) { }
+  explicit get_elapsed_preevents(std::vector<elapsed_config> configs) : configs(std::move(configs)) {}
 
  protected:
   void process(json &&message) override {
@@ -93,27 +93,29 @@ class get_elapsed_preevents : public plugin {
   void output_preevent(const std::string &position, elapsed_config &config, json &message) {
     auto uniqueId = message.find(config.uniqueId);
     if (uniqueId == nullptr)
-      throw std::runtime_error(std::string("Trying to get uniqueId: ") + config.uniqueId + " from:" + tao::json::to_string(message) + ", and... it's not there!");
+      throw std::runtime_error(
+          std::string("Trying to get uniqueId: ") + config.uniqueId
+              + " from:" + tao::json::to_string(message) + ", and... it's not there!"
+      );
 
     metrics_output({
-               {"algorithm", "elapsed"},
-               {"position", position},
-               {"elapsedId", config.name},
-               {"uniqueId", uniqueId->get_string()},
-               {"@timestamp", message["@timestamp"].get_string()},
-               {"type", "correlation_data"},
-               {"host", message["host"].get_string()},
-               {"group", message["group"].get_string()}
-           });
+                       {"algorithm", "elapsed"},
+                       {"position", position},
+                       {"elapsedId", config.name},
+                       {"uniqueId", uniqueId->get_string()},
+                       {"@timestamp", message["@timestamp"].get_string()},
+                       {"type", "correlation_data"},
+                       {"host", message["host"].get_string()},
+                       {"group", message["group"].get_string()}
+                   });
   }
-
 
   void metrics_output(json &&message) {
     output("metrics", std::move(message));
   }
 
  public:
-  template <typename... Args>
+  template<typename... Args>
   pointer register_preevents_output(pointer plugin, Args &&... args) {
     return register_named_output("metrics", std::move(plugin), args...);
   }

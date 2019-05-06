@@ -13,10 +13,10 @@
 namespace wolf {
 
 class add_local_info : public plugin {
-public:
-  add_local_info(std::string group, std::string max_loglevel) : group(group), max_loglevel(max_loglevel) {  }
+ public:
+  add_local_info(std::string group, std::string max_loglevel) : group(group), max_loglevel(max_loglevel) {}
 
-protected:
+ protected:
 
   void start() override {
     auto it = std::find(loglevels.begin(), loglevels.end(), max_loglevel);
@@ -34,7 +34,7 @@ protected:
     }
 
     std::string level = message["level"].get_string();
-    for (const std::string & loglevel : loglevels) {
+    for (const std::string &loglevel : loglevels) {
       if (loglevel == level) break;
       if (loglevel == max_loglevel) return;
     }
@@ -49,7 +49,7 @@ protected:
     output(std::move(message));
   }
 
-private:
+ private:
   std::string group;
   std::string max_loglevel;
   std::vector<std::string> loglevels = {"OFF", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE", "ALL"};

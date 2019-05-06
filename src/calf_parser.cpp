@@ -28,7 +28,10 @@ int main(int argc, char *argv[]) {
   std::string output = p.option<command<std::string>>("output", "Type of output, kafka/logstash")->get_value();
   std::string output_ip = p.option<command<std::string>>("output_ip", "Ip address of output")->get_value();
   std::string group = p.option<command<std::string>>("group", "Define the group name")->get_value();
-  std::string max_loglevel = p.option<command<std::string>>("max_loglevel", "Define max loglevel, one of OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL")->get_value();
+  std::string max_loglevel = p.option<command<std::string>>(
+      "max_loglevel",
+      "Define max loglevel, one of OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL"
+  )->get_value();
 
   logger.info("Parsed arguments:");
   logger.info("output:       " + output);
@@ -40,13 +43,15 @@ int main(int argc, char *argv[]) {
   plugin::pointer tcp = create<tcp_out<line>>(
       p.option<constant<std::string>>(output_ip),
       p.option<constant<std::string>>("9070")
-    );
+  );
 
   if (output == "kafka") {
-    out = [&](std::string type) { return create<kafka_out>(
-        p.option<constant<std::string>>(type + "-" + group),
-        12,
-        output_ip + ":9092"); };
+    out = [&](std::string type) {
+      return create<kafka_out>(
+          p.option<constant<std::string>>(type + "-" + group),
+          12,
+          output_ip + ":9092");
+    };
   } else if (output == "logstash") {
     out = [&](std::string type) { return tcp; };
   } else if (not p.will_print_help()) {
@@ -55,7 +60,6 @@ int main(int argc, char *argv[]) {
     // just to fill out with something
     out = [&](std::string type) { return create<cout>(); };
   }
-
 
   plugin::pointer common_processing =
       create<add_local_info>(group, max_loglevel)->register_output(

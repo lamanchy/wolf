@@ -10,7 +10,7 @@
 namespace wolf {
 
 class json_to_string : public plugin {
-protected:
+ protected:
   void process(json &&message) override {
     auto res = json(tao::json::to_string(message));
     res.metadata = message.metadata;

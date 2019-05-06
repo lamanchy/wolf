@@ -1,22 +1,21 @@
 #ifndef WOLF_THREADED_PLUGIN_H
 #define WOLF_THREADED_PLUGIN_H
 
-
 #include <thread>
 #include "plugin.h"
 
 namespace wolf {
 
 class threaded_plugin : public plugin {
-protected:
+ protected:
   std::atomic<bool> running{false};
   std::thread thread;
 
-  virtual void setup() { }
+  virtual void setup() {}
 
-  virtual void loop() { }
+  virtual void loop() {}
 
-  threaded_plugin() : plugin() { }
+  threaded_plugin() : plugin() {}
 
   void start() override {
     running = true;
@@ -42,7 +41,6 @@ protected:
       loop();
     }
   }
-
 
 };
 

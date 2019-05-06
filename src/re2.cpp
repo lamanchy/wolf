@@ -11,14 +11,12 @@
 #include <assert.h>
 #include <iostream>
 
-
 int main() {
   std::cout << RE2::FullMatch("hello", "h.*o");
   assert(!RE2::FullMatch("hello", "e"));
 
   assert(RE2::PartialMatch("hello", "h.*o"));
   assert(RE2::PartialMatch("hello", "e"));
-
 
   return 0;
 }

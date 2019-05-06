@@ -173,7 +173,7 @@ class http_out : public threaded_plugin {
                                   shared_from_this(),
                                   std::placeholders::_1,
                                   std::placeholders::_2)
-          );
+      );
     }
 
     void on_read(

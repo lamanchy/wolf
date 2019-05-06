@@ -8,7 +8,7 @@
 #include <base/plugins/plugin.h>
 namespace wolf {
 
-class drop : public plugin { };
+class drop : public plugin {};
 
 }
 

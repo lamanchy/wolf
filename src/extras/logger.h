@@ -85,7 +85,6 @@ class Logger {
   static std::string logging_dir;
   std::mutex lock;
 
-
   static void do_log(std::ostream &stream, const std::string &level, std::string const &message) {
     stream << date::format("%F %T", std::chrono::system_clock::now()) << " " << level << " " << message << std::endl;
   }

@@ -11,7 +11,7 @@
 namespace wolf {
 
 class normalize_serilog_logs : public plugin {
-protected:
+ protected:
   void process(json &&message) override {
     message["@timestamp"] = extras::convert_time(message["timestamp"].as<std::string>());
     message.erase("timestamp");
@@ -25,7 +25,7 @@ protected:
     output(std::move(message));
   }
 
-private:
+ private:
   std::string normalize_level(const std::string &level) {
     if (level == "Verbose") return "TRACE";
     if (level == "Debug") return "DEBUG";

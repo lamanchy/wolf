@@ -16,7 +16,7 @@ class count_logs : public mutexed_threaded_plugin {
  public:
   explicit count_logs(std::vector<std::string> fields) : fields(std::move(fields)) {}
 
-  template <typename... Args>
+  template<typename... Args>
   pointer register_stats_output(pointer plugin, Args &&... args) {
     return register_named_output("stats", std::move(plugin), args...);
   }
@@ -36,7 +36,7 @@ class count_logs : public mutexed_threaded_plugin {
 
     if (it == storage.end()) {
       storage.insert(std::make_pair(key, json({{"count", 1}})));
-      json & item = storage.find(key)->second;
+      json &item = storage.find(key)->second;
 
       for (std::string &field : fields) {
         item[field] = message.find(field)->get_string();
@@ -61,7 +61,7 @@ class count_logs : public mutexed_threaded_plugin {
   }
 
   void locked_loop() override {
-    for (auto & item : storage) {
+    for (auto &item : storage) {
 //      std::cout << "outputtting stuff" << tao::json::to_string(item.second) << std::endl;
       stats_output(std::move(item.second));
     }

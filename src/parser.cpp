@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
   std::string brokers =
       p.option<command<std::string>>("broker_list", "List of kafkas brokers")->get_value();
 
-  std::function<plugin::pointer(std::string)> out = [&](const std::string & topic_name) {
+  std::function<plugin::pointer(std::string)> out = [&](const std::string &topic_name) {
     return create<lambda>(
         [&, topic_name](json &message) {
           message.metadata["output"] = topic_name + "-" + message["group"].get_string();

@@ -6,7 +6,7 @@ using namespace cppkafka;
 int main() {
   // Create the config
   Configuration config = {
-      { "metadata.broker.list", "10.0.10.18:9092" }
+      {"metadata.broker.list", "10.0.10.18:9092"}
   };
 
   // Create the producer

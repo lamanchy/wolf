@@ -11,8 +11,16 @@ namespace wolf {
 
 class json_to_influx : public plugin {
  public:
-  json_to_influx(std::string measurement, std::vector<std::string> tags, std::vector<std::string> fields, std::string time = "@timestamp", bool add_random_nanoseconds = true)
-  : measurement(measurement), tags(tags), fields(fields), time(time), add_random_nanoseconds(add_random_nanoseconds) { }
+  json_to_influx(std::string measurement,
+                 std::vector<std::string> tags,
+                 std::vector<std::string> fields,
+                 std::string time = "@timestamp",
+                 bool add_random_nanoseconds = true)
+      : measurement(measurement),
+        tags(tags),
+        fields(fields),
+        time(time),
+        add_random_nanoseconds(add_random_nanoseconds) {}
 
  protected:
   void process(json &&message) override {
@@ -27,7 +35,7 @@ class json_to_influx : public plugin {
     }
 
     bool first = true;
-    for (auto & field : fields) {
+    for (auto &field : fields) {
       res << (first ? " " : ",");
       first = false;
 
@@ -35,17 +43,11 @@ class json_to_influx : public plugin {
       res << escape(field, ",= ") << "=";
       if (it->is_string_type()) {
         res << '\"' << it->get_string() << '\"';
-      }
-
-      else if (it->is_integer()) {
+      } else if (it->is_integer()) {
         res << it->get_signed() << "i";
-      }
-
-      else if (it->is_double()) {
+      } else if (it->is_double()) {
         res << it->get_double();
-      }
-
-      else if (it->is_boolean()) {
+      } else if (it->is_boolean()) {
         res << (it->get_boolean() ? "t" : "f");
       }
     }
@@ -67,10 +69,10 @@ class json_to_influx : public plugin {
   std::vector<std::string> tags, fields;
   bool add_random_nanoseconds;
 
-  std::string escape(const std::string& src, const std::string& escape_seq) {
+  std::string escape(const std::string &src, const std::string &escape_seq) {
     size_t pos = 0, start = 0;
     std::stringstream res;
-    while((pos = src.find_first_of(escape_seq, start)) != std::string::npos) {
+    while ((pos = src.find_first_of(escape_seq, start)) != std::string::npos) {
       res.write(src.c_str() + start, pos - start);
       res << '\\' << src[pos];
       start = ++pos;
@@ -80,7 +82,6 @@ class json_to_influx : public plugin {
     return res.str();
   }
 };
-
 
 }
 
