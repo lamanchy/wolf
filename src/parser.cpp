@@ -19,37 +19,76 @@
 #include <plugins/regex.h>
 #include <plugins/ysoft/get_elapsed_preevents.h>
 #include <plugins/ysoft/count_logs.h>
+#include <plugins/kafka_in.h>
+#include <base/options/event.h>
+#include <base/json_to_influx.h>
+#include <plugins/collate.h>
+#include <plugins/http_out.h>
+#include <plugins/elapsed.h>
+#include <plugins/stream_sort.h>
+#include <plugins/stats.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
 
-  pipeline p = pipeline(argc, argv, true);
+  pipeline p = pipeline(argc, argv, false);
 
-  std::vector<get_elapsed_preevents::elapsed_config> elapsed_config = {
-      {"start_stuff", "stop_stuff", "myId", "stuff_elapsed"}
+  std::string brokers =
+      p.option<command<std::string>>("broker_list", "List of kafkas brokers")->get_value();
+
+  std::function<plugin::pointer(std::string)> out = [&](const std::string & topic_name) {
+    return create<lambda>(
+        [&, topic_name](json &message) {
+          message.metadata["output"] = topic_name + "-" + message["group"].get_string();
+        }
+    )->register_output(
+        create<json_to_string>(),
+        create<stats>(),
+        create<kafka_out>(
+            p.option<event<std::string>>("output", true), 12, brokers
+        )
+    );
   };
 
-  plugin::pointer output =
-      create<json_to_string>()->register_output(
-          create<tcp_out<line>>(
-              p.option<constant<std::string>>("localhost"),
-              p.option<command<std::string>>("output_port", "Output port")
-          )
-      );
-
   p.register_plugin(
-      create<tcp_in<line>>(
-          p.option<command<unsigned short>>("input_port", "Input port")
-          ),
+      create<kafka_in>(
+          "^unified_logs-.*",
+          brokers,
+          "parser-test"
+      ),
       create<string_to_json>(),
       create<regex>(regex::parse_file(p.get_config_dir() + "parsers")),
-      create<get_elapsed_preevents>(elapsed_config)->register_preevents_output(
-          output
+      create<get_elapsed_preevents>(
+          get_elapsed_preevents::parse_file(p.get_config_dir() + "elapsed")
+      )->register_preevents_output(
+          out("correlation_data")
       ),
-      create<count_logs>(std::vector<std::string>({"logId", "host", "group"}))->register_stats_output(
-          output
+      create<count_logs>(
+          std::vector<std::string>({"logId", "host", "group", "level", "component"})
+      )->register_stats_output(
+          create<lambda>(
+              [&](json &message) {
+                message.metadata["group"] = message["group"].get_string();
+              }
+          ),
+          create<json_to_influx>(
+              "logs_count",
+              std::vector<std::string>({"logId", "host", "group", "level", "component"}),
+              std::vector<std::string>({"count"}),
+              "@timestamp"
+          ),
+          create<lambda>(
+              [&](json &message) {
+                message.assign_object({
+                                          {"message", message.get_string()},
+                                          {"type", "metrics"},
+                                          {"group", message.metadata["group"].get_string()},
+                                      });
+              }
+          ),
+          out("metrics")
       ),
-      output
+      out("parsed_logs")
   );
 
   p.run();

@@ -39,8 +39,8 @@ int main(int argc, char *argv[]) {
             message.assign_string(std::string(message.get_string() + "\n"));
           }
       )->register_output(
+          create<stats>(),
           create<collate>(),
-//              create<cout>()
           create<http_out>("localhost", "8086", "/write?db=metric_db")
       );
 

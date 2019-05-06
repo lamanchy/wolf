@@ -10,7 +10,7 @@
 namespace wolf {
 namespace extras {
 
-std::string get_time() {
+std::string get_date() {
   typedef std::chrono::system_clock Clock;
 
   auto now = Clock::now();

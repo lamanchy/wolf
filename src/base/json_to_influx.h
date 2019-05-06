@@ -57,7 +57,9 @@ class json_to_influx : public plugin {
       nanoseconds += std::rand() % 10000000;
     res << " " << nanoseconds;
 
-    output(json(res.str()));
+    auto to_output = json(std::move(res.str()));
+    to_output.metadata = message.metadata;
+    output(std::move(to_output));
   }
 
  private:

@@ -91,11 +91,15 @@ class get_elapsed_preevents : public plugin {
   std::vector<elapsed_config> configs;
 
   void output_preevent(const std::string &position, elapsed_config &config, json &message) {
+    auto uniqueId = message.find(config.uniqueId);
+    if (uniqueId == nullptr)
+      throw std::runtime_error(std::string("Trying to get uniqueId: ") + config.uniqueId + " from:" + tao::json::to_string(message) + ", and... it's not there!");
+
     metrics_output({
                {"algorithm", "elapsed"},
                {"position", position},
                {"elapsedId", config.name},
-               {"uniqueId", message.find(config.uniqueId)->get_string()},
+               {"uniqueId", uniqueId->get_string()},
                {"@timestamp", message["@timestamp"].get_string()},
                {"type", "correlation_data"},
                {"host", message["host"].get_string()},

@@ -19,44 +19,27 @@ int main(int argc, char *argv[]) {
   Logger &logger = p.logger;
 
   logger.info("Parsing command line arguments");
-  cxxopts::Options opts(argv[0], " - example command line options");
 
-  std::string bootstrap_servers, influx_ip, es_ip;
-  opts.add_options()
-      ("bootstrap_servers",
-       "Servers of kafka, default 10.0.11.162:9092",
-       cxxopts::value<std::string>(bootstrap_servers)->default_value("10.0.11.162:9092"))
-      ("influx_ip",
-       "Ip address of influx, default localhost",
-       cxxopts::value<std::string>(influx_ip)->default_value("localhost"))
-      ("es_ip",
-       "Ip address of influx, default localhost",
-       cxxopts::value<std::string>(es_ip)->default_value("localhost"));
-  opts.parse(argc, argv);
+  std::string bootstrap_servers, influx_ip;
+
+  bootstrap_servers = p.option<command<std::string>>("broker_list", "List of kafka brokers")->get_value();
+  influx_ip = p.option<command<std::string>>("influx_ip", "Ip address of influx, default localhost")->get_value();
 
   logger.info("Parsed arguments:");
   logger.info("bootstrap_servers:    " + bootstrap_servers);
   logger.info("influx_ip: " + influx_ip);
-  logger.info("es_ip: " + es_ip);
 
   p.register_plugin(
-      create<kafka_in>("^metrics-.*", bootstrap_servers, "metrics_forwarder_test")->register_output(
-          create<string_to_json>()->register_output(
-              create<lambda>(
-                  [](json &message) {
-                    message.assign_string(std::string(message["message"].get_string() + "\n"));
-                  }
-              )->register_output(
-                  create<stats>()->register_output(
-                      create<collate>()
-                          ->register_output(
-//                              create<cout>()
-                              create<http_out>(influx_ip, "8086", "/write?db=metric_db")
-                          )
-                  )
-              )
-          )
-      )
+      create<kafka_in>("^metrics-.*", bootstrap_servers, "metrics_forwarder_test"),
+      create<string_to_json>(),
+      create<lambda>(
+          [](json &message) {
+            message.assign_string(std::string(message["message"].get_string() + "\n"));
+          }
+      ),
+      create<stats>(),
+      create<collate>(),
+      create<http_out>(influx_ip, "8086", "/write?db=metric_db")
   );
 
 //  p.register_plugin(
@@ -80,7 +63,7 @@ int main(int argc, char *argv[]) {
 //                                 {"index", {
 //                                     {"_index", "logs-" +
 //                                         group + "-" +
-//                                         extras::get_time()},
+//                                         extras::get_date()},
 //                                     {"_type", "logs"}
 //                                 }}
 //                             })

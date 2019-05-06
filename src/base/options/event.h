@@ -14,9 +14,12 @@ namespace wolf {
 template<typename T>
 class event : public option_type<T> {
  public:
-  explicit event(std::string field) : field(std::move(field)) { }
+  explicit event(std::string field, bool metadata = false) : field(std::move(field)), metadata(metadata) { }
 
   T get_value(const json &event) override {
+    if (metadata)
+      return event.metadata.find(field)->as<T>();
+
     return event.find(field)->as<T>();
   }
 
@@ -26,6 +29,7 @@ class event : public option_type<T> {
 
  private:
   std::string field;
+  bool metadata;
 
 };
 
