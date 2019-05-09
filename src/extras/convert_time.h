@@ -21,16 +21,17 @@ const std::vector<std::string> parsers = {
     "%FT%H:%M:%15S%Ez"
 };
 
-
 bool is_number(const std::string &s) {
-  return not s.empty() and std::find_if(s.begin(),
-                                    s.end(), [](char c) { return not std::isdigit(c); }) == s.end();
+  return not s.empty() and std::find_if(
+      s.begin(),
+      s.end(),
+      [](char c) { return not std::isdigit(c); }
+  ) == s.end();
 }
 
 }
 
-
-std::chrono::time_point<std::chrono::system_clock> string_to_time(const std::string & input) {
+std::chrono::time_point<std::chrono::system_clock> string_to_time(const std::string &input) {
   using namespace std;
   using namespace std::chrono;
   using namespace date;
@@ -47,7 +48,6 @@ std::chrono::time_point<std::chrono::system_clock> string_to_time(const std::str
 std::uint64_t convert_time(const std::chrono::duration<uint64_t> input) {
   return static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(input).count());
 }
-
 
 std::string convert_time(const std::string &input) {
   using namespace std;
@@ -74,7 +74,7 @@ std::string convert_time(const std::uint64_t &input) {
 }
 
 std::string convert_time(const std::uint64_t &seconds, const std::uint64_t &nanos) {
-  return convert_time(seconds*1000 + nanos/1000000);
+  return convert_time(seconds * 1000 + nanos / 1000000);
 }
 
 }

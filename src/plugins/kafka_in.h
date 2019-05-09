@@ -34,7 +34,7 @@ class kafka_in : public threaded_plugin {
         {"client.id", group_id},
         {"auto.offset.reset", "earliest"},
         {"queued.max.messages.kbytes", 64},
-        {"fetch.max.bytes", 64*1024},
+        {"fetch.max.bytes", 64 * 1024},
         {"enable.auto.commit", true}
     };
 

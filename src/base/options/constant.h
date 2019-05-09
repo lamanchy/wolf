@@ -11,7 +11,7 @@ namespace wolf {
 template<typename T>
 class constant : public not_event_option_type<T> {
  public:
-  explicit constant(const T & value) : value(value) {}
+  explicit constant(const T &value) : value(value) {}
 
   T get_value() {
     return value;
@@ -20,7 +20,6 @@ class constant : public not_event_option_type<T> {
  private:
   T value;
 };
-
 
 }
 

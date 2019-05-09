@@ -18,15 +18,16 @@ class stream_sort : public mutexed_threaded_plugin {
   template<typename T>
   static std::function<bool(const json &)> ready_after(std::chrono::duration<T> duration) {
     long real_duration = std::chrono::nanoseconds(duration).count();
-    return [real_duration](const json & top) -> bool {
-      return (std::chrono::system_clock::now().time_since_epoch().count() - top.metadata.find("stream_sort_inserted_time")->get_signed()) > real_duration;
+    return [real_duration](const json &top) -> bool {
+      return (std::chrono::system_clock::now().time_since_epoch().count()
+          - top.metadata.find("stream_sort_inserted_time")->get_signed()) > real_duration;
     };
   }
 
   stream_sort(
       const std::function<bool(const json &lhs, const json &rhs)> &cmp,
       std::function<bool(const json &)> is_ready
-  ) : priority_queue(priority_queue_t(cmp)), is_ready(std::move(is_ready)) { }
+  ) : priority_queue(priority_queue_t(cmp)), is_ready(std::move(is_ready)) {}
 
  protected:
   using priority_queue_t = std::priority_queue<
@@ -34,11 +35,11 @@ class stream_sort : public mutexed_threaded_plugin {
       std::deque<json>,
       std::function<bool(const json &lhs, const json &rhs)>
   >;
-  
+
   void setup() override {
     mark_as_processor();
   }
-  
+
   void unlocked_loop() override {
     lock.lock();
     while (not priority_queue.empty() and is_ready(priority_queue.top())) {

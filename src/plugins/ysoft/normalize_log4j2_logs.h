@@ -11,13 +11,14 @@
 namespace wolf {
 
 class normalize_log4j2_logs : public plugin {
-protected:
+ protected:
   void process(json &&message) override {
     if (message.find("timeMillis") != nullptr) {
       message["@timestamp"] = extras::convert_time(message["timeMillis"].get_unsigned());
       message.erase("timeMillis");
     } else if (message.find("instant") != nullptr) {
-      message["@timestamp"] = extras::convert_time(message["instant"]["epochSecond"].get_unsigned(), message["instant"]["nanoOfSecond"].get_unsigned());
+      message["@timestamp"] = extras::convert_time(message["instant"]["epochSecond"].get_unsigned(),
+                                                   message["instant"]["nanoOfSecond"].get_unsigned());
       message.erase("instant");
     } else {
       throw std::runtime_error("Cannot find time");

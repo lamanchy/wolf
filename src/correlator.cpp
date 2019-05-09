@@ -22,6 +22,7 @@
 #include <base/options/event.h>
 #include <plugins/kafka_in.h>
 #include <base/json_to_influx.h>
+#include <plugins/stats.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]) {
         return lhs.find("@timestamp")->get_string() > rhs.find("@timestamp")->get_string();
       },
       stream_sort::ready_after(std::chrono::seconds(
-          p.option<command<int>>("stream_sort_seconds", "Seconds to wait with each event")->get_value()
+          p.option<command<int>>("stream_sort_seconds", "Seconds to wait with each event", "", "60")->get_value()
       ))
   );
 
@@ -41,9 +42,7 @@ int main(int argc, char *argv[]) {
 
   bool is_test = p.option<command<bool>>("test", "When testing, use stdin/stdout")->get_value();
   int max_seconds_to_keep =
-      p.option<command<bool>>("max_seconds_to_keep", "How long to wait for end event")->get_value();
-
-
+      p.option<command<int>>("max_seconds_to_keep", "How long to wait for end event", "", "1800")->get_value();
 
   if (is_test) {
     in = create<cin>();
@@ -52,19 +51,13 @@ int main(int argc, char *argv[]) {
     std::string broker_list = p.option<command<std::string>>("broker_list", "List of kafka brokers")->get_value();
 
     in = create<kafka_in>(
-        p.option<constant<std::string>>("correlation_data-.*")->get_value(),
+        p.option<constant<std::string>>("^correlation_data-.*")->get_value(),
         broker_list,
         p.option<constant<std::string>>("correlator")->get_value()
     );
-    out = create<lambda>(
-            [](json &message) {
-              message["output"] = "metrics-" + message["group"].get_string();
-            }
-        )->register_output(
-            create<kafka_out>(
-                p.option<event<std::string>>("output"), 12, broker_list
-            )
-        );
+    out = create<kafka_out>(
+        p.option<event<std::string>>("output", true), 12, broker_list
+    );
   }
 
   common_processing = create<lambda>(
@@ -75,14 +68,19 @@ int main(int argc, char *argv[]) {
                               });
       }
   )->register_output(
-      create<json_to_string>()->register_output(
-          out
-          )
+      create<json_to_string>(),
+      create<stats>(),
+      out
   );
 
   p.register_plugin(
       in,
       create<string_to_json>(),
+      create<lambda>(
+          [](json &message) {
+            message.metadata["output"] = "metrics-" + message["group"].get_string();
+          }
+      ),
       sort_by_time,
       create<elapsed>(max_seconds_to_keep)->register_expired_output(
           create<json_to_influx>(
@@ -90,9 +88,8 @@ int main(int argc, char *argv[]) {
               std::vector<std::string>({"elapsedId", "status", "start_host", "group"}),
               std::vector<std::string>({"uniqueId",}),
               "start_time"
-          )->register_output(
-              common_processing
-          )
+          ),
+          common_processing
       ),
       create<json_to_influx>(
           "elapsed",

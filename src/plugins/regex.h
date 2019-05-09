@@ -16,7 +16,7 @@ class regex : public plugin {
  public:
   using named_regex = std::pair<std::string, std::string>;
   explicit regex(const std::vector<named_regex> &regex_pairs) : regex_set(re2::RE2::Options(), re2::RE2::UNANCHORED) {
-    for (const named_regex & pair : regex_pairs) {
+    for (const named_regex &pair : regex_pairs) {
       std::string error;
       int result = regex_set.Add(pair.second, &error);
       if (result == -1) {
@@ -52,7 +52,7 @@ class regex : public plugin {
           Logger::getLogger().error("Cannot parsing file " + file_path + ", ':' is missing on line " + line);
           exit(1);
         }
-        result.emplace_back(line.substr(0, it), line.substr(it+1));
+        result.emplace_back(line.substr(0, it), line.substr(it + 1));
       }
       file.close();
     } else {
@@ -73,17 +73,17 @@ class regex : public plugin {
 
       message["logId"] = regexes.at(min_i).first;
 
-      re2::RE2 & regex = *regexes.at(min_i).second;
+      re2::RE2 &regex = *regexes.at(min_i).second;
 
       const int submatches_count = 1 + regex.NumberOfCapturingGroups();
       // TODO memory leak?
-      re2::StringPiece* submatches = new re2::StringPiece[submatches_count];
+      re2::StringPiece *submatches = new re2::StringPiece[submatches_count];
 
       regex.Match(
           message["message"].get_string(), 0, message["message"].get_string().length(),
           re2::RE2::UNANCHORED, submatches, submatches_count);
 
-      for (auto & pair : regex.NamedCapturingGroups()) {
+      for (auto &pair : regex.NamedCapturingGroups()) {
         message[pair.first] = std::string(submatches[pair.second].data(), submatches[pair.second].length());
       }
     } else {

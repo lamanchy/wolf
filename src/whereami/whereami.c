@@ -182,31 +182,25 @@ int WAI_PREFIX(getModulePath)(char* out, int capacity, int* dirname_length)
 #endif
 
 WAI_FUNCSPEC
-int WAI_PREFIX(getExecutablePath)(char* out, int capacity, int* dirname_length)
-{
+int WAI_PREFIX(getExecutablePath)(char *out, int capacity, int *dirname_length) {
   char buffer[PATH_MAX];
-  char* resolved = NULL;
+  char *resolved = NULL;
   int length = -1;
 
-  for (;;)
-  {
+  for (;;) {
     resolved = realpath(WAI_PROC_SELF_EXE, buffer);
     if (!resolved)
       break;
 
-    length = (int)strlen(resolved);
-    if (length <= capacity)
-    {
+    length = (int) strlen(resolved);
+    if (length <= capacity) {
       memcpy(out, resolved, length);
 
-      if (dirname_length)
-      {
+      if (dirname_length) {
         int i;
 
-        for (i = length - 1; i >= 0; --i)
-        {
-          if (out[i] == '/')
-          {
+        for (i = length - 1; i >= 0; --i) {
+          if (out[i] == '/') {
             *dirname_length = i;
             break;
           }
@@ -240,20 +234,17 @@ int WAI_PREFIX(getExecutablePath)(char* out, int capacity, int* dirname_length)
 
 WAI_NOINLINE
 WAI_FUNCSPEC
-int WAI_PREFIX(getModulePath)(char* out, int capacity, int* dirname_length)
-{
+int WAI_PREFIX(getModulePath)(char *out, int capacity, int *dirname_length) {
   int length = -1;
-  FILE* maps = NULL;
+  FILE *maps = NULL;
   int i;
 
-  for (i = 0; i < WAI_PROC_SELF_MAPS_RETRY; ++i)
-  {
+  for (i = 0; i < WAI_PROC_SELF_MAPS_RETRY; ++i) {
     maps = fopen(WAI_PROC_SELF_MAPS, "r");
     if (!maps)
       break;
 
-    for (;;)
-    {
+    for (;;) {
       char buffer[PATH_MAX < 1024 ? 1024 : PATH_MAX];
       uint64_t low, high;
       char perms[5];
@@ -265,18 +256,25 @@ int WAI_PREFIX(getModulePath)(char* out, int capacity, int* dirname_length)
       if (!fgets(buffer, sizeof(buffer), maps))
         break;
 
-      if (sscanf(buffer, "%" PRIx64 "-%" PRIx64 " %s %" PRIx64 " %x:%x %u %s\n", &low, &high, perms, &offset, &major, &minor, &inode, path) == 8)
-      {
-        uint64_t addr = (uint64_t)(uintptr_t)WAI_RETURN_ADDRESS();
-        if (low <= addr && addr <= high)
-        {
-          char* resolved;
+      if (sscanf(buffer,
+                 "%" PRIx64 "-%" PRIx64 " %s %" PRIx64 " %x:%x %u %s\n",
+                 &low,
+                 &high,
+                 perms,
+                 &offset,
+                 &major,
+                 &minor,
+                 &inode,
+                 path) == 8) {
+        uint64_t addr = (uint64_t) (uintptr_t) WAI_RETURN_ADDRESS();
+        if (low <= addr && addr <= high) {
+          char *resolved;
 
           resolved = realpath(path, buffer);
           if (!resolved)
             break;
 
-          length = (int)strlen(resolved);
+          length = (int) strlen(resolved);
 #if defined(__ANDROID__) || defined(ANDROID)
           if (length > 4
               &&buffer[length - 1] == 'k'
@@ -314,18 +312,14 @@ int WAI_PREFIX(getModulePath)(char* out, int capacity, int* dirname_length)
             close(fd);
           }
 #endif
-          if (length <= capacity)
-          {
+          if (length <= capacity) {
             memcpy(out, resolved, length);
 
-            if (dirname_length)
-            {
+            if (dirname_length) {
               int i;
 
-              for (i = length - 1; i >= 0; --i)
-              {
-                if (out[i] == '/')
-                {
+              for (i = length - 1; i >= 0; --i) {
+                if (out[i] == '/') {
                   *dirname_length = i;
                   break;
                 }

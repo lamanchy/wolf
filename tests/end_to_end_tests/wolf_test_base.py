@@ -1,18 +1,17 @@
 #!/usr/bin/env python
 
 import json
-import re
 import os
+import re
 import signal
 import socket
 import subprocess
+import sys
 import unittest
 from os.path import isfile
 from signal import SIGINT
 from subprocess import Popen, PIPE
 from threading import Lock, Thread
-
-import sys
 from time import sleep
 
 build_lock = Lock()
@@ -219,5 +218,3 @@ class WolfTestBase(unittest.TestCase):
                     raise ValueError("Couldn't parse output " + self.tcp_listeners_results[port])
 
                 self.tcp_listeners_expecting[port].remove(obj)
-
-            assert len(self.tcp_listeners_expecting[port]) == 0

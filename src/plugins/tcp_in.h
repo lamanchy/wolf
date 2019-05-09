@@ -17,11 +17,10 @@
 
 namespace wolf {
 
-
 template<typename Serializer>
 class tcp_in : public threaded_plugin {
-public:
-  explicit tcp_in(const not_event_option<unsigned short> &port) : port(port->get_value()) { }
+ public:
+  explicit tcp_in(const not_event_option<unsigned short> &port) : port(port->get_value()) {}
 
  protected:
   void setup() override {
@@ -39,13 +38,13 @@ public:
     threaded_plugin::stop();
   }
 
-private:
+ private:
   unsigned short port{};
   asio::io_context io_context;
 
   class tcp_connection
       : public boost::enable_shared_from_this<tcp_connection> {
-  public:
+   public:
     using pointer = typename boost::shared_ptr<tcp_connection>;
 
     static pointer create(tcp_in *p, asio::io_context &io_context) {
@@ -65,7 +64,7 @@ private:
                                                          boost::placeholders::_2));
     }
 
-  private:
+   private:
     tcp_in *p;
     Serializer s;
 
@@ -101,13 +100,13 @@ private:
   };
 
   class tcp_server {
-  public:
+   public:
     tcp_server(tcp_in *p, asio::io_context &io_context, unsigned short port)
         : p(p), acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
       start_accept();
     }
 
-  private:
+   private:
     tcp_in *p;
     using pointer = typename tcp_connection::pointer;
 
@@ -119,7 +118,6 @@ private:
                              boost::bind(&tcp_server::handle_accept, this, new_connection,
                                          std::error_code()));
     }
-
 
     void handle_accept(pointer new_connection,
                        const std::error_code &error) {

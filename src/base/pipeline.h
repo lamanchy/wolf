@@ -12,11 +12,18 @@
 namespace wolf {
 
 class pipeline {
-public:
-  using pointer = plugin::pointer;
-  Logger & logger = Logger::getLogger();
+ private:
+  options opts;
 
-  pipeline(int argc, char *argv[], bool persistent = true) : opts(argc, argv) {
+ public:
+  using pointer = plugin::pointer;
+  Logger &logger;
+
+  pipeline(int argc, char *argv[], bool persistent = true) :
+      opts(argc, argv),
+      logger(Logger::getLogger(
+          opts.option<command<std::string>>("logging_dir", "Path to configs", "", wolf::extras::get_executable_dir()
+          )->get_value())) {
     plugin::persistent = persistent;
     if (persistent)
       plugin::buffer_size = 1024;
@@ -41,11 +48,12 @@ public:
     return opts.option<T>(std::forward<Args>(args)...);
   }
 
+  template<typename... Args>
   void register_plugin(const pointer &plugin) {
     plugins.push_back(plugin);
   }
 
-  template <typename... Args>
+  template<typename... Args>
   void register_plugin(const pointer &plugin, Args &&... args) {
     plugins.push_back(plugin);
     plugin->register_output(chain_register_output(args...));
@@ -55,9 +63,10 @@ public:
     return plugin;
   }
 
-  template <typename... Args>
+  template<typename... Args>
   const pointer &chain_register_output(const pointer &plugin, Args &&... args) {
     plugin->register_output(chain_register_output(args...));
+
     return plugin;
   }
 
@@ -79,25 +88,22 @@ public:
     return opts.should_print_help();
   }
 
-  std::string get_config_path() {
-    return config_path;
+  std::string get_config_dir() {
+    return config_dir;
   }
 
-
-private:
+ private:
   std::vector<pointer> plugins;
   std::vector<std::thread> processors;
-  options opts;
   unsigned number_of_processors = std::thread::hardware_concurrency();
   static bool initialized;
-  static std::string config_path;
-
+  static std::string config_dir;
 
   void initialize() {
     initialized = true;
-    std::string path = extras::get_executable_path();
+    std::string path = extras::get_executable_dir();
 
-    config_path = this->option<command<std::string>>("config_path", "Path to configs", "", path)->get_value();
+    config_dir = this->option<command<std::string>>("config_dir", "Path to configs", "", path)->get_value();
 
     logger.info("Configuring STXXL");
     stxxl::config *cfg = stxxl::config::get_instance();
@@ -119,7 +125,7 @@ private:
   }
 
   template<typename T>
-  std::vector<T> for_each_plugin(const std::function<T(plugin &)>& function) {
+  std::vector<T> for_each_plugin(const std::function<T(plugin &)> &function) {
     // TODO this must be done better, yuck
     std::set<plugin::id_type> visited;
     std::queue<pointer> to_process;
@@ -144,8 +150,8 @@ private:
     return results;
   }
 
-  void for_each_plugin(const std::function<void(plugin &)>& function) {
-    const std::function<int(plugin &)> fn([&function] (plugin & p) {
+  void for_each_plugin(const std::function<void(plugin &)> &function) {
+    const std::function<int(plugin &)> fn([&function](plugin &p) {
       function(p);
       return 0;
     });
@@ -155,14 +161,14 @@ private:
   void process() {
     plugin::is_thread_processor = true;
     while (plugins_running()) {
-      for_each_plugin([](plugin &p) { while(p.process_buffer()) { }; });
+      for_each_plugin([](plugin &p) { while (p.process_buffer()) {}; });
 //      if (not std::all_of(res.begin(), res.end(), [](bool r) { return r; }))
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
       // TODO build up sleep time
 //      std::this_thread::yield();
     }
     std::for_each(plugins.begin(), plugins.end(), [this](pointer &) {
-      for_each_plugin([](plugin &p) { while (p.process_buffer()) { }; });
+      for_each_plugin([](plugin &p) { while (p.process_buffer()) {}; });
     });
 
     logger.info("ending processor");
@@ -211,7 +217,7 @@ private:
 
 std::atomic<int> pipeline::interrupt_received{0};
 bool pipeline::initialized{false};
-std::string pipeline::config_path;
+std::string pipeline::config_dir;
 
 }
 

@@ -11,19 +11,18 @@
 
 namespace wolf {
 class lambda : public plugin {
-public:
-  lambda(std::function<void(json &)> fn) : fn(std::move(fn)) {}
+ public:
+  lambda(std::function<void(json & )> fn) : fn(std::move(fn)) {}
 
-protected:
+ protected:
   void process(json &&message) override {
     fn(message);
     output(std::move(message));
   }
 
-private:
-  std::function<void(json &)> fn;
+ private:
+  std::function<void(json & )> fn;
 };
 }
-
 
 #endif //WOLF_LAMBDA_H

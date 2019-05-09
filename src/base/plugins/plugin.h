@@ -26,8 +26,13 @@ class plugin : public std::enable_shared_from_this<plugin> {
 
   Logger &logger = Logger::getLogger();
 
-  pointer register_output(pointer plugin) {
-    return register_named_output("default", std::move(plugin));
+  pointer register_output() {
+    return shared_from_this();
+  }
+
+  template<typename... Args>
+  pointer register_output(pointer plugin, Args &&... args) {
+    return register_named_output("default", std::move(plugin), args...);
   }
 
   bool operator==(const plugin &other) const {
@@ -65,8 +70,9 @@ class plugin : public std::enable_shared_from_this<plugin> {
   virtual void safe_prepare(json &&message) {
     try {
       prepare(std::move(message));
-    } catch (std::exception & ex) {
-      logger.error("error in " + std::string(typeid(this).name()) + " when processing message: " + std::string(ex.what()));
+    } catch (std::exception &ex) {
+      logger.error("error in " + std::string(typeid(*this).name()) +
+          " when processing message: " + std::string(ex.what()));
     }
   }
 
@@ -107,10 +113,14 @@ class plugin : public std::enable_shared_from_this<plugin> {
     outputs.at(output_type)->receive(std::move(message));
   }
 
-  virtual pointer register_named_output(std::string output_name, pointer plugin) {
+  template<typename... Args>
+  pointer register_named_output(std::string output_name, pointer plugin, Args &&... args) {
     auto it = outputs.find(output_name);
     if (it != outputs.end()) throw std::runtime_error("plugin already registered output named: " + output_name);
     outputs.emplace(std::make_pair(output_name, plugin));
+
+    plugin->register_output(args...);
+
     return shared_from_this();
   }
 

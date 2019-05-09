@@ -1,18 +1,17 @@
 #ifndef WOLF_COUT_H
 #define WOLF_COUT_H
 
-
 #include <base/plugins/plugin.h>
 
 namespace wolf {
 
 class cout : public mutexed_plugin {
-public:
+ public:
   ~cout() {
     std::cout << std::flush;
   }
 
-protected:
+ protected:
   void process(json &&message) override {
     std::cout << message.get_string() << std::endl;
 //    tao::json::from_string(tao::json::to_string(message))["pi"].get_unsigned();
@@ -26,7 +25,7 @@ protected:
 //    assert(message["happy"] == true);
   }
 
-private:
+ private:
   std::atomic<unsigned long> i{0};
 };
 

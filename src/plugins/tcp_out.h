@@ -10,15 +10,15 @@
 
 namespace wolf {
 
-template< typename Serializer>
+template<typename Serializer>
 class tcp_out : public plugin {
  public:
   tcp_out(const not_event_option<std::string> &host, const not_event_option<std::string> &port)
       : plugin(),
-      io_context_(),
-      socket_(io_context_),
-      host(host->get_value()),
-      port(port->get_value()) {
+        io_context_(),
+        socket_(io_context_),
+        host(host->get_value()),
+        port(port->get_value()) {
     socket_ = asio::ip::tcp::socket(io_context_);
   }
 

@@ -10,8 +10,8 @@ using namespace cppkafka;
 int main() {
   // Create the config
   Configuration config = {
-      { "metadata.broker.list", "localhost:9092" },
-      { "compression.type", "gzip" }
+      {"metadata.broker.list", "localhost:9092"},
+      {"compression.type", "gzip"}
   };
 
   // Create the producer
@@ -32,7 +32,9 @@ int main() {
   auto t1 = Clock::now();
   int total = 10000000;
   for (int i = 0; i < total; ++i) {
-    string t = "dnafeogdfkpanfrjkgojdosdfmtodnofpenfjlkandfoasnangjrgpokp[dewopirdnlvkdnczkds[pkeopjegknd,mc;laskd[pietoprjndlsnalslkdf[pkafepkgwwrg'wef.ejoisefmaekfopkepjigsrngvkjadfiojeiotlakjrglkjafelknzs,fmnarlkj[tasnkfsjdfghkjgkasjfhaujhfakjbfvarkjnfaeknfaekjnfakjgnkjadnfkjnafskjfnakgjnakjfnadfkjnasdkfjnavr[iiojdflkmzv" + to_string(i);
+    string t =
+        "dnafeogdfkpanfrjkgojdosdfmtodnofpenfjlkandfoasnangjrgpokp[dewopirdnlvkdnczkds[pkeopjegknd,mc;laskd[pietoprjndlsnalslkdf[pkafepkgwwrg'wef.ejoisefmaekfopkepjigsrngvkjadfiojeiotlakjrglkjafelknzs,fmnarlkj[tasnkfsjdfghkjgkasjfhaujhfakjbfvarkjnfaeknfaekjnfakjgnkjadnfkjnafskjfnakgjnakjfnadfkjnasdkfjnavr[iiojdflkmzv"
+            + to_string(i);
 //    strings.push_back(t);
     producer.produce(MessageBuilder("test").partition(0).payload(t));
   }
@@ -41,6 +43,6 @@ int main() {
 
   auto t2 = Clock::now();
   std::cout << "Delta t2-t1: "
-    << 1000*total/std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
-    << " mili" << std::endl;
+            << 1000 * total / std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()
+            << " mili" << std::endl;
 }

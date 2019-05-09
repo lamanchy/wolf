@@ -11,7 +11,7 @@
 namespace wolf {
 
 class normalize_nlog_logs : public plugin {
-protected:
+ protected:
   void process(json &&message) override {
     message["@timestamp"] = extras::convert_time(message["time"].as<std::string>());
     message.erase("time");
