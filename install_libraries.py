@@ -88,7 +88,7 @@ for build_type in ["Debug", "Release"]:
 
 
     def copy_headers(name, extend=""):
-        print "copying %s header files" % name
+        print("copying %s header files" % name)
         lib_path = os.path.join("submodules", name)
         destination_path = os.path.join(include_path, extend)
         if not os.path.exists(destination_path):
