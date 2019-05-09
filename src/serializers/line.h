@@ -18,6 +18,7 @@ class line : public serializer {
   }
 
   void deserialize(std::string &&string, const std::function<void(json &&)> &fn) override {
+    std::lock_guard<std::mutex> lg(m);
     auto begin = string.begin();
     auto mark = string.begin();
     auto end = string.end();
@@ -43,6 +44,7 @@ class line : public serializer {
   }
  private:
   std::string previous;
+  std::mutex m;
 
 };
 

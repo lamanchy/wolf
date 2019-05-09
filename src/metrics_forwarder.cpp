@@ -11,6 +11,7 @@
 #include <plugins/http_out.h>
 #include <plugins/string_to_json.h>
 #include <plugins/stats.h>
+#include <serializers/plain.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
           }
       ),
       create<stats>(),
-      create<collate>(),
+      create<collate<plain>>(),
       create<http_out>(influx_ip, "8086", "/write?db=metric_db")
   );
 

@@ -8,7 +8,10 @@
 #include <base/plugins/plugin.h>
 namespace wolf {
 
-class drop : public plugin {};
+class drop : public plugin {
+ protected:
+  void process(json &&message) override {}
+};
 
 }
 

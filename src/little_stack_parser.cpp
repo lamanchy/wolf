@@ -27,6 +27,9 @@
 #include <plugins/stream_sort.h>
 #include <plugins/elapsed.h>
 #include <plugins/drop.h>
+#include <serializers/compressed.h>
+#include <serializers/plain.h>
+#include <serializers/deserialize.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -40,7 +43,7 @@ int main(int argc, char *argv[]) {
           }
       )->register_output(
           create<stats>(),
-          create<collate>(),
+          create<collate<plain>>(),
           create<http_out>("localhost", "8086", "/write?db=metric_db")
       );
 
@@ -54,9 +57,10 @@ int main(int argc, char *argv[]) {
   );
 
   p.register_plugin(
-      create<tcp_in<line>>(
+      create<tcp_in<compressed>>(
           p.option<command<unsigned short>>("input_port", "Input port")
       ),
+      create<deserialize<line>>(),
       create<string_to_json>(),
 
       create<filter>(

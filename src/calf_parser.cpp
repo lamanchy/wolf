@@ -15,6 +15,9 @@
 #include <whereami/whereami.h>
 #include <serializers/plain.h>
 #include <plugins/cout.h>
+#include <plugins/compress.h>
+#include <serializers/compressed.h>
+#include <plugins/collate.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -40,10 +43,13 @@ int main(int argc, char *argv[]) {
   logger.info("max_loglevel: " + max_loglevel);
 
   std::function<plugin::pointer(std::string)> out;
-  plugin::pointer tcp = create<tcp_out<line>>(
-      p.option<constant<std::string>>(output_ip),
-      p.option<constant<std::string>>("9070")
-  );
+  plugin::pointer tcp =
+      create<collate<line>>(60, 1000)->register_output(
+          create<tcp_out<compressed>>(
+              p.option<constant<std::string>>(output_ip),
+              p.option<constant<std::string>>("9070")
+          )
+      );
 
   if (output == "kafka") {
     out = [&](std::string type) {
