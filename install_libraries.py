@@ -13,10 +13,10 @@ def is_linux():
 def is_win():
     return not is_linux()
 
+cmake = "cmake"
+if len(sys.argv) > 1:
+    cmake = sys.argv[1]
 
-cmake = r"C:\Program Files\JetBrains\CLion 2018.3\bin\cmake\win\bin\cmake.exe"
-if is_linux():
-    cmake = "cmake"
 
 compiler = "Visual Studio 15 2017 Win64"
 if is_linux():
@@ -88,7 +88,7 @@ for build_type in ["Debug", "Release"]:
 
 
     def copy_headers(name, extend=""):
-        print "copying %s header files" % name
+        print("copying %s header files" % name)
         lib_path = os.path.join("submodules", name)
         destination_path = os.path.join(include_path, extend)
         if not os.path.exists(destination_path):
@@ -119,7 +119,7 @@ for build_type in ["Debug", "Release"]:
         except OSError:
             pass
 
-        print "installing " + name
+        print("installing " + name)
 
         os.mkdir(build_path)
         os.chdir(build_path)
@@ -135,7 +135,7 @@ for build_type in ["Debug", "Release"]:
                             "-DCMAKE_INSTALL_PREFIX=" + target_path,
                             '-DCMAKE_CXX_FLAGS_RELEASE=' + " ".join([('/MT /O2 /DNDEBUG' if is_win() else '')] + extra_flags),
                             '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
-                            '-DCMAKE_CXX_FLAGS_DEBUG' + " ".join(['=/MTd' if is_win() else ''] + extra_flags),
+                            '-DCMAKE_CXX_FLAGS_DEBUG=' + " ".join(['=/MTd' if is_win() else ''] + extra_flags),
                             '-DCMAKE_C_FLAGS_DEBUG=/MTd' if is_win() else '',
                             '-DCMAKE_BUILD_TYPE=' + build_type,
                             # "-DCMAKE_C_COMPILER=" + c_compiler,
@@ -182,6 +182,6 @@ for build_type in ["Debug", "Release"]:
 try:
     shutil.rmtree("submodules")
 except OSError as e:
-    print e
+    print(e)
     pass
 

@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from wolf_test_base import WolfTestBase
+from tests.end_to_end_tests.wolf_test_base import WolfTestBase
 
 
 class ParserTest(WolfTestBase):

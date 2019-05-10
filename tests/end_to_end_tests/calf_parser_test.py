@@ -2,7 +2,7 @@ import socket
 import unittest
 from time import sleep
 
-from wolf_test_base import WolfTestBase
+from tests.end_to_end_tests.wolf_test_base import WolfTestBase
 
 
 class CalfParserTest(WolfTestBase):

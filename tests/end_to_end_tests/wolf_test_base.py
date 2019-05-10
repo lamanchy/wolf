@@ -62,7 +62,7 @@ class WolfTestBase(unittest.TestCase):
                 continue
 
             except socket.error:
-                print "tcp listener error occured"
+                print("tcp listener error occured")
                 break
 
         conn.close()
@@ -184,7 +184,7 @@ class WolfTestBase(unittest.TestCase):
             try:
                 stdout_objects.append(json.loads(line))
             except ValueError:
-                print line
+                print(line)
                 raise
 
         for line in stderr.split('\n'):
