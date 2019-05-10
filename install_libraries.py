@@ -6,6 +6,10 @@ import subprocess
 import sys
 import zipfile
 
+from urllib import request
+
+
+
 def is_linux():
     return sys.platform == "linux" or sys.platform == "linux2"
 
@@ -59,15 +63,7 @@ def get_libs():
             subprocess.call(["git", "checkout", lib["tag"]])
         os.chdir("..")
 
-    if is_linux():
-        subprocess.call(["wget", "-q", "https://dl.bintray.com/boostorg/release/1.69.0/source/%s.tar.gz" % boost_version])
-        subprocess.call(["tar", "-xf", "%s.tar.gz" % boost_version])
-    else:
-        command = r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe (new-object System.Net.WebClient).DownloadFile('https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.zip', 'boost_1_69_0.zip')"
-        subprocess.call(command, shell=True)
-        boost = zipfile.ZipFile("boost_1_69_0.zip", "r")
-        boost.extractall(".")
-        boost.close()
+    request.urlretrieve('https://dl.bintray.com/boostorg/release/1.69.0/source/%s.zip' % boost_version, "%s.zip" % boost_version)
 
     os.chdir(BASE_DIR)
 
