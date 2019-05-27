@@ -21,7 +21,7 @@ do
 
     cmake --build ${build_path} -- -j 4 || exit 1
 
-    python ${basepath}/tests/run_all_tests.py ${build_path_part} || exit 1
+    python3 ${basepath}/tests/run_all_tests.py ${build_path_part} || exit 1
 
     cmake --build ${build_path} --target install -- -j 4
 done

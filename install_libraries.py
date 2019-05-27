@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import shutil
@@ -63,7 +63,15 @@ def get_libs():
             subprocess.call(["git", "checkout", lib["tag"]])
         os.chdir("..")
 
-    request.urlretrieve('https://dl.bintray.com/boostorg/release/1.69.0/source/%s.zip' % boost_version, "%s.zip" % boost_version)
+
+    if is_linux():
+        subprocess.call(["wget", "-q", "https://dl.bintray.com/boostorg/release/1.69.0/source/%s.tar.gz" % boost_version])
+        subprocess.call(["tar", "-xf", "%s.tar.gz" % boost_version])
+    else:
+        request.urlretrieve('https://dl.bintray.com/boostorg/release/1.69.0/source/%s.zip' % boost_version, "%s.zip" % boost_version)
+        boost = zipfile.ZipFile("boost_1_69_0.zip", "r")
+        boost.extractall(".")
+        boost.close()
 
     os.chdir(BASE_DIR)
 
