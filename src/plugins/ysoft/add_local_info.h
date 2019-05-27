@@ -26,7 +26,11 @@ class add_local_info : public plugin {
   }
 
   void process(json &&message) override {
-    message["host"] = asio::ip::host_name();
+    auto host = message.find("host");
+    if (host == nullptr) {
+      message["host"] = asio::ip::host_name();
+    }
+
     message["group"] = group;
     auto component = message.find("component");
     if (component == nullptr) {
