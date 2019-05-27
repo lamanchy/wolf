@@ -117,9 +117,6 @@ class pipeline {
     setenv("STXXLERRLOGFILE", (Logger::logging_dir + "stxxl.errlog").c_str(), 1);
 #endif
 
-    if(const char* env_p = std::getenv("STXXLERRLOGFILE"))
-      std::cout << "Your STXXLERRLOGFILE is: " << env_p << '\n';
-
     stxxl::config *cfg = stxxl::config::get_instance();
     // create a disk_config structure.
     stxxl::disk_config disk(path + "queue.tmp", 0, path[path.size() - 1] == '/' ? "syscall" : "wincall");
