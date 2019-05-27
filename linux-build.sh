@@ -2,9 +2,9 @@
 
 basepath="$(cd "$(dirname "$0")"; pwd -P)"
 
-if [[ "$(sudo docker images -q wolf 2> /dev/null)" == "" ]]; then
+# if [[ "$(sudo docker images -q wolf 2> /dev/null)" == "" ]]; then
   sudo docker build -t wolf ${basepath}/linux;
-fi
+# fi
 
 sudo docker run --rm -v ${basepath}:/wolf wolf;
 

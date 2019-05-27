@@ -106,6 +106,22 @@ class pipeline {
     config_dir = this->option<command<std::string>>("config_dir", "Path to configs", "", path)->get_value();
 
     logger.info("Configuring STXXL");
+
+    std::string * s = new std::string("dasd");
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+    putenv(&std::string("STXXLLOGFILE=" + logging_dir + "stxxl.log")[0]);
+    putenv(&std::string("STXXLERRLOGFILE=" + logging_dir + "stxxl.errlog")[0]);
+
+#else
+    setenv("STXXLLOGFILE", (Logger::logging_dir + "stxxl.log").c_str(), 1);
+    setenv("STXXLERRLOGFILE", (Logger::logging_dir + "stxxl.errlog").c_str(), 1);
+
+    if(const char* env_p = std::getenv("STXXLERRLOGFILE"))
+      std::cout << "Your STXXLERRLOGFILE is: " << env_p << '\n';
+#endif
+
+
     stxxl::config *cfg = stxxl::config::get_instance();
     // create a disk_config structure.
     stxxl::disk_config disk(path + "queue.tmp", 0, path[path.size() - 1] == '/' ? "syscall" : "wincall");
@@ -114,6 +130,7 @@ class pipeline {
     disk.delete_on_exit = true;
     disk.direct = stxxl::disk_config::DIRECT_TRY;
     cfg->add_disk(disk);
+
     logger.info("Pipeline initialized");
   }
 

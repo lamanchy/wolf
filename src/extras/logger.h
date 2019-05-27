@@ -82,7 +82,6 @@ class Logger {
   std::ofstream info_file_;
   std::ofstream trace_file_;
   static std::atomic<bool> initialized;
-  static std::string logging_dir;
   std::mutex lock;
 
   static void do_log(std::ostream &stream, const std::string &level, std::string const &message) {
@@ -90,6 +89,7 @@ class Logger {
   }
 
  public:
+  static std::string logging_dir;
   Logger(Logger const &) = delete;
   void operator=(Logger const &) = delete;
 };

@@ -15,8 +15,6 @@ namespace wolf {
 template<typename T>
 class command : public not_event_option_type<T> {
  public:
-  Logger &logger = Logger::getLogger();
-
   command(std::string name, std::string desc, std::string help = "", std::string default_value = "") :
       name(std::move(name)),
       desc(std::move(desc)),
