@@ -110,17 +110,15 @@ class pipeline {
     std::string * s = new std::string("dasd");
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-    putenv(&std::string("STXXLLOGFILE=" + logging_dir + "stxxl.log")[0]);
-    putenv(&std::string("STXXLERRLOGFILE=" + logging_dir + "stxxl.errlog")[0]);
-
+    _putenv_s("STXXLLOGFILE", (Logger::logging_dir + "stxxl.log").c_str());
+    _putenv_s("STXXLERRLOGFILE", (Logger::logging_dir + "stxxl.errlog").c_str());
 #else
     setenv("STXXLLOGFILE", (Logger::logging_dir + "stxxl.log").c_str(), 1);
     setenv("STXXLERRLOGFILE", (Logger::logging_dir + "stxxl.errlog").c_str(), 1);
+#endif
 
     if(const char* env_p = std::getenv("STXXLERRLOGFILE"))
       std::cout << "Your STXXLERRLOGFILE is: " << env_p << '\n';
-#endif
-
 
     stxxl::config *cfg = stxxl::config::get_instance();
     // create a disk_config structure.
