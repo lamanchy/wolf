@@ -11,10 +11,7 @@ namespace wolf {
 
 class mutexed_plugin : public plugin {
  protected:
-  void prepare(json &&message) override {
-    std::lock_guard<std::mutex> lg(lock);
-    process(std::move(message));
-  }
+  void prepare(json &&message) override;
 
   std::mutex lock;
 };

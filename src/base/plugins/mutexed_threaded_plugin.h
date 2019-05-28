@@ -10,25 +10,12 @@ namespace wolf {
 
 class mutexed_threaded_plugin : public threaded_plugin {
  protected:
-  void prepare(json &&message) override {
-    std::lock_guard<std::mutex> lg(lock);
-    process(std::move(message));
-  }
+  void prepare(json &&message) override;
 
   virtual void locked_loop() {}
   virtual void unlocked_loop() {}
 
-  void run() override {
-    {
-      std::lock_guard<std::mutex> lg(lock);
-      setup();
-    }
-    while (is_running()) {
-      unlocked_loop();
-      std::lock_guard<std::mutex> lg(lock);
-      locked_loop();
-    }
-  }
+  void run() override;
 
   std::mutex lock;
 

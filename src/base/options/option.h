@@ -15,20 +15,9 @@ class base_option {};
 
 class options {
  public:
-  options(int argc, char *argv[]) :
-      g_opts(argv[0], " - example command line options"),
-      argc(argc),
-      argv(argv) {
-    g_opts.add_options()("h,help", "Prints help");
-    cxxopts::Options opts("");
-    opts.add_options("")("h,help", "Prints help", cxxopts::value<bool>(_should_print_help));
-    opts.allow_unrecognised_options();
-    auto r = options::parse_opts(opts, argc, argv);
-  }
+  options(int argc, char *argv[]);
 
-  void print_help() {
-    Logger::getLogger().info(g_opts.help(g_opts.groups()));
-  }
+  void print_help();
 
   bool should_print_help() {
     return _should_print_help;
@@ -56,14 +45,7 @@ class options {
   std::vector<std::shared_ptr<base_option>> all_options;
   bool _should_print_help;
 
-  static cxxopts::ParseResult parse_opts(cxxopts::Options &opts, int argc, char **argv) {
-    try {
-      return opts.parse(argc, argv);
-    } catch (const cxxopts::OptionException &e) {
-      Logger::getLogger().error("Error parsing options: " + std::string(e.what()));
-      exit(1);
-    }
-  }
+  static cxxopts::ParseResult parse_opts(cxxopts::Options &opts, int argc, char **argv);
 };
 
 template<typename T>

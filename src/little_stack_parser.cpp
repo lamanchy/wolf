@@ -23,7 +23,7 @@
 #include <plugins/http_out.h>
 #include <plugins/collate.h>
 #include <plugins/stats.h>
-#include <base/json_to_influx.h>
+#include <json_to_influx.h>
 #include <plugins/stream_sort.h>
 #include <plugins/elapsed.h>
 #include <plugins/drop.h>

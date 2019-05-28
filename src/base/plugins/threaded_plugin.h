@@ -17,30 +17,15 @@ class threaded_plugin : public plugin {
 
   threaded_plugin() : plugin() {}
 
-  void start() override {
-    running = true;
-    thread = std::thread(&threaded_plugin::run, this);
-  }
+  void start() override;
 
-  void end_loop() {
-    running = false;
-  }
+  void end_loop();
 
-  void stop() override {
-    end_loop();
-    thread.join();
-  }
+  void stop() override;
 
-  bool is_running() override {
-    return running;
-  }
+  bool is_running() override;
 
-  virtual void run() {
-    setup();
-    while (is_running()) {
-      loop();
-    }
-  }
+  virtual void run();
 
 };
 

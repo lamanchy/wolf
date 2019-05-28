@@ -21,7 +21,7 @@
 #include <base/options/command.h>
 #include <base/options/event.h>
 #include <plugins/kafka_in.h>
-#include <base/json_to_influx.h>
+#include <json_to_influx.h>
 #include <plugins/stats.h>
 
 int main(int argc, char *argv[]) {

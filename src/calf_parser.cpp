@@ -15,7 +15,6 @@
 #include <whereami/whereami.h>
 #include <serializers/plain.h>
 #include <plugins/cout.h>
-#include <plugins/compress.h>
 #include <serializers/compressed.h>
 #include <plugins/collate.h>
 

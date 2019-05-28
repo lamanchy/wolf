@@ -134,5 +134,94 @@ bool plugin::process_buffer() {
   return true;
 
 }
+void plugin::safe_prepare(json &&message) {
+  try {
+    prepare(std::move(message));
+  } catch (std::exception &ex) {
+    logger.error("error in " + std::string(typeid(*this).name()) +
+        " when processing message: " + std::string(ex.what()));
+  }
+}
+bool plugin::are_outputs_full() {
+  if (plugin::persistent)
+    return is_full();
+
+  if (is_full())
+    return true;
+
+  for (auto &output : outputs) {
+    if (output.second->are_outputs_full()) return true;
+  }
+  return false;
+}
+
+void plugin::process_back_queue_front() {
+//      const unsigned batch_size = 64;
+//      std::queue<json> q;
+//      while (q.size() < batch_size and not back_queue.empty()) {
+//        q.push(std::move(back_queue.front()));
+//        back_queue.pop();
+//      }
+//      back_queue_mutex.unlock();
+//      while (not q.empty()) {
+//        safe_prepare(q.front());
+//        q.pop();
+//      }
+
+  json message = std::move(back_queue.front());
+  back_queue.pop();
+  back_queue_mutex.unlock();
+  safe_prepare(std::move(message));
+}
+void plugin::receive(json &&message) {
+  if (plugin::is_thread_processor && !is_full()) {
+    safe_prepare(std::move(message));
+  } else {
+    buffer(std::move(message));
+  }
+}
+void plugin::buffer(json &&message) {
+  front_queue_mutex.lock();
+
+  if (not plugin::persistent) {
+    while (front_queue.size() >= plugin::buffer_size - 2) {
+      front_queue_mutex.unlock();
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      if (plugin::is_thread_processor && !is_full()) {
+        safe_prepare(std::move(message));
+        return;
+      }
+      front_queue_mutex.lock();
+    }
+  }
+  front_queue.push(message);
+
+//    if (front_queue.size() < plugin::buffer_size - 1) front_queue.push(message);
+  if (front_queue.size() >= plugin::buffer_size) {
+    empty_front_queue(); // unlocks fqm
+    return;
+  }
+  front_queue_mutex.unlock();
+}
+std::string plugin::get_serialized_size(size_t size) {
+  std::string result;
+  result.reserve(4);
+  while (size > 0) {
+    result.push_back((char) (size % string_serializer_divisor));
+    size /= string_serializer_divisor;
+  }
+  result.push_back(string_serializer_end);
+  return result;
+}
+size_t plugin::get_deserialized_size(std::string serialized_form) {
+  size_t result = 0;
+  size_t base = 1;
+  serialized_form.pop_back();
+  for (char &c : serialized_form) {
+    result += c * base;
+    base *= string_serializer_divisor;
+  }
+  return result;
+}
 
 }

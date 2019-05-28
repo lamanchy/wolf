@@ -16,18 +16,29 @@ execute_process(COMMAND ${CMAKE_SOURCE_DIR}/install_libraries.py)
 file(LOCK ${CMAKE_SOURCE_DIR}/lib DIRECTORY RELEASE)
 
 set(SOURCE_FILES
-        src/base/plugins/plugin.h
-        src/base/plugins/plugin.cpp
-        src/base/pipeline.h
-        src/base/plugins/threaded_plugin.h
-        src/whereami/whereami.c
-        src/whereami/whereami.h
-        src/plugins/generator.h src/plugins/cout.h src/plugins/tcp_in.h src/base/serializer.h src/serializers/line.h src/plugins/string_to_json.h src/base/json.h src/plugins/kafka_out.h src/base/plugins/mutexed_plugin.h src/plugins/collate.h src/plugins/ysoft/normalize_nlog_logs.h src/extras/convert_time.h src/plugins/ysoft/normalize_log4j2_logs.h src/plugins/ysoft/normalize_serilog_logs.h src/plugins/ysoft/add_local_info.h src/plugins/json_to_string.h src/plugins/tcp_out.h src/plugins/lambda.h src/extras/logger.h src/extras/logger.cpp src/plugins/kafka_in.h src/plugins/http_out.h src/plugins/stats.h src/base/plugins/mutexed_threaded_plugin.h src/extras/get_time.h src/plugins/stream_sort.h src/extras/get_executable_path.h src/plugins/elapsed.h src/plugins/cin.h src/base/options/option.h src/base/options/constant.h src/base/options/event.h src/base/options/command.h src/plugins/regex.h src/plugins/ysoft/get_elapsed_preevents.h src/plugins/ysoft/count_logs.h src/serializers/plain.h src/base/json_to_influx.h src/plugins/filter.h src/plugins/drop.h src/plugins/compress.h src/serializers/compressed.h src/serializers/serialize.h src/serializers/deserialize.h)
+        src/base/plugins/plugin.h src/base/plugins/plugin.cpp src/base/pipeline.h src/base/pipeline.cpp
+        src/base/plugins/threaded_plugin.h src/whereami/whereami.c src/whereami/whereami.h
+        src/plugins/generator.h src/plugins/cout.h src/plugins/tcp_in.h src/base/serializer.h src/serializers/line.h
+        src/plugins/string_to_json.h src/base/json.h src/plugins/kafka_out.h src/base/plugins/mutexed_plugin.h
+        src/plugins/collate.h src/plugins/ysoft/normalize_nlog_logs.h src/extras/convert_time.h
+        src/plugins/ysoft/normalize_log4j2_logs.h src/plugins/ysoft/normalize_serilog_logs.h
+        src/plugins/ysoft/add_local_info.h src/plugins/json_to_string.h src/plugins/tcp_out.h src/plugins/lambda.h
+        src/extras/logger.h src/extras/logger.cpp src/plugins/kafka_in.h src/plugins/http_out.h src/plugins/stats.h
+        src/base/plugins/mutexed_threaded_plugin.h src/extras/get_time.h src/plugins/stream_sort.h
+        src/extras/get_executable_path.h src/plugins/elapsed.h src/plugins/cin.h src/base/options/option.h
+        src/base/options/constant.h src/base/options/event.h src/base/options/command.h src/plugins/regex.h
+        src/plugins/ysoft/get_elapsed_preevents.h src/plugins/ysoft/count_logs.h src/serializers/plain.h
+        src/json_to_influx.h src/plugins/filter.h src/plugins/drop.h
+        src/serializers/compressed.h src/serializers/serialize.h src/serializers/deserialize.h
+        src/base/plugins/threaded_plugin.cpp src/base/plugins/threaded_plugin.h
+        src/base/plugins/mutexed_threaded_plugin.cpp src/base/plugins/mutexed_threaded_plugin.h
+        src/base/plugins/mutexed_plugin.cpp src/base/plugins/mutexed_plugin.h src/serializers/compressed.cpp
+        src/serializers/compressed.h src/base/options/option.cpp src/base/options/option.h src/extras/convert_time.cpp src/extras/convert_time.h src/extras/get_executable_path.cpp src/extras/get_executable_path.h src/extras/get_time.cpp src/extras/get_time.h src/serializers/line.cpp src/serializers/line.h)
 
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
     if (WIN32)
-        set(LIBRARIES re2.lib cppkafka.lib rdkafka.lib zlibstaticd.lib stxxl_debug.lib rdkafka++.lib )
+        set(LIBRARIES re2.lib cppkafka.lib rdkafka.lib zlibstaticd.lib stxxl_debug.lib rdkafka++.lib)
         set(DIR_POSTFIX windows-debug)
     elseif (UNIX)
         set(LIBRARIES libre2.a libcppkafka.a librdkafka.a libstxxl_debug.a libz.a librdkafka++.a)
@@ -61,15 +72,15 @@ foreach (target ${TARGETS})
     if (${target} STREQUAL parser)
         install(FILES configs/parsers DESTINATION ${target}-${DIR_POSTFIX}/)
         install(FILES configs/elapsed DESTINATION ${target}-${DIR_POSTFIX}/)
-    endif()
+    endif ()
     if (${target} STREQUAL little_stack_parser)
         install(FILES configs/parsers DESTINATION ${target}-${DIR_POSTFIX}/)
         install(FILES configs/elapsed DESTINATION ${target}-${DIR_POSTFIX}/)
-    endif()
+    endif ()
 endforeach ()
 
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Release)
     # empty target for clion to setup set of upload scripts, only in release
     add_custom_target(upload)
-endif()
+endif ()

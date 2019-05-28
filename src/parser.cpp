@@ -21,7 +21,7 @@
 #include <plugins/ysoft/count_logs.h>
 #include <plugins/kafka_in.h>
 #include <base/options/event.h>
-#include <base/json_to_influx.h>
+#include <json_to_influx.h>
 #include <plugins/collate.h>
 #include <plugins/http_out.h>
 #include <plugins/elapsed.h>
