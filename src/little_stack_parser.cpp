@@ -102,11 +102,11 @@ int main(int argc, char *argv[]) {
       ),
 
       create<count_logs>(
-          std::vector<std::string>({"logId", "host", "group", "level", "component"})
+          std::vector<std::string>({"logId", "host", "group", "level", "component", "spocGuid"})
       )->register_stats_output(
           create<json_to_influx>(
               "logs_count",
-              std::vector<std::string>({"logId", "host", "group", "level", "component"}),
+              std::vector<std::string>({"logId", "host", "group", "level", "component", "spocGuid"}),
               std::vector<std::string>({"count"}),
               "@timestamp"
           ),

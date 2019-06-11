@@ -26,8 +26,9 @@ class count_logs : public mutexed_threaded_plugin {
     std::string key;
 
     for (std::string &field : fields) {
-      key += message.find(field)->get_string();
-      key += ":";
+      auto ptr = message.find(field);
+      if (ptr != nullptr)
+        key += ptr->get_string() + ":";
     }
     auto nanos = extras::string_to_time(message["@timestamp"].get_string()).time_since_epoch();
     key += std::to_string(std::chrono::duration_cast<std::chrono::minutes>(nanos).count());
@@ -39,7 +40,9 @@ class count_logs : public mutexed_threaded_plugin {
       json &item = storage.find(key)->second;
 
       for (std::string &field : fields) {
-        item[field] = message.find(field)->get_string();
+        auto ptr = message.find(field);
+        if (ptr != nullptr)
+          item[field] = ptr->get_string();
       }
 
       item["@timestamp"] = message["@timestamp"].get_string();
