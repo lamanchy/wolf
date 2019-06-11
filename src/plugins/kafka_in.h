@@ -32,7 +32,7 @@ class kafka_in : public threaded_plugin {
         {"metadata.broker.list", broker_list},
         {"group.id", group_id},
         {"client.id", group_id},
-        {"auto.offset.reset", "earliest"},
+        {"auto.offset.reset", "latest"},
         {"queued.max.messages.kbytes", 64},
         {"fetch.max.bytes", 64 * 1024},
         {"enable.auto.commit", true}

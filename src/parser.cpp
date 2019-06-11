@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
       create<kafka_in>(
           "^unified_logs-.*",
           brokers,
-          "parser-test"
+          "parser"
       ),
       create<string_to_json>(),
       create<regex>(regex::parse_file(p.get_config_dir() + "parsers")),
