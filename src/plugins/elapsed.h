@@ -47,6 +47,7 @@ class elapsed : public mutexed_threaded_plugin {
             {"duration", (extras::string_to_time(message["@timestamp"].get_string())
                 - extras::string_to_time(start->second["@timestamp"].get_string())).count()},
         };
+        out.metadata = start->second.metadata;
 
         output(std::move(out));
 
@@ -62,15 +63,17 @@ class elapsed : public mutexed_threaded_plugin {
               it->second.metadata["elapsed_inserted_time"].get_signed()
       ) > std::chrono::nanoseconds(std::chrono::seconds(max_seconds_to_keep)).count()
           ) {
-        expired_output({
-                           {"start_time", it->second["@timestamp"]},
-                           {"type", "metrics"},
-                           {"status", "expired"},
-                           {"start_host", it->second["host"]},
-                           {"group", it->second["group"]},
-                           {"elapsedId", it->second["elapsedId"]},
-                           {"uniqueId", it->second["uniqueId"]},
-                       });
+        json out = {
+            {"start_time", it->second["@timestamp"]},
+            {"type", "metrics"},
+            {"status", "expired"},
+            {"start_host", it->second["host"]},
+            {"group", it->second["group"]},
+            {"elapsedId", it->second["elapsedId"]},
+            {"uniqueId", it->second["uniqueId"]},
+        };
+        out.metadata = it->second.metadata;
+        expired_output(std::move(out));
         storage.erase(it++);
       } else {
         ++it;

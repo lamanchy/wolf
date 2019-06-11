@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   logger.info("es_ip: " + es_ip);
 
   p.register_plugin(
-      create<kafka_in>("^parsed_logs-.*", bootstrap_servers, "logs_forwarder"),
+      create<kafka_in>("^parsed_logs-.*", bootstrap_servers, "forwarder-logs"),
       create<lambda>(
           [](json &message) {
             const std::string &topic = message.metadata["topic"].get_string();
