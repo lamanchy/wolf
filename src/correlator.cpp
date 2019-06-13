@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     in = create<kafka_in>(
         p.option<constant<std::string>>("^correlation_data-.*")->get_value(),
         broker_list,
-        p.option<constant<std::string>>("correlator")->get_value()
+        p.option<constant<std::string>>("wolf_correlator4")->get_value()
     );
     out = create<kafka_out>(
         p.option<event<std::string>>("output", true), 12, broker_list

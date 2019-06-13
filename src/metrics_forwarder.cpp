@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   logger.info("influx_ip: " + influx_ip);
 
   p.register_plugin(
-      create<kafka_in>("^metrics-.*", bootstrap_servers, "metrics_forwarder_test"),
+      create<kafka_in>("^metrics-.*", bootstrap_servers, "wolf_metrics_forwarder4"),
       create<string_to_json>(),
       create<lambda>(
           [](json &message) {

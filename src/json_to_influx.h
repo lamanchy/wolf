@@ -46,7 +46,8 @@ class json_to_influx : public plugin {
         if (it->is_string_type()) {
           res << '\"' << it->get_string() << '\"';
         } else if (it->is_integer()) {
-          res << it->get_signed() << "i";
+//          res << it->get_signed() << "i"; i commented out because of old data, it raises conversion error
+          res << it->get_signed();
         } else if (it->is_double()) {
           res << it->get_double();
         } else if (it->is_boolean()) {
