@@ -167,37 +167,42 @@ class http_out : public threaded_plugin {
 
 
       // Receive the HTTP response
-      socket_.async_read_some(asio::streambuf::mutable_buffers_type(result.prepare(64)),
-                              std::bind(
-                                  &session::on_read,
-                                  shared_from_this(),
-                                  std::placeholders::_1,
-                                  std::placeholders::_2)
+      asio::async_read_until(socket_, result, "\r\n\r\n", std::bind(
+          &session::on_read,
+          shared_from_this(),
+          std::placeholders::_1,
+          std::placeholders::_2)
       );
     }
 
     void on_read(
         asio::error_code ec,
         std::size_t bytes_transferred) {
-//      boost::ignore_unused(bytes_transferred);
-
-//      result.commit(bytes_transferred);
-//
-//      if (bytes_transferred != 0) {
-//        on_write(ec, 0);
-//        std::cout << "next write" << std::endl;
-//
-//        asio::streambuf::const_buffers_type bufs = result.data();
-//        auto str = std::string(asio::buffers_begin(bufs), asio::buffers_begin(bufs) + result.size());
-//        std::cout << "size " << result.size() << ", transfered: " << bytes_transferred << ", string size: " << str.size() << std::endl;
-//        std::cout << str << std::endl;
-//        return;
-//      }
+      result.commit(bytes_transferred);
 
       if (ec) {
         logger.warn("http out read error: " + ec.message());
         retry();
         return;
+      }
+
+      std::istream response_stream(&result);
+      std::string http_version;
+      response_stream >> http_version;
+      unsigned int status_code;
+      response_stream >> status_code;
+      std::string status_message;
+      std::getline(response_stream, status_message);
+      if (!response_stream || http_version.substr(0, 5) != "HTTP/") {
+        logger.error("Invalid http response");
+      }
+      else if (status_code != 200 and status_code != 201 and status_code != 202 and status_code != 203 and status_code != 204) {
+        asio::streambuf::const_buffers_type bufs = result.data();
+        auto str = std::string(asio::buffers_begin(bufs), asio::buffers_begin(bufs) + bytes_transferred);
+        std::cout << "size " << result.size() << ", transfered: " << bytes_transferred << ", string size: " << str.size() << std::endl;
+
+        logger.error("Http response not in 200-204");
+        logger.error(str);
       }
 
       // Gracefully close the socket
