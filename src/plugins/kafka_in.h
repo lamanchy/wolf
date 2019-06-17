@@ -32,10 +32,13 @@ class kafka_in : public threaded_plugin {
         {"metadata.broker.list", broker_list},
         {"group.id", group_id},
         {"client.id", group_id},
-        {"auto.offset.reset", "latest"},
+        {"auto.offset.reset", "earliest"},
         {"queued.max.messages.kbytes", 64},
         {"fetch.max.bytes", 64 * 1024},
-        {"enable.auto.commit", true}
+        {"enable.auto.commit", true},
+        {"heartbeat.interval.ms", 10000},
+        {"session.timeout.ms", 20000},
+        {"metadata.max.age.ms", 300000}
     };
 
     // Create the consumer

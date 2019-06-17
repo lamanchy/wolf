@@ -23,7 +23,7 @@ class kafka_out : public plugin {
 //        ,
 //        { "topic.metadata.refresh.interval.ms", 20000 }
         ,
-        {"debug", "broker,topic,msg"},
+//        {"debug", "broker,topic,msg"},
         {"linger.ms", "1000"}
     };
   }
