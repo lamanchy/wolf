@@ -76,12 +76,11 @@ class regex : public plugin {
       re2::RE2 &regex = *regexes.at(min_i).second;
 
       const int submatches_count = 1 + regex.NumberOfCapturingGroups();
-      // TODO memory leak?
-      re2::StringPiece *submatches = new re2::StringPiece[submatches_count];
+      std::unique_ptr<re2::StringPiece[]> submatches(new re2::StringPiece[submatches_count]);
 
       regex.Match(
           message["message"].get_string(), 0, message["message"].get_string().length(),
-          re2::RE2::UNANCHORED, submatches, submatches_count);
+          re2::RE2::UNANCHORED, submatches.get(), submatches_count);
 
       for (auto &pair : regex.NamedCapturingGroups()) {
         message[pair.first] = std::string(submatches[pair.second].data(), submatches[pair.second].length());
