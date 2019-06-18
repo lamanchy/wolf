@@ -134,22 +134,33 @@ for build_type in ["Debug", "Release"]:
 
         # subprocess.call(["set", r"PATH=C:\Program_Files\mingw-w64\x86_64-8.1.0-posix-sjlj-rt_v6-rev0\mingw64\bin;%PATH%"])
 
-        subprocess.call([
-                            cmake,
-                            "-DCMAKE_INSTALL_PREFIX=" + target_path,
-                            '-DCMAKE_CXX_FLAGS_RELEASE=' + " ".join([('/MT /O2 /DNDEBUG' if is_win() else '')] + extra_flags),
-                            '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
-                            ('-DCMAKE_CXX_FLAGS_DEBUG=' + " ".join((['/MTd'] if is_win() else []) + extra_flags)) if len((['/MTd'] if is_win() else []) + extra_flags) > 0 else ''
-                            '-DCMAKE_C_FLAGS_DEBUG=/MTd' if is_win() else '',
-                            '-DCMAKE_BUILD_TYPE=' + build_type,
-                            # "-DCMAKE_C_COMPILER=" + c_compiler,
-                            # "-DCMAKE_CXX_COMPILER=" + cpp_compiler,
-                            # "-DCMAKE_MAKE_PROGRAM=" + make,
-                            "-G", compiler,
-                            lib_path,
-                        ] + args)
+        command = [
+            cmake,
+            "-DCMAKE_INSTALL_PREFIX=" + target_path,
+            '-DCMAKE_BUILD_TYPE=' + build_type
+        ]
+        cxx_flags_release = ['/MT', '/O2', '/DNDEBUG'] if is_win() else []
+        cxx_flags_release += extra_flags
+        if len(cxx_flags_release) > 0:
+            command.append('-DCMAKE_CXX_FLAGS_RELEASE=' + " ".join(cxx_flags_release))
+        if is_win():
+            command.append('-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG')
 
-        # subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", build_type, "--", "-j", "4"])
+        cxx_flags_debug = ['/MTd'] if is_win() else []
+        cxx_flags_debug += extra_flags
+        if len(cxx_flags_debug) > 0:
+            command.append('-DCMAKE_CXX_FLAGS_DEBUG=' + " ".join(cxx_flags_debug))
+        if is_win():
+            command.append('-DCMAKE_C_FLAGS_DEBUG=/MTd')
+
+        command += [
+            "-G", compiler,
+            lib_path
+        ]
+
+        command += args
+
+        subprocess.call(command)
         subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", build_type])
 
         os.chdir(BASE_DIR)
