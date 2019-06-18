@@ -2,6 +2,8 @@
 // Created by lamanchy on 27.5.19.
 //
 
+#include <chrono>
+#include <ctime>
 #include "get_time.h"
 
 std::string wolf::extras::get_date() {

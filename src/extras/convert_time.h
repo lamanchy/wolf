@@ -5,6 +5,7 @@
 #ifndef WOLF_CONVERT_TIME_H
 #define WOLF_CONVERT_TIME_H
 
+#include <iso646.h>
 #include <vector>
 #include <string>
 #include <algorithm>

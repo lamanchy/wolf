@@ -2,6 +2,7 @@
 // Created by lamanchy on 27.5.19.
 //
 
+#include <iso646.h>
 #include <gzip/compress.hpp>
 #include <gzip/decompress.hpp>
 #include "compressed.h"
