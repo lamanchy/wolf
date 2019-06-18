@@ -134,12 +134,26 @@ for build_type in ["Debug", "Release"]:
 
         # subprocess.call(["set", r"PATH=C:\Program_Files\mingw-w64\x86_64-8.1.0-posix-sjlj-rt_v6-rev0\mingw64\bin;%PATH%"])
 
+        print(" ".join([
+                           cmake,
+                           "-DCMAKE_INSTALL_PREFIX=" + target_path,
+                           '-DCMAKE_CXX_FLAGS_RELEASE=' + " ".join([('/MT /O2 /DNDEBUG' if is_win() else '')] + extra_flags),
+                           '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
+                           '-DCMAKE_CXX_FLAGS_DEBUG=' + " ".join(['=/MTd' if is_win() else ''] + extra_flags),
+                           '-DCMAKE_C_FLAGS_DEBUG=/MTd' if is_win() else '',
+                           '-DCMAKE_BUILD_TYPE=' + build_type,
+                           # "-DCMAKE_C_COMPILER=" + c_compiler,
+                           # "-DCMAKE_CXX_COMPILER=" + cpp_compiler,
+                           # "-DCMAKE_MAKE_PROGRAM=" + make,
+                           "-G", compiler,
+                           lib_path,
+                           ] + args))
         subprocess.call([
                             cmake,
                             "-DCMAKE_INSTALL_PREFIX=" + target_path,
                             '-DCMAKE_CXX_FLAGS_RELEASE=' + " ".join([('/MT /O2 /DNDEBUG' if is_win() else '')] + extra_flags),
                             '-DCMAKE_C_FLAGS_RELEASE=/MT /O2 /DNDEBUG' if is_win() else '',
-                            '-DCMAKE_CXX_FLAGS_DEBUG=' + " ".join(['=/MTd' if is_win() else ''] + extra_flags),
+                            ('-DCMAKE_CXX_FLAGS_DEBUG=' + " ".join((['/MTd'] if is_win() else []) + extra_flags)) if len((['/MTd'] if is_win() else []) + extra_flags) > 0 else ''
                             '-DCMAKE_C_FLAGS_DEBUG=/MTd' if is_win() else '',
                             '-DCMAKE_BUILD_TYPE=' + build_type,
                             # "-DCMAKE_C_COMPILER=" + c_compiler,
@@ -169,7 +183,7 @@ for build_type in ["Debug", "Release"]:
     install_lib("zlib")
     install_lib("cxxopts")
     install_lib("stxxl", [],
-                extra_flags=["/D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=OFF" if is_win() else ""])
+                extra_flags=["/D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=OFF"] if is_win() else None)
     install_lib("librdkafka",
                 ["-DRDKAFKA_BUILD_STATIC=ON",
                 "-DRDKAFKA_BUILD_EXAMPLES=OFF",
