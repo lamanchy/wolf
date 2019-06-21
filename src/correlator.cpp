@@ -23,20 +23,12 @@
 #include <plugins/kafka_in.h>
 #include <json_to_influx.h>
 #include <plugins/stats.h>
+#include <plugins/time_sort.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
 
   pipeline p = pipeline(argc, argv, false);
-
-  plugin::pointer sort_by_time = create<stream_sort>(
-      [](const json &lhs, const json &rhs) -> bool {
-        return lhs.find("@timestamp")->get_string() > rhs.find("@timestamp")->get_string();
-      },
-      stream_sort::ready_after(std::chrono::seconds(
-          p.option<command<int>>("stream_sort_seconds", "Seconds to wait with each event", "", "60")->get_value()
-      ))
-  );
 
   plugin::pointer in, out, common_processing;
 
@@ -81,7 +73,7 @@ int main(int argc, char *argv[]) {
             message.metadata["output"] = "metrics-" + message["group"].get_string();
           }
       ),
-      sort_by_time,
+      create<time_sort>(p.option<command<int>>("stream_sort_seconds", "Seconds to wait with each event", "", "10")->get_value()),
       create<elapsed>(max_seconds_to_keep)->register_expired_output(
           create<json_to_influx>(
               "elapsed",
