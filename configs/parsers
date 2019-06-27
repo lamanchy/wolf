@@ -33,5 +33,6 @@ attemptingToPrint:^Attempting to print jobId=(?P<JobId>(?:[+-]?(?:[0-9]+)))
 terminalServerSending:^Sending: .*PrintService.printAll.*"userName":"(?P<userName>\b\w+\b)".*
 spocLoadingJobTickets:^Loading job tickets for .* (?P<userName>\b\w+\b)
 spocSendingPrintRequest:^Sending print request (?P<requestId>\S+)
+managementGetNewJobsReceived:^Received request message: GetNewJobsByUsersRequestMessage[senderServerGuid=(?P<spocGuid>\S+),.*
 start_stuff:^starting stuff (?P<myId>(?:[+-]?(?:[0-9]+)))
 stop_stuff:^(?P<myId>(?:[+-]?(?:[0-9]+))) end stuff
