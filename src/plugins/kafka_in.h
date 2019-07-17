@@ -37,7 +37,7 @@ class kafka_in : public threaded_plugin {
         {"fetch.max.bytes", 64 * 1024},
         {"enable.auto.commit", true},
         {"heartbeat.interval.ms", 10000},
-        {"session.timeout.ms", 20000},
+        {"session.timeout.ms", 50000},
         {"metadata.max.age.ms", 300000}
     };
 
