@@ -30,6 +30,8 @@
 #include <serializers/compressed.h>
 #include <serializers/plain.h>
 #include <serializers/deserialize.h>
+#include <serializers/serialize.h>
+#include <plugins/file_out.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -112,7 +114,10 @@ int main(int argc, char *argv[]) {
           ),
           metrics_output
       ),
-      create<drop>()
+      create<json_to_string>(),
+      create<collate<line>>(60, 1000),
+      create<serialize<compressed>>(),
+      create<file_out>("logs_archive")
   );
 
   p.run();

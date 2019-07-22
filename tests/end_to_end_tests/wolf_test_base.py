@@ -126,19 +126,19 @@ class WolfTestBase(unittest.TestCase):
             self._kill_wolf()
             raise AssertionError("Wolf ended with %s rc, stdout:\n%s\nstderr:\n%s" % (
                 self.wolf.returncode,
-                self.wolf.stdout.read(),
-                self.wolf.stderr.read()
+                self.wolf.stdout.read().decode(),
+                self.wolf.stderr.read().decode()
             ))
 
         self.check_wolf_output()
 
     def json_to_input(self, input):
-        if isinstance(input, basestring): return input + "\n"
+        if isinstance(input, str): return input + "\n"
         if not isinstance(input, list): input = [input]
         return "".join([json.dumps(i) + "\n" for i in input])
 
     def stdin_write(self, input):
-        self.wolf.stdin.write(self.json_to_input(input))
+        self.wolf.stdin.write(self.json_to_input(input).encode())
 
     def tcp_write(self, port, input):
         host = socket.gethostname()
@@ -154,7 +154,7 @@ class WolfTestBase(unittest.TestCase):
                 sleep(0.1)
                 continue
 
-        s.sendall(self.json_to_input(input))
+        s.sendall(self.json_to_input(input).encode())
         s.close()
 
     def stdout_contains(self, obj):

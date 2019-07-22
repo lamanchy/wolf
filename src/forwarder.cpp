@@ -12,6 +12,12 @@
 #include <plugins/string_to_json.h>
 #include <plugins/stats.h>
 #include <serializers/plain.h>
+#include <plugins/copy.h>
+#include <plugins/json_to_string.h>
+#include <serializers/line.h>
+#include <serializers/serialize.h>
+#include <serializers/compressed.h>
+#include <plugins/file_out.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -30,6 +36,11 @@ int main(int argc, char *argv[]) {
 
   p.register_plugin(
       create<kafka_in>("^parsed_logs-.*", bootstrap_servers, "wolf_logs_forwarder5"),
+      create<copy>()->register_copy_output(
+          create<collate<line>>(60, 1000),
+          create<serialize<compressed>>(),
+          create<file_out>("logs_archive")
+      ),
       create<lambda>(
           [](json &message) {
             const std::string &topic = message.metadata["topic"].get_string();
