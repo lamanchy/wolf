@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import zipfile
@@ -194,9 +195,13 @@ for build_type in ["Debug", "Release"]:
                 "-DCPPKAFKA_DISABLE_TESTS=ON",]
                 )
 
+
+def del_rw(action, name, exc):
+    os.chmod(name, stat.S_IWRITE)
+    os.remove(name)
+
 try:
-    shutil.rmtree("submodules")
+    shutil.rmtree("submodules", onerror=del_rw)
 except OSError as e:
     print(e)
     pass
-
