@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
           metrics_output
       ),
       create<json_to_string>(),
-      create<collate<line>>(60, 1000),
+      create<collate<line>>(300, 1000),
       create<serialize<compressed>>(),
       create<file_out>("logs_archive")
   );

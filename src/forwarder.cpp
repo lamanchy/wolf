@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
   p.register_plugin(
       create<kafka_in>("^parsed_logs-.*", bootstrap_servers, "wolf_logs_forwarder5"),
       create<copy>()->register_copy_output(
-          create<collate<line>>(60, 1000),
+          create<collate<line>>(300, 1000),
           create<serialize<compressed>>(),
           create<file_out>("logs_archive")
       ),
