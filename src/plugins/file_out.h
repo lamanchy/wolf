@@ -15,7 +15,7 @@ class file_out : public mutexed_threaded_plugin {
  public:
   explicit file_out(std::string file_name) : file_name(std::move(file_name)) {
     current_date = extras::get_date();
-    file.open(get_file_name(), std::ios_base::app);
+    file.open(get_file_name(), std::ios_base::app | std::ios_base::binary);
   }
 
  protected:
