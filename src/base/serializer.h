@@ -6,6 +6,7 @@
 #define WOLF_SERIALIZER_H
 
 #include "json.h"
+#include "extras/logger.h"
 
 namespace wolf {
 
@@ -14,6 +15,9 @@ class serializer {
   virtual std::string serialize(json &&json) = 0;
 
   virtual void deserialize(std::string &&string, const std::function<void(json && )> &fn) = 0;
+
+ protected:
+  Logger & logger = Logger::getLogger();
 };
 
 }
