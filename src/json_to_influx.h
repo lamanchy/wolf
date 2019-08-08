@@ -44,7 +44,7 @@ class json_to_influx : public plugin {
 
         res << escape(field, ",= ") << "=";
         if (it->is_string_type()) {
-          res << '\"' << it->get_string() << '\"';
+          res << '\"' << escape(it->get_string(), "\"") << '\"';
         } else if (it->is_integer()) {
           res << it->get_signed() << "i";
         } else if (it->is_double()) {
