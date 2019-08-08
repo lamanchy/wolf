@@ -8,9 +8,10 @@ namespace wolf {
 
 void threaded_plugin::run() {
   setup();
-  while (is_running()) {
+  while (loop_running) {
     loop();
   }
+  running = false;
 }
 void threaded_plugin::stop() {
   end_loop();
@@ -18,10 +19,11 @@ void threaded_plugin::stop() {
 }
 void threaded_plugin::start() {
   running = true;
+  loop_running = true;
   thread = std::thread(&threaded_plugin::run, this);
 }
 void threaded_plugin::end_loop() {
-  running = false;
+  loop_running = false;
 }
 bool threaded_plugin::is_running() {
   return running;

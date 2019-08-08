@@ -9,6 +9,7 @@ namespace wolf {
 class threaded_plugin : public plugin {
  protected:
   std::atomic<bool> running{false};
+  std::atomic<bool> loop_running{false};
   std::thread thread;
 
   virtual void setup() {}
@@ -19,7 +20,7 @@ class threaded_plugin : public plugin {
 
   void start() override;
 
-  void end_loop();
+  virtual void end_loop();
 
   void stop() override;
 

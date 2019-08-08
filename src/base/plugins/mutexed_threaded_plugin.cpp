@@ -15,7 +15,7 @@ void mutexed_threaded_plugin::run() {
     std::lock_guard<std::mutex> lg(lock);
     setup();
   }
-  while (is_running()) {
+  while (loop_running) {
     unlocked_loop();
     std::lock_guard<std::mutex> lg(lock);
     locked_loop();
