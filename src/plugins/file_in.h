@@ -31,6 +31,7 @@ class file_in : public threaded_plugin {
       });
 
     }
+    std::this_thread::sleep_for(std::chrono::minutes(1));
     end_loop();
   }
 

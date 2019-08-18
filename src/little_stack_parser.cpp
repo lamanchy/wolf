@@ -114,10 +114,33 @@ int main(int argc, char *argv[]) {
           ),
           metrics_output
       ),
-      create<json_to_string>(),
-      create<collate<line>>(300, 1000),
-      create<serialize<compressed>>(),
-      create<file_out>("logs_archive")
+      // send logs to influx as well
+      create<lambda>(
+          [](json &message) {
+            json copy(message);
+            copy.erase("message");
+            copy.erase("@timestamp");
+            copy.erase("logId");
+            copy.erase("host");
+            copy.erase("group");
+            copy.erase("level");
+            copy.erase("component");
+            message["message"].assign_string(std::string(message["message"].get_string()) + " " + tao::json::to_string(copy));
+          }
+      ),
+      create<json_to_influx>(
+          "logs",
+          std::vector<std::string>({"logId", "host", "group", "level", "component"}),
+          std::vector<std::string>({"message"}),
+          "@timestamp"
+      ),
+      create<lambda>(
+          [](json &message) {
+            message.assign_string(std::string(message.get_string() + "\n"));
+          }
+      ),
+      create<collate<plain>>(1, 1000),
+      create<http_out>("localhost", "8086", "/write?db=log_db")
   );
 
   p.run();
