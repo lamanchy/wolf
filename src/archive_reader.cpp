@@ -61,7 +61,7 @@ int main(int argc, char ** argv) {
       ),
       create<collate<plain>>(1, 1000),
 //      create<cout>()
-      create<http_out>("10.0.122.138", "8086", "/write?db=log_db")
+      create<http_out>("localhost", "8086", "/write?db=log_db")
   );
 
   p.run();
