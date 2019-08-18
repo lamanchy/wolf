@@ -29,15 +29,6 @@ int main(int argc, char ** argv) {
       create<string_to_json>(),
       create<lambda>(
           [](json &message) {
-//            std::string m = message["message"].get_string();
-//            if (m.length() > 100) {
-//              std::string title;
-//              for (auto c : m) {
-//                if (c == '<' or c == '>') continue;
-//                if (c == '"') c = '\'';
-//              }
-//              std::string title = str.erase(std::remove(str.begin(), str.end(), 'a'), str.end());
-//            }
             json copy(message);
             copy.erase("message");
             copy.erase("@timestamp");
@@ -46,13 +37,24 @@ int main(int argc, char ** argv) {
             copy.erase("group");
             copy.erase("level");
             copy.erase("component");
-            message["message"].assign_string(std::string(message["message"].get_string()) + " " + tao::json::to_string(copy));
+            std::string rest;
+
+            for (const auto& key : copy.get_object()) {
+              if (rest.length() > 0)
+                rest += ", ";
+
+              if (key.second.is_null())
+                continue;
+
+              rest += key.first + ": " + tao::json::to_string(key.second);
+            }
+            message["rest"] = rest;
           }
       ),
       create<json_to_influx>(
           "logs",
           std::vector<std::string>({"logId", "host", "group", "level", "component"}),
-          std::vector<std::string>({"message"}),
+          std::vector<std::string>({"message", "rest"}),
           "@timestamp"
           ),
       create<lambda>(

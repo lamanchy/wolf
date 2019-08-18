@@ -125,7 +125,18 @@ int main(int argc, char *argv[]) {
             copy.erase("group");
             copy.erase("level");
             copy.erase("component");
-            message["message"].assign_string(std::string(message["message"].get_string()) + " " + tao::json::to_string(copy));
+            std::string rest;
+
+            for (const auto& key : copy.get_object()) {
+              if (rest.length() > 0)
+                rest += ", ";
+
+              if (key.second.is_null())
+                continue;
+
+              rest += key.first + ": " + tao::json::to_string(key.second);
+            }
+            message["rest"] = rest;
           }
       ),
       create<json_to_influx>(
