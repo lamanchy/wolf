@@ -21,6 +21,7 @@ int main(int argc, char ** argv) {
   pipeline p = pipeline(argc, argv, false);
 
   std::string file_name = p.option<command<std::string>>("file_name", "File to load")->get_value();
+  std::string output_ip = p.option<command<std::string>>("output_ip", "Ip of influx", "", "localhost")->get_value();
 
   p.register_plugin(
       create<file_in<compressed>>(file_name),
@@ -61,7 +62,7 @@ int main(int argc, char ** argv) {
       ),
       create<collate<plain>>(1, 1000),
 //      create<cout>()
-      create<http_out>("localhost", "8086", "/write?db=log_db")
+      create<http_out>(output_ip, "8086", "/write?db=log_db")
   );
 
   p.run();
