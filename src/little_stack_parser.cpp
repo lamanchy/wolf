@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
       create<json_to_influx>(
           "logs",
           std::vector<std::string>({"logId", "host", "group", "level", "component"}),
-          std::vector<std::string>({"message"}),
+          std::vector<std::string>({"message", "rest"}),
           "@timestamp"
       ),
       create<lambda>(
