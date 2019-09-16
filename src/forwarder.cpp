@@ -36,11 +36,11 @@ int main(int argc, char *argv[]) {
 
   p.register_plugin(
       create<kafka_in>("^parsed_logs-.*", bootstrap_servers, "wolf_logs_forwarder5"),
-      create<copy>()->register_copy_output(
-          create<collate<line>>(300, 1000),
-          create<serialize<compressed>>(),
-          create<file_out>("logs_archive")
-      ),
+//      create<copy>()->register_copy_output(
+//          create<collate<line>>(300, 1000),
+//          create<serialize<compressed>>(),
+//          create<file_out>("logs_archive")
+//      ),
       create<lambda>(
           [](json &message) {
             const std::string &topic = message.metadata["topic"].get_string();
