@@ -9,10 +9,10 @@ else
 fi
 
 # if [[ "$(sudo docker images -q wolf 2> /dev/null)" == "" ]]; then
-  sudo docker build -t wolf ${basepath}/linux;
+  sudo -S docker build -t wolf ${basepath}/linux;
 # fi
 
-sudo docker run --rm -v ${mount_path}:/wolf wolf;
+sudo -S docker run --rm -v ${mount_path}:/wolf wolf;
 
 # docker created files are roots, well, it's hard to remove them then, you know
 find ${basepath} -user root -exec sudo chown -R $USER: {} +

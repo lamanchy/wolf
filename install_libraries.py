@@ -10,7 +10,6 @@ import zipfile
 from urllib import request
 
 
-
 def is_linux():
     return sys.platform == "linux" or sys.platform == "linux2"
 
@@ -18,9 +17,14 @@ def is_linux():
 def is_win():
     return not is_linux()
 
-cmake = "cmake"
+
+def dist_name():
+    return "win" if is_win() else "linux"
+
+
+build_source = "local"
 if len(sys.argv) > 1:
-    cmake = sys.argv[1]
+    build_source = sys.argv[1]
 
 
 compiler = "Visual Studio 15 2017 Win64"
@@ -29,10 +33,10 @@ if is_linux():
 
 boost_version = "boost_1_69_0"
 
-BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib')
+BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib', dist_name() + "-" + build_source)
 
 if not os.path.exists(BASE_DIR):
-    os.mkdir(BASE_DIR)
+    os.makedirs(BASE_DIR, exist_ok=True)
 
 
 def get_libs():
@@ -51,26 +55,28 @@ def get_libs():
         dict(name="cxxopts", git="https://github.com/jarro2783/cxxopts.git"),  # needs master
     ]
 
-    if not os.path.exists("submodules"):
-        os.mkdir("submodules")
+    if not os.path.exists("tmp"):
+        os.mkdir("tmp")
     else:
         return
 
-    os.chdir("submodules")
+    os.chdir("tmp")
     for lib in libs:
-        subprocess.call(["git", "clone", lib["git"], lib["name"]])
-        os.chdir(lib["name"])
+        print("clonning", lib['name'])
+        command = ["git", "clone", "-q"]
         if "tag" in lib:
-            subprocess.call(["git", "checkout", lib["tag"]])
-        os.chdir("..")
+            command += ["--branch", lib["tag"]]
+        command += ["--depth", "1", lib["git"], lib["name"]]
+        subprocess.call(command)
 
-
+    print("downloading and extracting boost")
+    base_url = "https://dl.bintray.com/boostorg/release/1.69.0/source"
     if is_linux():
-        subprocess.call(["wget", "-q", "https://dl.bintray.com/boostorg/release/1.69.0/source/%s.tar.gz" % boost_version])
+        subprocess.call(["wget", "-q", base_url + "/%s.tar.gz" % boost_version])
         subprocess.call(["tar", "-xf", "%s.tar.gz" % boost_version])
     else:
-        request.urlretrieve('https://dl.bintray.com/boostorg/release/1.69.0/source/%s.zip' % boost_version, "%s.zip" % boost_version)
-        boost = zipfile.ZipFile("boost_1_69_0.zip", "r")
+        request.urlretrieve(base_url + '/' + boost_version + '.zip', boost_version + ".zip")
+        boost = zipfile.ZipFile(boost_version + ".zip", "r")
         boost.extractall(".")
         boost.close()
 
@@ -94,7 +100,7 @@ for build_type in ["Debug", "Release"]:
 
     def copy_headers(name, extend=""):
         print("copying %s header files" % name)
-        lib_path = os.path.join("submodules", name)
+        lib_path = os.path.join("tmp", name)
         destination_path = os.path.join(include_path, extend)
         if not os.path.exists(destination_path):
             os.mkdir(destination_path)
@@ -118,7 +124,7 @@ for build_type in ["Debug", "Release"]:
         if extra_flags is None:
             extra_flags = []
 
-        lib_path = os.path.join(BASE_DIR, "submodules", name)
+        lib_path = os.path.join(BASE_DIR, "tmp", name)
         try:
             shutil.rmtree(build_path)
         except OSError:
@@ -136,7 +142,7 @@ for build_type in ["Debug", "Release"]:
         # subprocess.call(["set", r"PATH=C:\Program_Files\mingw-w64\x86_64-8.1.0-posix-sjlj-rt_v6-rev0\mingw64\bin;%PATH%"])
 
         command = [
-            cmake,
+            "cmake",
             "-DCMAKE_INSTALL_PREFIX=" + target_path,
             '-DCMAKE_BUILD_TYPE=' + build_type
         ]
@@ -162,7 +168,7 @@ for build_type in ["Debug", "Release"]:
         command += args
 
         subprocess.call(command)
-        subprocess.call([cmake, "--build", build_path, "--target", "install", "--config", build_type])
+        subprocess.call(["cmake", "--build", build_path, "--target", "install", "--config", build_type])
 
         os.chdir(BASE_DIR)
         shutil.rmtree(build_path)
@@ -177,22 +183,22 @@ for build_type in ["Debug", "Release"]:
                 ["-DRE2_BUILD_TESTING=OFF"])
     install_lib("taojson",
                 ["-DTAOCPP_JSON_BUILD_TESTS=OFF",
-                "-DTAOCPP_JSON_BUILD_EXAMPLES=OFF"])
+                 "-DTAOCPP_JSON_BUILD_EXAMPLES=OFF"])
     install_lib("zlib")
     install_lib("cxxopts")
     install_lib("stxxl", [],
                 extra_flags=["/D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=OFF"] if is_win() else None)
     install_lib("librdkafka",
                 ["-DRDKAFKA_BUILD_STATIC=ON",
-                "-DRDKAFKA_BUILD_EXAMPLES=OFF",
-                "-DRDKAFKA_BUILD_TESTS=OFF"]
+                 "-DRDKAFKA_BUILD_EXAMPLES=OFF",
+                 "-DRDKAFKA_BUILD_TESTS=OFF"]
                 )
     install_lib("cppkafka",
                 ["-DRDKAFKA_ROOT_DIR=" + target_path,
-                "-DBOOST_ROOT=" + BASE_DIR,
-                "-DCPPKAFKA_RDKAFKA_STATIC_LIB=ON",
-                "-DCPPKAFKA_BUILD_SHARED=OFF",
-                "-DCPPKAFKA_DISABLE_TESTS=ON",]
+                 "-DBOOST_ROOT=" + BASE_DIR,
+                 "-DCPPKAFKA_RDKAFKA_STATIC_LIB=ON",
+                 "-DCPPKAFKA_BUILD_SHARED=OFF",
+                 "-DCPPKAFKA_DISABLE_TESTS=ON", ]
                 )
 
 
@@ -200,8 +206,9 @@ def del_rw(action, name, exc):
     os.chmod(name, stat.S_IWRITE)
     os.remove(name)
 
+
 try:
-    shutil.rmtree("submodules", onerror=del_rw)
+    shutil.rmtree("tmp", onerror=del_rw)
 except OSError as e:
     print(e)
     pass

@@ -17,7 +17,7 @@ do
     mkdir -p ${build_path}
     cd ${build_path}
 
-    cmake -DCMAKE_BUILD_TYPE=${build_type} -DCMAKE_INSTALL_PREFIX=${basepath}/bin -G "CodeBlocks - Unix Makefiles" ${basepath}
+    cmake -DCMAKE_BUILD_TYPE=${build_type} -DCMAKE_INSTALL_PREFIX=${basepath}/bin -DWOLF_BUILD_SOURCE=$build_path_part -G "CodeBlocks - Unix Makefiles" ${basepath}
 
     cmake --build ${build_path} -- -j 4 || exit 1
 

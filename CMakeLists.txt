@@ -10,9 +10,19 @@ elseif (WIN32)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 endif ()
 
-message(INFO Building libraries)
+message(Building libraries)
+if(NOT WOLF_BUILD_SOURCE)
+    set(WOLF_BUILD_SOURCE local)
+endif()
+
 file(LOCK ${CMAKE_SOURCE_DIR}/lib DIRECTORY)
-execute_process(COMMAND ${CMAKE_SOURCE_DIR}/install_libraries.py)
+if (WIN32)
+    execute_process(COMMAND python ${CMAKE_SOURCE_DIR}/install_libraries.py ${WOLF_BUILD_SOURCE})
+    set(LIB_PATH win-${WOLF_BUILD_SOURCE})
+elseif (UNIX)
+    execute_process(COMMAND ${CMAKE_SOURCE_DIR}/install_libraries.py ${WOLF_BUILD_SOURCE})
+    set(LIB_PATH linux-${WOLF_BUILD_SOURCE})
+endif()
 file(LOCK ${CMAKE_SOURCE_DIR}/lib DIRECTORY RELEASE)
 
 set(SOURCE_FILES
@@ -54,10 +64,10 @@ else ()
     endif ()
 endif ()
 
-list(TRANSFORM LIBRARIES PREPEND ${CMAKE_SOURCE_DIR}/lib/${CMAKE_BUILD_TYPE}/lib/)
+list(TRANSFORM LIBRARIES PREPEND ${CMAKE_SOURCE_DIR}/lib/${LIB_PATH}/${CMAKE_BUILD_TYPE}/lib/)
 
-include_directories(lib/${CMAKE_BUILD_TYPE}/include)
-link_directories(lib/${CMAKE_BUILD_TYPE}/lib)
+include_directories(lib/${LIB_PATH}/${CMAKE_BUILD_TYPE}/include)
+link_directories(lib/${LIB_PATH}/${CMAKE_BUILD_TYPE}/lib)
 include_directories(src)
 
 set(TARGETS calf_parser metrics_forwarder correlator parser little_stack_parser forwarder archive_reader)
@@ -78,9 +88,3 @@ foreach (target ${TARGETS})
         install(FILES configs/elapsed DESTINATION ${target}-${DIR_POSTFIX}/)
     endif ()
 endforeach ()
-
-
-if (${CMAKE_BUILD_TYPE} STREQUAL Release)
-    # empty target for clion to setup set of upload scripts, only in release
-    add_custom_target(upload)
-endif ()
