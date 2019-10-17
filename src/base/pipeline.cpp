@@ -7,20 +7,24 @@ std::string pipeline::config_dir;
 
 bool pipeline::initialized{false};
 
-pipeline::pipeline(int argc, char **argv, bool persistent) :
+pipeline::pipeline(int argc, char **argv) :
     opts(argc, argv),
     logger(Logger::getLogger(
-        opts.option<command<std::string>>("logging_dir", "Path to configs", "", wolf::extras::get_executable_dir()
+        opts.option<command<std::string>>("logging_dir", "Path to logs", "", wolf::extras::get_executable_dir()
         )->get_value())) {
-  plugin::persistent = persistent;
-  if (persistent)
-    plugin::buffer_size = 1024;
-  else
-    plugin::buffer_size = 128;
-
-  if (!initialized) {
-    initialize();
+  if (initialized) {
+    logger.error("Cannot create two pipelines.");
+    exit(0);
   }
+  initialized = true;
+
+  bool persistent = this->option<command<bool>>("persistent", "Can pipeline store events on disk?")->get_value();
+
+  plugin::persistent = persistent;
+  if (persistent) plugin::buffer_size = 1024;
+  else plugin::buffer_size = 128;
+
+  initialize();
 }
 void pipeline::run() {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
@@ -36,18 +40,15 @@ void pipeline::run() {
   logger.info("Pipeline stopped");
 }
 void pipeline::initialize() {
-  initialized = true;
   std::string path = extras::get_executable_dir();
 
   config_dir = this->option<command<std::string>>("config_dir", "Path to configs", "", path)->get_value();
 
   logger.info("Configuring STXXL");
 
-  std::string * s = new std::string("dasd");
-
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
   _putenv_s("STXXLLOGFILE", (Logger::logging_dir + "stxxl.log").c_str());
-    _putenv_s("STXXLERRLOGFILE", (Logger::logging_dir + "stxxl.errlog").c_str());
+  _putenv_s("STXXLERRLOGFILE", (Logger::logging_dir + "stxxl.errlog").c_str());
 #else
   setenv("STXXLLOGFILE", (Logger::logging_dir + "stxxl.log").c_str(), 1);
   setenv("STXXLERRLOGFILE", (Logger::logging_dir + "stxxl.errlog").c_str(), 1);
@@ -55,7 +56,8 @@ void pipeline::initialize() {
 
   stxxl::config *cfg = stxxl::config::get_instance();
   // create a disk_config structure.
-  stxxl::disk_config disk(path + "queue.tmp", 0, path[path.size() - 1] == '/' ? "syscall" : "wincall");
+  std::string fileio = path[path.size() - 1] == '/' ? "syscall" : "wincall";
+  stxxl::disk_config disk(path + "queue.tmp", 0, fileio);
   disk.autogrow = true;
   disk.unlink_on_open = true;
   disk.delete_on_exit = true;

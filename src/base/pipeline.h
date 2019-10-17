@@ -19,7 +19,7 @@ class pipeline {
   using pointer = plugin::pointer;
   Logger &logger;
 
-  pipeline(int argc, char *argv[], bool persistent = true);
+  pipeline(int argc, char *argv[]);
 
   pipeline(pipeline const &) = delete;
 

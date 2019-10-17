@@ -21,7 +21,7 @@
 int main(int argc, char *argv[]) {
   using namespace wolf;
 
-  pipeline p = pipeline(argc, argv, true);
+  pipeline p = pipeline(argc, argv);
   Logger &logger = p.logger;
 
   logger.info("Parsing command line arguments");
