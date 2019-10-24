@@ -42,14 +42,14 @@ int main(int argc, char *argv[]) {
       );
 
   if (output->get_value() == "kafka") {
-    out = [&](string type) {
+    out = [&](const string& type) {
       return make<kafka_out>(
           make<constant<string>>(type + "-" + group->get_value()),
           12,
           output_ip->get_value() + ":9092");
     };
   } else if (output->get_value() == "logstash") {
-    out = [&](string type) { return tcp; };
+    out = [&](const string& type) { return tcp; };
   }
 
   plugin::pointer common_processing =

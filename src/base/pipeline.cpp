@@ -44,27 +44,25 @@ void pipeline::setup_persistency() {
 
   std::string path = extras::get_executable_dir();
 
-  if (plugin::persistent) {
-    logger.info("Configuring STXXL");
+  logger.info("Configuring STXXL");
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-    _putenv_s("STXXLLOGFILE", (logger.get_logging_dir() + "stxxl.log").c_str());
-    _putenv_s("STXXLERRLOGFILE", (logger.get_logging_dir() + "stxxl.errlog").c_str());
+  _putenv_s("STXXLLOGFILE", (logger.get_logging_dir() + "stxxl.log").c_str());
+  _putenv_s("STXXLERRLOGFILE", (logger.get_logging_dir() + "stxxl.errlog").c_str());
 #else
-    setenv("STXXLLOGFILE", (logger.get_logging_dir() + "stxxl.log").c_str(), 1);
-    setenv("STXXLERRLOGFILE", (logger.get_logging_dir() + "stxxl.errlog").c_str(), 1);
+  setenv("STXXLLOGFILE", (logger.get_logging_dir() + "stxxl.log").c_str(), 1);
+  setenv("STXXLERRLOGFILE", (logger.get_logging_dir() + "stxxl.errlog").c_str(), 1);
 #endif
 
-    stxxl::config *cfg = stxxl::config::get_instance();
-    // create a disk_config structure.
-    std::string fileio = path[path.size() - 1] == '/' ? "syscall" : "wincall";
-    stxxl::disk_config disk(path + "queue.tmp", 0, fileio);
-    disk.autogrow = true;
-    disk.unlink_on_open = true;
-    disk.delete_on_exit = true;
-    disk.direct = stxxl::disk_config::DIRECT_TRY;
-    cfg->add_disk(disk);
-  }
+  stxxl::config *cfg = stxxl::config::get_instance();
+  // create a disk_config structure.
+  std::string fileio = path[path.size() - 1] == '/' ? "syscall" : "wincall";
+  stxxl::disk_config disk(path + "queue.tmp", 0, fileio);
+  disk.autogrow = true;
+  disk.unlink_on_open = true;
+  disk.delete_on_exit = true;
+  disk.direct = stxxl::disk_config::DIRECT_TRY;
+  cfg->add_disk(disk);
 }
 template<typename T>
 std::vector<T> pipeline::for_each_plugin(const std::function<T(plugin &)> &function) {
