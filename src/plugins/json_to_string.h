@@ -11,7 +11,7 @@ namespace wolf {
 
 class json_to_string : public plugin {
  public:
-  json_to_string(bool add_newline = false) : add_newline(add_newline) { }
+  json_to_string(bool add_newline = false) : add_newline(add_newline) {}
 
  protected:
   void process(json &&message) override {

@@ -12,7 +12,7 @@ template<typename Serializer>
 class deserialize : public plugin {
  protected:
   void process(json &&message) override {
-    s.deserialize(std::move(message.get_string()), [this](json&& out){
+    s.deserialize(std::move(message.get_string()), [this](json &&out) {
       output(std::move(out));
     });
   }

@@ -30,7 +30,7 @@ class options {
   }
 
   template<typename T, typename... Args>
-  std::shared_ptr<T> add_named(const std::string & group, Args &&... args) {
+  std::shared_ptr<T> add_named(const std::string &group, Args &&... args) {
     if (parsed)
       logger.fatal("Cannot add options after pipeline creation");
 

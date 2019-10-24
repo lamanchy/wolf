@@ -49,7 +49,7 @@ void Logger::do_log(std::ostream &stream, const std::string &level, std::string 
     stream << date::format("%F %T", std::chrono::system_clock::now()) << " " << level << " " << message << std::endl;
 }
 
-void Logger::set_logging_dir(const std::string& path) {
+void Logger::set_logging_dir(const std::string &path) {
   info_file_ = std::ofstream(path + "info.log", std::ofstream::out | std::ofstream::app);
   trace_file_ = std::ofstream(path + "trace.log", std::ofstream::out | std::ofstream::app);
   if (not info_file_ or not trace_file_) {

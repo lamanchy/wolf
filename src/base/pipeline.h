@@ -21,7 +21,7 @@ class pipeline {
   Logger &logger = Logger::getLogger();
 
   explicit pipeline(options opts);
-  pipeline(int argc, char ** argv) : pipeline(options(argc, argv)) {}
+  pipeline(int argc, char **argv) : pipeline(options(argc, argv)) {}
 
   pipeline(pipeline const &) = delete;
 

@@ -4,7 +4,7 @@
 
 #include "mutexed_threaded_plugin.h"
 
-namespace  wolf {
+namespace wolf {
 
 void mutexed_threaded_plugin::prepare(json &&message) {
   std::lock_guard<std::mutex> lg(lock);

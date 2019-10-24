@@ -48,7 +48,7 @@ class Logger {
   static void do_log(std::ostream &stream, const std::string &level, std::string const &message);
 
  public:
-  void set_logging_dir(const std::string& path);
+  void set_logging_dir(const std::string &path);
 
   Logger(Logger const &) = delete;
   void operator=(Logger const &) = delete;

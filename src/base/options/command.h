@@ -16,7 +16,7 @@ template<typename T>
 class command : public not_event_option_type<T> {
  public:
   command(std::string name, std::string desc, std::string default_value = "",
-      std::function<bool(const T &)> validator = [](const T &) { return true;}) :
+          std::function<bool(const T &)> validator = [](const T &) { return true; }) :
       name(std::move(name)),
       desc(std::move(desc)),
       validator(std::move(validator)),
@@ -29,9 +29,9 @@ class command : public not_event_option_type<T> {
   }
 
   std::string value_to_string() {
-      std::stringstream ss;
-      ss << value;
-      return ss.str();
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
   }
 
   void print_info() override {

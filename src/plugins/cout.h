@@ -7,7 +7,7 @@ namespace wolf {
 
 class cout : public mutexed_plugin {
  public:
-  explicit cout(bool print_metadata = false) : print_metadata(print_metadata) { }
+  explicit cout(bool print_metadata = false) : print_metadata(print_metadata) {}
 
   ~cout() {
     std::cout << std::flush;

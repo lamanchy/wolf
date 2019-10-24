@@ -73,7 +73,10 @@ int main(int argc, char *argv[]) {
             message.metadata["output"] = "metrics-" + message["group"].get_string();
           }
       ),
-      create<time_sort>(p.option<command<int>>("stream_sort_seconds", "Seconds to wait with each event", "", "10")->get_value()),
+      create<time_sort>(p.option<command<int>>("stream_sort_seconds",
+                                               "Seconds to wait with each event",
+                                               "",
+                                               "10")->get_value()),
       create<elapsed>(max_seconds_to_keep)->register_expired_output(
           create<json_to_influx>(
               "elapsed",

@@ -42,7 +42,7 @@ class generator : public threaded_plugin {
                     {"requestId", "0HLBTTFQC6TSJ:00000001"},
                     {"requestPath", "/spoolers/76838cee-bed6-4c3e-9e79-a8a800387473/job"},
                     {"sourceContext", "Spooler.Spooler"}
-    }));
+                }));
 //    output(json(std::string(
 //        "2018-06-21 16:40:00,092 pool-8-thread-1                  INFO icReportGeneratorJob                                               - Checking if there are unprocessed statistic report that must be generated and sent by an email or save to the file.")));
 //    std::cout << i << std::endl;

@@ -15,7 +15,7 @@
 #include <plugins/http_out.h>
 #include "json_to_influx.h"
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
   using namespace wolf;
 
   pipeline p = pipeline(argc, argv, false);
@@ -39,7 +39,7 @@ int main(int argc, char ** argv) {
             copy.erase("component");
             std::string rest;
 
-            for (const auto& key : copy.get_object()) {
+            for (const auto &key : copy.get_object()) {
               if (rest.length() > 0)
                 rest += ", ";
 
@@ -56,7 +56,7 @@ int main(int argc, char ** argv) {
           std::vector<std::string>({"logId", "host", "group", "level", "component"}),
           std::vector<std::string>({"message", "rest"}),
           "@timestamp"
-          ),
+      ),
       create<lambda>(
           [](json &message) {
             message.assign_string(std::string(message.get_string() + "\n"));

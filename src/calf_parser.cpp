@@ -26,16 +26,14 @@ int main(int argc, char *argv[]) {
   options opts = options(argc, argv);
   auto output = opts.add
       <command<string>>("output", "Type of output, kafka/logstash", "logstash",
-          [](const string& value) { return extras::is_in<string>(value, {"kafka", "logstash"}); });
+                        [](const string &value) { return extras::is_in<string>(value, {"kafka", "logstash"}); });
   auto output_ip = opts.add<command<string>>("output_ip", "Ip address of output", "localhost");
   auto output_port = opts.add<command<string>>("output_port", "Port of output", "9070");
   auto group = opts.add<command<string>>("group", "Define the group name", "default");
   auto max_loglevel = opts.add<command<string>>(
       "max_loglevel", "Define max loglevel, one of OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL", "INFO");
 
-
   pipeline p(opts);
-
 
   std::function<plugin::pointer(string)> out;
   plugin::pointer tcp =

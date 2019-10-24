@@ -11,14 +11,14 @@ namespace wolf {
 template<typename Serializer>
 class file_in : public threaded_plugin {
  public:
-  explicit file_in(const std::string& file_name) {
+  explicit file_in(const std::string &file_name) {
     file.open(file_name, std::ios_base::binary);
   }
 
  protected:
   void setup() override {
     size_t buffer_size = 256 * 1024;
-    char * buffer = new char[buffer_size];
+    char *buffer = new char[buffer_size];
 
     while (file) {
       file.read(buffer, buffer_size);

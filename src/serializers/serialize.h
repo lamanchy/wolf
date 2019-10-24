@@ -8,7 +8,6 @@
 #include <base/plugins/plugin.h>
 namespace wolf {
 
-
 template<typename Serializer>
 class serialize : public plugin {
  protected:

@@ -17,7 +17,7 @@ class serializer {
   virtual void deserialize(std::string &&string, const std::function<void(json && )> &fn) = 0;
 
  protected:
-  Logger & logger = Logger::getLogger();
+  Logger &logger = Logger::getLogger();
 };
 
 }

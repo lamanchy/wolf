@@ -195,11 +195,12 @@ class http_out : public threaded_plugin {
       std::getline(response_stream, status_message);
       if (!response_stream || http_version.substr(0, 5) != "HTTP/") {
         logger.error("Invalid http response");
-      }
-      else if (status_code != 200 and status_code != 201 and status_code != 202 and status_code != 203 and status_code != 204) {
+      } else if (status_code != 200 and status_code != 201 and status_code != 202 and status_code != 203
+          and status_code != 204) {
         asio::streambuf::const_buffers_type bufs = result.data();
         auto str = std::string(asio::buffers_begin(bufs), asio::buffers_begin(bufs) + bytes_transferred);
-        std::cout << "size " << result.size() << ", transfered: " << bytes_transferred << ", string size: " << str.size() << std::endl;
+        std::cout << "size " << result.size() << ", transfered: " << bytes_transferred << ", string size: "
+                  << str.size() << std::endl;
 
         logger.error("Http response not in 200-204");
         logger.error(str);

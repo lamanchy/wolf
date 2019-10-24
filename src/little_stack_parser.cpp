@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
             copy.erase("component");
             std::string rest;
 
-            for (const auto& key : copy.get_object()) {
+            for (const auto &key : copy.get_object()) {
               if (rest.length() > 0)
                 rest += ", ";
 

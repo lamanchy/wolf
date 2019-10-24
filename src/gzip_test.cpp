@@ -7,7 +7,7 @@
 #include <gzip/decompress.hpp>
 #include <base/pipeline.h>
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
 
   std::string s("ahoj");
   std::string s2("ahoj2");

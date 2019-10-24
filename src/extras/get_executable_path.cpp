@@ -25,7 +25,7 @@ std::vector<std::string> get_executable_path() {
   } else {
     throw std::runtime_error("coulndt get path");
   }
-  return std::vector<std::string> {dir_path, name, separator};
+  return std::vector<std::string>{dir_path, name, separator};
 }
 
 std::string wolf::extras::get_executable_dir() {

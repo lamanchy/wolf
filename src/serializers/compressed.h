@@ -12,7 +12,7 @@ namespace wolf {
 class compressed : public serializer {
  public:
   std::string serialize(json &&next) override;
-  void deserialize(std::string &&next, const std::function<void(json && )> &fn) override;
+  void deserialize(std::string &&next, const std::function<void(json &&)> &fn) override;
 
  private:
   bool is_gzip = false;
