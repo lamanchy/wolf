@@ -3,22 +3,11 @@
 //
 #include "logger.h"
 
-std::atomic<bool> Logger::initialized{false};
-Logger &Logger::getLogger(std::string log_dir) {
-  if (not initialized) {
-    if (log_dir.empty())
-      log_dir = wolf::extras::get_executable_dir();
-
-    setupLogger(log_dir);
-  }
-
-  static Logger instance(logging_dir);
+Logger &Logger::getLogger() {
+  static Logger instance;
   return instance;
 }
-void Logger::setupLogger(const std::string &ld) {
-  logging_dir = ld;
-  initialized = true;
-}
+
 void Logger::trace(std::string const &message) {
   std::lock_guard<std::mutex> lg(lock);
   do_log(std::cout, "TRACE", message);
@@ -47,15 +36,25 @@ void Logger::error(std::string const &message) {
   do_log(info_file_, "ERROR", message);
   do_log(trace_file_, "ERROR", message);
 }
-Logger::Logger(const std::string &log_dir)
-    : info_file_(log_dir + "wolf.log", std::ofstream::out | std::ofstream::app),
-      trace_file_(log_dir + "trace.log", std::ofstream::out | std::ofstream::app) {
+void Logger::fatal(std::string const &message) {
+  std::lock_guard<std::mutex> lg(lock);
+  do_log(std::cerr, "FATAL", message);
+  do_log(info_file_, "FATAL", message);
+  do_log(trace_file_, "FATAL", message);
+  exit(1);
+}
+
+void Logger::do_log(std::ostream &stream, const std::string &level, std::string const &message) {
+  if (stream)
+    stream << date::format("%F %T", std::chrono::system_clock::now()) << " " << level << " " << message << std::endl;
+}
+
+void Logger::set_logging_dir(const std::string& path) {
+  info_file_ = std::ofstream(path + "info.log", std::ofstream::out | std::ofstream::app);
+  trace_file_ = std::ofstream(path + "trace.log", std::ofstream::out | std::ofstream::app);
   if (not info_file_ or not trace_file_) {
     std::cerr << "Couldn't create log files!" << std::endl;
     exit(1);
   }
+  logging_dir = path;
 }
-void Logger::do_log(std::ostream &stream, const std::string &level, std::string const &message) {
-  stream << date::format("%F %T", std::chrono::system_clock::now()) << " " << level << " " << message << std::endl;
-}
-std::string Logger::logging_dir;

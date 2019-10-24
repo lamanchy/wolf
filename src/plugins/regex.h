@@ -20,15 +20,13 @@ class regex : public plugin {
       std::string error;
       int result = regex_set.Add(pair.second, &error);
       if (result == -1) {
-        logger.error(error);
-        exit(1);
+        logger.fatal(error);
       }
       regexes.insert(std::make_pair(result, std::make_pair(pair.first, std::make_shared<re2::RE2>(pair.second))));
     }
     int result = regex_set.Compile();
     if (result == false) {
-      logger.error("Regex set run out of memory");
-      exit(1);
+      logger.fatal("Regex set run out of memory");
     }
   }
 
@@ -49,15 +47,13 @@ class regex : public plugin {
 
         auto it = line.find(':');
         if (it == std::string::npos) {
-          Logger::getLogger().error("Cannot parsing file " + file_path + ", ':' is missing on line " + line);
-          exit(1);
+          Logger::getLogger().fatal("Cannot parsing file " + file_path + ", ':' is missing on line " + line);
         }
         result.emplace_back(line.substr(0, it), line.substr(it + 1));
       }
       file.close();
     } else {
-      Logger::getLogger().error("Cannot open file " + file_path + " for regexes.");
-      exit(1);
+      Logger::getLogger().fatal("Cannot open file " + file_path + " for regexes.");
     }
 
     return result;

@@ -17,9 +17,11 @@
 
 class Logger {
  public:
-  static Logger &getLogger(std::string log_dir = "");
+  std::string get_logging_dir() {
+    return logging_dir;
+  }
 
-  static void setupLogger(const std::string &ld);
+  static Logger &getLogger();
 
   void trace(std::string const &message);
 
@@ -31,20 +33,23 @@ class Logger {
 
   void error(std::string const &message);
 
- private:
-  Logger() = default;
+  void fatal(std::string const &message);
 
-  explicit Logger(const std::string &log_dir);
+ private:
+  Logger() {
+    set_logging_dir(wolf::extras::get_executable_dir());
+  }
 
   std::ofstream info_file_;
   std::ofstream trace_file_;
-  static std::atomic<bool> initialized;
   std::mutex lock;
+  std::string logging_dir;
 
   static void do_log(std::ostream &stream, const std::string &level, std::string const &message);
 
  public:
-  static std::string logging_dir;
+  void set_logging_dir(const std::string& path);
+
   Logger(Logger const &) = delete;
   void operator=(Logger const &) = delete;
 };

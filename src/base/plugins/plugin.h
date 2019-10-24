@@ -15,7 +15,7 @@
 #include <cxxopts.hpp>
 #include <thread>
 #include <extras/logger.h>
-#include "base/json.h"
+#include <base/json.h>
 
 namespace wolf {
 
@@ -167,7 +167,7 @@ class plugin : public std::enable_shared_from_this<plugin> {
 };
 
 template<typename T, typename... Args>
-std::shared_ptr<T> create(Args &&... args) {
+std::shared_ptr<T> make(Args &&... args) {
   return std::shared_ptr<T>(new T(std::forward<Args>(args)...));
 }
 

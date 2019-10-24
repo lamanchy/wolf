@@ -5,7 +5,7 @@
 #ifndef WOLF_MUTEXED_PLUGIN_H
 #define WOLF_MUTEXED_PLUGIN_H
 
-#include "plugin.h"
+#include <base/plugins/plugin.h>
 
 namespace wolf {
 

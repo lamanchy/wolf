@@ -3,8 +3,9 @@
 
 #include <csignal>
 #include <thread>
-#include "base/plugins/plugin.h"
-#include "base/options/option.h"
+#include <base/plugins/plugin.h>
+#include <plugins/drop.h>
+#include <base/options/option.h>
 #include <cxxopts.hpp>
 #include <base/options/constant.h>
 #include <base/options/command.h>
@@ -17,9 +18,10 @@ class pipeline {
 
  public:
   using pointer = plugin::pointer;
-  Logger &logger;
+  Logger &logger = Logger::getLogger();
 
-  pipeline(int argc, char *argv[]);
+  explicit pipeline(options opts);
+  pipeline(int argc, char ** argv) : pipeline(options(argc, argv)) {}
 
   pipeline(pipeline const &) = delete;
 
@@ -28,11 +30,6 @@ class pipeline {
   pipeline(pipeline &&) = default;
 
   pipeline &operator=(pipeline &&) = delete;
-
-  template<typename T, typename... Args>
-  std::shared_ptr<T> option(Args &&... args) {
-    return opts.option<T>(std::forward<Args>(args)...);
-  }
 
   template<typename... Args>
   void register_plugin(const pointer &plugin) {
@@ -58,10 +55,6 @@ class pipeline {
 
   void run();
 
-  bool will_print_help() {
-    return opts.should_print_help();
-  }
-
   std::string get_config_dir() {
     return config_dir;
   }
@@ -71,16 +64,10 @@ class pipeline {
   std::vector<std::thread> processors;
   unsigned number_of_processors = std::thread::hardware_concurrency();
   static bool initialized;
-  static std::string config_dir;
+  std::string config_dir;
 
-  void initialize();
-
-  void evaluate_options() {
-    if (opts.should_print_help()) {
-      opts.print_help();
-      exit(0);
-    }
-  }
+  void evaluate_options();
+  void setup_persistency();
 
   template<typename T>
   std::vector<T> for_each_plugin(const std::function<T(plugin &)> &function);
@@ -100,7 +87,6 @@ class pipeline {
   void wait();
 
   void stop();
-
 };
 
 }

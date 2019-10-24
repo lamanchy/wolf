@@ -3,55 +3,56 @@
 namespace wolf {
 
 std::atomic<int> pipeline::interrupt_received{0};
-std::string pipeline::config_dir;
 
 bool pipeline::initialized{false};
 
-pipeline::pipeline(int argc, char **argv) :
-    opts(argc, argv),
-    logger(Logger::getLogger(
-        opts.option<command<std::string>>("logging_dir", "Path to logs", "", wolf::extras::get_executable_dir()
-        )->get_value())) {
+pipeline::pipeline(options _opts) :
+    opts(std::move(_opts)) {
   if (initialized) {
-    logger.error("Cannot create two pipelines.");
+    logger.error("Pipeline already initialized, cannot create two pipelines.");
     exit(0);
   }
   initialized = true;
+  
+  evaluate_options();
+  setup_persistency();
 
-  bool persistent = this->option<command<bool>>("persistent", "Can pipeline store events on disk?")->get_value();
+  logger.info("Pipeline initialized");
 
-  plugin::persistent = persistent;
-  if (persistent) plugin::buffer_size = 1024;
-  else plugin::buffer_size = 128;
-
-  initialize();
+  // drop is just an empty plugin, condition is never true,
+  // however, without this line linker fails, I already spent
+  // too much time trying to fix that, so...
+  if (wolf::extras::get_separator().empty()) drop();
 }
+
 void pipeline::run() {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
   std::signal(SIGBREAK, catch_signal);
 #endif
   std::signal(SIGINT, catch_signal);
-  evaluate_options();
   logger.info("Starting pipeline");
   start();
   logger.info("Pipeline started");
   wait();
+  logger.info("Stopping pipeline");
   stop();
   logger.info("Pipeline stopped");
 }
-void pipeline::initialize() {
+void pipeline::setup_persistency() {
+  if (plugin::persistent) plugin::buffer_size = 1024;
+  else plugin::buffer_size = 128;
+
   std::string path = extras::get_executable_dir();
 
-  config_dir = this->option<command<std::string>>("config_dir", "Path to configs", "", path)->get_value();
-
+  if (plugin::persistent) {
   logger.info("Configuring STXXL");
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-  _putenv_s("STXXLLOGFILE", (Logger::logging_dir + "stxxl.log").c_str());
-  _putenv_s("STXXLERRLOGFILE", (Logger::logging_dir + "stxxl.errlog").c_str());
+  _putenv_s("STXXLLOGFILE", (logger.get_logging_dir() + "stxxl.log").c_str());
+  _putenv_s("STXXLERRLOGFILE", (logger.get_logging_dir() + "stxxl.errlog").c_str());
 #else
-  setenv("STXXLLOGFILE", (Logger::logging_dir + "stxxl.log").c_str(), 1);
-  setenv("STXXLERRLOGFILE", (Logger::logging_dir + "stxxl.errlog").c_str(), 1);
+  setenv("STXXLLOGFILE", (logger.get_logging_dir() + "stxxl.log").c_str(), 1);
+  setenv("STXXLERRLOGFILE", (logger.get_logging_dir() + "stxxl.errlog").c_str(), 1);
 #endif
 
   stxxl::config *cfg = stxxl::config::get_instance();
@@ -63,8 +64,7 @@ void pipeline::initialize() {
   disk.delete_on_exit = true;
   disk.direct = stxxl::disk_config::DIRECT_TRY;
   cfg->add_disk(disk);
-
-  logger.info("Pipeline initialized");
+  }
 }
 template<typename T>
 std::vector<T> pipeline::for_each_plugin(const std::function<T(plugin &)> &function) {
@@ -144,6 +144,23 @@ bool pipeline::plugins_running() {
 void pipeline::stop() {
   for_each_plugin([](plugin &p) { p.stop(); });
   std::for_each(processors.begin(), processors.end(), [](std::thread &thread) { thread.join(); });
+}
+void pipeline::evaluate_options() {
+  std::string path = extras::get_executable_dir();
+
+  auto config_config = opts.add_named
+      <command<std::string>>(options::general_config_group_name, "c,config_dir", "Path to configs", path);
+  auto logging_config = opts.add_named
+      <command<std::string>>(options::general_config_group_name, "l,logging_dir", "Path to logs", path);
+  auto persistent_config = opts.add_named
+      <command<bool>>(options::general_config_group_name, "p,persistent", "Can pipeline store events on disk?");
+
+  opts.parse_options();
+  opts.print_options();
+
+  config_dir = config_config->get_value();
+  logger.set_logging_dir(logging_config->get_value());
+  plugin::persistent = persistent_config->get_value();
 }
 
 }

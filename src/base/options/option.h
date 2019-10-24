@@ -11,7 +11,12 @@
 
 namespace wolf {
 
-class base_option {};
+class base_option {
+ public:
+  virtual void add_options(cxxopts::OptionAdder &&opts) {}
+  virtual void validate_options(const cxxopts::ParseResult &opts) {}
+  virtual void print_info() {};
+};
 
 class options {
  public:
@@ -19,33 +24,35 @@ class options {
 
   void print_help();
 
-  bool should_print_help() {
-    return _should_print_help;
+  template<typename T, typename... Args>
+  std::shared_ptr<T> add(Args &&... args) {
+    return add_named<T>("", std::forward<Args>(args)...);
   }
 
   template<typename T, typename... Args>
-  std::shared_ptr<T> option(Args &&... args) {
+  std::shared_ptr<T> add_named(const std::string & group, Args &&... args) {
+    if (parsed)
+      logger.fatal("Cannot add options after pipeline creation");
+
     auto opt = std::shared_ptr<T>(new T(std::forward<Args>(args)...));
 
-    cxxopts::Options opts("");
-    opt->add_options(g_opts.add_options());
-    opt->add_options(opts.add_options());
-
-    opts.allow_unrecognised_options();
-    if (not should_print_help())
-      opt->validate_options(options::parse_opts(opts, argc, argv));
+    opt->add_options(g_opts.add_options(group));
     all_options.push_back(opt);
     return opt;
   }
+
+  void parse_options();
+  void print_options();
+
+  static std::string general_config_group_name;
 
  private:
   int argc;
   char **argv;
   cxxopts::Options g_opts;
   std::vector<std::shared_ptr<base_option>> all_options;
-  bool _should_print_help;
-
-  static cxxopts::ParseResult parse_opts(cxxopts::Options &opts, int argc, char **argv);
+  Logger &logger = Logger::getLogger();
+  bool parsed = false;
 };
 
 template<typename T>
@@ -59,9 +66,6 @@ class option_type : public base_option {
 
  protected:
   option_type() = default;
-
-  virtual void add_options(cxxopts::OptionAdder &&opts) {}
-  virtual void validate_options(const cxxopts::ParseResult &opts) {}
 
  private:
   friend class options;
