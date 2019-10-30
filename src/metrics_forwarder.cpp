@@ -23,8 +23,8 @@ int main(int argc, char *argv[]) {
 
   std::string bootstrap_servers, influx_ip;
 
-  bootstrap_servers = p.option<command<std::string>>("broker_list", "List of kafka brokers")->get_value();
-  influx_ip = p.option<command<std::string>>("influx_ip", "Ip address of influx, default localhost")->get_value();
+  bootstrap_servers = p.option<command<std::string>>("broker_list", "List of kafka brokers")->value();
+  influx_ip = p.option<command<std::string>>("influx_ip", "Ip address of influx, default localhost")->value();
 
   logger.info("Parsed arguments:");
   logger.info("bootstrap_servers:    " + bootstrap_servers);

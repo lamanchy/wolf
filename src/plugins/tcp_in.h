@@ -20,7 +20,7 @@ namespace wolf {
 template<typename Serializer>
 class tcp_in : public threaded_plugin {
  public:
-  explicit tcp_in(const not_event_option<unsigned short> &port) : port(port->get_value()) {}
+  explicit tcp_in(const not_event_option<unsigned short> &port) : port(port->value()) {}
 
  protected:
   void setup() override {

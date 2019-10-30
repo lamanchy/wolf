@@ -15,7 +15,7 @@ namespace wolf {
 
 class kafka_out : public plugin {
  public:
-  kafka_out(option<std::string> topic, unsigned partitions, std::string broker_list)
+  kafka_out(option<std::string> topic, int partitions, std::string broker_list)
       : topic(std::move(topic)), partitions(partitions), broker_list(broker_list) {
     config = {
         {"metadata.broker.list", broker_list},
@@ -53,7 +53,7 @@ class kafka_out : public plugin {
 
   void process(json &&message) override {
     p->add_message(
-        p->make_builder(topic->get_value(message))
+        p->make_builder(topic->value(message))
             .partition(get_partition())
             .payload(std::move(message.as<std::string>())));
   }
@@ -63,7 +63,7 @@ class kafka_out : public plugin {
   }
  private:
 
-  unsigned get_partition() {
+  int get_partition() {
     return current_partition++ % partitions;
   }
 
@@ -71,8 +71,8 @@ class kafka_out : public plugin {
   configuration config;
   option<std::string> topic;
   std::string broker_list;
-  unsigned partitions;
-  std::atomic<unsigned> current_partition{0};
+  int partitions;
+  std::atomic<int> current_partition{0};
   std::atomic<bool> running{true};
   std::thread flusher;
 };

@@ -20,8 +20,8 @@ int main(int argc, char **argv) {
 
   pipeline p = pipeline(argc, argv, false);
 
-  std::string file_name = p.option<command<std::string>>("file_name", "File to load")->get_value();
-  std::string output_ip = p.option<command<std::string>>("output_ip", "Ip of influx", "", "localhost")->get_value();
+  std::string file_name = p.option<command<std::string>>("file_name", "File to load")->value();
+  std::string output_ip = p.option<command<std::string>>("output_ip", "Ip of influx", "", "localhost")->value();
 
   p.register_plugin(
       create<file_in<compressed>>(file_name),

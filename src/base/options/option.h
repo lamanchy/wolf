@@ -58,11 +58,11 @@ class options {
 template<typename T>
 class option_type : public base_option {
  public:
-  virtual T get_value(const json &event) {
-    return get_value();
+  virtual T value(const json &event) {
+    return value();
   };
 
-  virtual T get_value() = 0;
+  virtual T value() = 0;
 
  protected:
   option_type() = default;

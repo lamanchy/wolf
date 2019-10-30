@@ -17,8 +17,8 @@ class tcp_out : public plugin {
       : plugin(),
         io_context_(),
         socket_(io_context_),
-        host(host->get_value()),
-        port(port->get_value()) {
+        host(host->value()),
+        port(port->value()) {
     socket_ = asio::ip::tcp::socket(io_context_);
   }
 

@@ -156,9 +156,9 @@ void pipeline::evaluate_options() {
   opts.parse_options();
   opts.print_options();
 
-  config_dir = config_config->get_value();
-  logger.set_logging_dir(logging_config->get_value());
-  plugin::persistent = persistent_config->get_value();
+  config_dir = config_config->value();
+  logger.set_logging_dir(logging_config->value());
+  plugin::persistent = persistent_config->value();
 }
 
 }

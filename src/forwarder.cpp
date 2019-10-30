@@ -27,8 +27,8 @@ int main(int argc, char *argv[]) {
 
   std::string bootstrap_servers, es_ip;
 
-  bootstrap_servers = p.option<command<std::string>>("broker_list", "List of kafka brokers")->get_value();
-  es_ip = p.option<command<std::string>>("es_ip", "Ip address of elasticsearch, default localhost")->get_value();
+  bootstrap_servers = p.option<command<std::string>>("broker_list", "List of kafka brokers")->value();
+  es_ip = p.option<command<std::string>>("es_ip", "Ip address of elasticsearch, default localhost")->value();
 
   logger.info("Parsed arguments:");
   logger.info("bootstrap_servers:    " + bootstrap_servers);

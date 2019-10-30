@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
         return lhs.find("@timestamp")->get_string() > rhs.find("@timestamp")->get_string();
       },
       stream_sort::ready_after(std::chrono::seconds(
-          p.option<command<int>>("stream_sort_seconds", "Seconds to wait with each event", "", "60")->get_value()
+          p.option<command<int>>("stream_sort_seconds", "Seconds to wait with each event", "", "60")->value()
       ))
   );
 

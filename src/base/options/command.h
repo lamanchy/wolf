@@ -22,15 +22,34 @@ class command : public not_event_option_type<T> {
       validator(std::move(validator)),
       default_value(std::move(default_value)) {}
 
-  T get_value() override {
+  T value() override {
     if (not validated)
       logger.fatal("Cannot access values before validation - pipeline initialization");
-    return value;
+    return _value;
   }
 
   std::string value_to_string() {
+    return value_to_string_impl(static_cast<T *>(0));
+  }
+
+  template< typename U>
+  std::string value_to_string_impl(U *) {
     std::stringstream ss;
-    ss << value;
+    ss << _value;
+    return ss.str();
+  }
+
+  std::string value_to_string_impl(bool *) {
+    std::stringstream ss;
+    ss << (_value ? "true" : "false");
+    return ss.str();
+  }
+
+  template< typename U>
+  std::string value_to_string_impl(std::vector<U> *) {
+    std::stringstream ss;
+    for (auto i : _value)
+      ss << i << ", ";
     return ss.str();
   }
 
@@ -44,9 +63,9 @@ class command : public not_event_option_type<T> {
   void add_options(cxxopts::OptionAdder &&opts) override {
     try {
       if (default_value == "") {
-        opts(name, desc, cxxopts::value<T>(value));
+        opts(name, desc, cxxopts::value<T>(_value));
       } else {
-        opts(name, desc, cxxopts::value<T>(value)->default_value(default_value));
+        opts(name, desc, cxxopts::value<T>(_value)->default_value(default_value));
       }
     } catch (cxxopts::option_exists_error &ex) {
       logger.fatal("Option " + name + " cannot be registered, it already exists");
@@ -54,19 +73,31 @@ class command : public not_event_option_type<T> {
   }
 
   void validate_options(const cxxopts::ParseResult &res) override {
-    if (res.count(name) == 0 and not std::is_same<T, bool>::value and default_value == "")
-      logger.fatal("Missing option " + name);
+    if (check_count(res) and not std::is_same<T, bool>::value and default_value == "")
+      logger.fatal("Missing (or duplicate) option " + name);
 
-    if (not validator(value))
+    if (not validator(_value))
       logger.fatal("Custom validation of option '" + name +
           "' failed, inputted value was '" + value_to_string() + "'");
 
     validated = true;
   }
+  bool check_count(const cxxopts::ParseResult &res) {
+    return check_count_impl(res, static_cast<T*>(0));
+  }
+  template <typename U>
+  bool check_count_impl(const cxxopts::ParseResult &res, U*) {
+    return res.count(name) != 1;
+  }
+
+  template <typename U>
+  bool check_count_impl(const cxxopts::ParseResult &res, std::vector<U>*) {
+    return false;
+  }
 
  private:
   Logger &logger = Logger::getLogger();
-  T value;
+  T _value;
   std::string default_value;
   std::string name, desc;
   bool validated = false;

@@ -32,20 +32,20 @@ int main(int argc, char *argv[]) {
 
   plugin::pointer in, out, common_processing;
 
-  bool is_test = p.option<command<bool>>("test", "When testing, use stdin/stdout")->get_value();
+  bool is_test = p.option<command<bool>>("test", "When testing, use stdin/stdout")->value();
   int max_seconds_to_keep =
-      p.option<command<int>>("max_seconds_to_keep", "How long to wait for end event", "", "1800")->get_value();
+      p.option<command<int>>("max_seconds_to_keep", "How long to wait for end event", "", "1800")->value();
 
   if (is_test) {
     in = create<cin>();
     out = create<cout>();
   } else {
-    std::string broker_list = p.option<command<std::string>>("broker_list", "List of kafka brokers")->get_value();
+    std::string broker_list = p.option<command<std::string>>("broker_list", "List of kafka brokers")->value();
 
     in = create<kafka_in>(
-        p.option<constant<std::string>>("^correlation_data-.*")->get_value(),
+        p.option<constant<std::string>>("^correlation_data-.*")->value(),
         broker_list,
-        p.option<constant<std::string>>("wolf_correlator5")->get_value()
+        p.option<constant<std::string>>("wolf_correlator5")->value()
     );
     out = create<kafka_out>(
         p.option<event<std::string>>("output", true), 12, broker_list
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
       create<time_sort>(p.option<command<int>>("stream_sort_seconds",
                                                "Seconds to wait with each event",
                                                "",
-                                               "10")->get_value()),
+                                               "10")->value()),
       create<elapsed>(max_seconds_to_keep)->register_expired_output(
           create<json_to_influx>(
               "elapsed",

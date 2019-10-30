@@ -17,7 +17,7 @@
 #include <plugins/cout.h>
 #include <serializers/compressed.h>
 #include <plugins/collate.h>
-#include <extras/extras.h>
+#include <extras/validators.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
@@ -28,7 +28,6 @@ int main(int argc, char *argv[]) {
       <command<string>>("output", "Type of output, kafka/logstash", "logstash",
                         [](const string &value) { return extras::is_in<string>(value, {"kafka", "logstash"}); });
   auto output_ip = opts.add<command<string>>("output_ip", "Ip address of output", "localhost");
-  auto output_port = opts.add<command<string>>("output_port", "Port of output", "9070");
   auto group = opts.add<command<string>>("group", "Define the group name", "default");
   auto max_loglevel = opts.add<command<string>>(
       "max_loglevel", "Define max loglevel, one of OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL", "INFO");
@@ -36,24 +35,24 @@ int main(int argc, char *argv[]) {
   pipeline p(opts);
 
   std::function<plugin::pointer(string)> out;
-  plugin::pointer tcp =
-      make<collate<line>>(60, 1000)->register_output(
+
+  if (output->value() == "kafka") {
+    out = [&](const string &type) {
+      return make<kafka_out>(
+          make<constant<string>>(type + "-" + group->value()),
+          12,
+          output_ip->value() + ":9092");
+    };
+  } else {
+    out = [&](const string &type) {
+      return make<collate<line>>(60, 1000)->register_output(
           make<tcp_out<compressed>>(output_ip, output_port)
       );
-
-  if (output->get_value() == "kafka") {
-    out = [&](const string& type) {
-      return make<kafka_out>(
-          make<constant<string>>(type + "-" + group->get_value()),
-          12,
-          output_ip->get_value() + ":9092");
     };
-  } else if (output->get_value() == "logstash") {
-    out = [&](const string& type) { return tcp; };
   }
 
   plugin::pointer common_processing =
-      make<add_local_info>(group->get_value(), max_loglevel->get_value())->register_output(
+      make<add_local_info>(group->value(), max_loglevel->value())->register_output(
           make<json_to_string>()->register_output(
               out("unified_logs")
           )
@@ -87,7 +86,7 @@ int main(int argc, char *argv[]) {
             message.assign_object(
                 {
                     {"message", message},
-                    {"group", group->get_value()},
+                    {"group", group->value()},
                     {"type", "metrics"}
                 });
           }),

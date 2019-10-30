@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
   pipeline p = pipeline(argc, argv, false);
 
   std::string brokers =
-      p.option<command<std::string>>("broker_list", "List of kafkas brokers")->get_value();
+      p.option<command<std::string>>("broker_list", "List of kafkas brokers")->value();
 
   std::function<plugin::pointer(std::string)> out = [&](const std::string &topic_name) {
     return create<lambda>(
