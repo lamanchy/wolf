@@ -8,11 +8,11 @@
 #include <base/plugins/plugin.h>
 namespace wolf {
 
-class copy : public plugin {
+class copy : public base_plugin {
 
  public:
   template<typename... Args>
-  pointer register_copy_output(pointer plugin, Args &&... args) {
+  plugin register_copy_output(plugin plugin, Args &&... args) {
     return register_named_output("copy", std::move(plugin), args...);
   }
 

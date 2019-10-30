@@ -2,7 +2,7 @@
 // Created by lamanchy on 27.5.19.
 //
 
-#include "option.h"
+#include "event_option.h"
 wolf::options::options(int argc, char **argv) :
     g_opts(wolf::extras::get_executable_name()),
     argc(argc),

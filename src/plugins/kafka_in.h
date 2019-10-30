@@ -9,40 +9,26 @@
 #include <base/plugins/mutexed_plugin.h>
 #include <base/plugins/threaded_plugin.h>
 #include <stdio.h>
+#include <utility>
 
 namespace wolf {
 
 class kafka_in : public threaded_plugin {
  public:
-  kafka_in(std::string topic, std::string broker_list, std::string group_id)
-      : topic(std::move(topic)), broker_list(broker_list), group_id(group_id) {
+  using config = cppkafka::Configuration;
 
-    config = {
-        {"metadata.broker.list", broker_list}
-    };
-  }
+  kafka_in(const option<std::string> &topic,
+           config conf)
+      : topic(topic->value()),
+        conf(std::move(conf)) {}
 
  protected:
 
   void run() override {
     using namespace cppkafka;
 
-    // Construct the configuration
-    Configuration config = {
-        {"metadata.broker.list", broker_list},
-        {"group.id", group_id},
-        {"client.id", group_id},
-        {"auto.offset.reset", "earliest"},
-        {"queued.max.messages.kbytes", 64},
-        {"fetch.max.bytes", 64 * 1024},
-        {"enable.auto.commit", true},
-        {"heartbeat.interval.ms", 10000},
-        {"session.timeout.ms", 50000},
-        {"metadata.max.age.ms", 300000}
-    };
-
     // Create the consumer
-    Consumer consumer(config);
+    Consumer consumer(conf);
 
     // Print the assigned partitions on assignment
     consumer.set_assignment_callback([](const TopicPartitionList &partitions) {
@@ -88,9 +74,8 @@ class kafka_in : public threaded_plugin {
     }
   }
 
-  cppkafka::Configuration config;
+  config conf;
   std::string topic;
-  std::string broker_list, group_id;
 };
 
 }

@@ -12,9 +12,12 @@
 
 namespace wolf {
 
-class add_local_info : public plugin {
+class add_local_info : public base_plugin {
  public:
-  add_local_info(std::string group, std::string max_loglevel) : group(group), max_loglevel(max_loglevel) {}
+  add_local_info(const option<std::string>& group,
+                 const option<std::string>& max_loglevel) :
+      group(group->value()),
+      max_loglevel(max_loglevel->value()) {}
 
  protected:
 

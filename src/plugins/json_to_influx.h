@@ -7,19 +7,21 @@
 
 #include <base/plugins/plugin.h>
 #include <extras/convert_time.h>
+
+#include <utility>
 namespace wolf {
 
-class json_to_influx : public plugin {
+class json_to_influx : public base_plugin {
  public:
   json_to_influx(std::string measurement,
                  std::vector<std::string> tags,
                  std::vector<std::string> fields,
                  std::string time = "@timestamp",
                  bool add_random_nanoseconds = true)
-      : measurement(measurement),
-        tags(tags),
-        fields(fields),
-        time(time),
+      : measurement(std::move(measurement)),
+        tags(std::move(tags)),
+        fields(std::move(fields)),
+        time(std::move(time)),
         add_random_nanoseconds(add_random_nanoseconds) {}
 
  protected:

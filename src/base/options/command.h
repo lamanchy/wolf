@@ -9,7 +9,7 @@
 #ifndef WOLF_COMMAND_H
 #define WOLF_COMMAND_H
 
-#include "option.h"
+#include "event_option.h"
 namespace wolf {
 
 template<typename T>
@@ -32,7 +32,7 @@ class command : public not_event_option_type<T> {
     return value_to_string_impl(static_cast<T *>(0));
   }
 
-  template< typename U>
+  template<typename U>
   std::string value_to_string_impl(U *) {
     std::stringstream ss;
     ss << _value;
@@ -45,7 +45,7 @@ class command : public not_event_option_type<T> {
     return ss.str();
   }
 
-  template< typename U>
+  template<typename U>
   std::string value_to_string_impl(std::vector<U> *) {
     std::stringstream ss;
     for (auto i : _value)
@@ -73,8 +73,7 @@ class command : public not_event_option_type<T> {
   }
 
   void validate_options(const cxxopts::ParseResult &res) override {
-    if (check_count(res) and not std::is_same<T, bool>::value and default_value == "")
-      logger.fatal("Missing (or duplicate) option " + name);
+    validate(res);
 
     if (not validator(_value))
       logger.fatal("Custom validation of option '" + name +
@@ -82,18 +81,20 @@ class command : public not_event_option_type<T> {
 
     validated = true;
   }
-  bool check_count(const cxxopts::ParseResult &res) {
-    return check_count_impl(res, static_cast<T*>(0));
+  void validate(const cxxopts::ParseResult &res) {
+    validate_impl(res, static_cast<T *>(0));
   }
-  template <typename U>
-  bool check_count_impl(const cxxopts::ParseResult &res, U*) {
-    return res.count(name) != 1;
+  template<typename U>
+  void validate_impl(const cxxopts::ParseResult &res, U *) {
+    if (res.count(name) == 0 and default_value == "")
+      logger.fatal("Missing option " + name);
+    if (res.count(name) > 1)
+      logger.fatal("Duplicate option " + name);
   }
 
-  template <typename U>
-  bool check_count_impl(const cxxopts::ParseResult &res, std::vector<U>*) {
-    return false;
-  }
+  template<typename U>
+  void validate_impl(const cxxopts::ParseResult &res, std::vector<U> *) {}
+  void validate_impl(const cxxopts::ParseResult &res, bool *) {}
 
  private:
   Logger &logger = Logger::getLogger();

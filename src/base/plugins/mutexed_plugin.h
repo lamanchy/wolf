@@ -9,7 +9,7 @@
 
 namespace wolf {
 
-class mutexed_plugin : public plugin {
+class mutexed_plugin : public base_plugin {
  protected:
   void prepare(json &&message) override;
 

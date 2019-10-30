@@ -9,7 +9,7 @@
 namespace wolf {
 
 template<typename Serializer>
-class deserialize : public plugin {
+class deserialize : public base_plugin {
  protected:
   void process(json &&message) override {
     s.deserialize(std::move(message.get_string()), [this](json &&out) {

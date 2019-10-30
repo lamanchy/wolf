@@ -12,7 +12,7 @@
 #include <base/plugins/plugin.h>
 namespace wolf {
 
-class get_elapsed_preevents : public plugin {
+class get_elapsed_preevents : public base_plugin {
  public:
   struct elapsed_config {
     std::string start_logId, end_logId, uniqueId, name;
@@ -112,7 +112,7 @@ class get_elapsed_preevents : public plugin {
 
  public:
   template<typename... Args>
-  pointer register_preevents_output(pointer plugin, Args &&... args) {
+  plugin register_preevents_output(plugin plugin, Args &&... args) {
     return register_named_output("metrics", std::move(plugin), args...);
   }
 

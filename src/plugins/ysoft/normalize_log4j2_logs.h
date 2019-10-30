@@ -10,7 +10,7 @@
 
 namespace wolf {
 
-class normalize_log4j2_logs : public plugin {
+class normalize_log4j2_logs : public base_plugin {
  protected:
   void process(json &&message) override {
     if (message.find("timeMillis") != nullptr) {

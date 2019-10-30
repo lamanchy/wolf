@@ -6,7 +6,7 @@
 
 namespace wolf {
 
-class threaded_plugin : public plugin {
+class threaded_plugin : public base_plugin {
  protected:
   std::atomic<bool> running{false};
   std::atomic<bool> loop_running{false};
@@ -15,8 +15,6 @@ class threaded_plugin : public plugin {
   virtual void setup() {}
 
   virtual void loop() {}
-
-  threaded_plugin() : plugin() {}
 
   void start() override;
 

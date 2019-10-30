@@ -1,46 +1,37 @@
-#include <base/plugins/plugin.h>
-#include <base/pipeline.h>
-#include <plugins/generator.h>
-#include <plugins/kafka_out.h>
-#include <plugins/collate.h>
-#include <plugins/lambda.h>
-#include <whereami/whereami.h>
-#include <plugins/kafka_in.h>
-#include <plugins/cout.h>
-#include <extras/get_time.h>
-#include <plugins/http_out.h>
-#include <plugins/string_to_json.h>
-#include <plugins/stats.h>
-#include <serializers/plain.h>
+#include <wolf.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
 
-  pipeline p = pipeline(argc, argv, false);
-  Logger &logger = p.logger;
+  options o(argc, argv);
+  auto broker_list = o.add<command<std::string>>("broker_list", "List of kafka brokers", "localhost:9092");
+  auto influx_ip = o.add<command<std::string>>("influx_ip", "Ip address of influx", "localhost");
 
-  logger.info("Parsing command line arguments");
-
-  std::string bootstrap_servers, influx_ip;
-
-  bootstrap_servers = p.option<command<std::string>>("broker_list", "List of kafka brokers")->value();
-  influx_ip = p.option<command<std::string>>("influx_ip", "Ip address of influx, default localhost")->value();
-
-  logger.info("Parsed arguments:");
-  logger.info("bootstrap_servers:    " + bootstrap_servers);
-  logger.info("influx_ip: " + influx_ip);
+  pipeline p(o);
 
   p.register_plugin(
-      create<kafka_in>("^metrics-.*", bootstrap_servers, "wolf_metrics_forwarder5"),
-      create<string_to_json>(),
-      create<lambda>(
+      make<kafka_in>("^metrics-.*", kafka_in::config(
+          {
+              {"metadata.broker.list", broker_list->value()},
+              {"group.id", "wolf_metrics_forwarder5"},
+              {"client.id", "wolf_metrics_forwarder5"},
+              {"auto.offset.reset", "earliest"},
+              {"queued.max.messages.kbytes", 64},
+              {"fetch.max.bytes", 64 * 1024},
+              {"enable.auto.commit", true},
+              {"heartbeat.interval.ms", 10000},
+              {"session.timeout.ms", 50000},
+              {"metadata.max.age.ms", 300000}
+          })),
+      make<string_to_json>(),
+      make<lambda>(
           [](json &message) {
             message.assign_string(std::string(message["message"].get_string() + "\n"));
           }
       ),
-      create<stats>(),
-      create<collate<plain>>(),
-      create<http_out>(influx_ip, "8086", "/write?db=metric_db")
+      make<stats>(),
+      make<collate<plain>>(),
+      make<http_out>(influx_ip, "8086", "/write?db=metric_db")
   );
 
   p.run();

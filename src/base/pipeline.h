@@ -5,7 +5,7 @@
 #include <thread>
 #include <base/plugins/plugin.h>
 #include <plugins/drop.h>
-#include <base/options/option.h>
+#include <base/options/event_option.h>
 #include <cxxopts.hpp>
 #include <base/options/constant.h>
 #include <base/options/command.h>
@@ -17,7 +17,6 @@ class pipeline {
   options opts;
 
  public:
-  using pointer = plugin::pointer;
   Logger &logger = Logger::getLogger();
 
   explicit pipeline(options opts);
@@ -32,23 +31,23 @@ class pipeline {
   pipeline &operator=(pipeline &&) = delete;
 
   template<typename... Args>
-  void register_plugin(const pointer &plugin) {
+  void register_plugin(const plugin &plugin) {
     plugins.push_back(plugin);
   }
 
   template<typename... Args>
-  void register_plugin(const pointer &plugin, Args &&... args) {
+  void register_plugin(const plugin &plugin, Args &&... args) {
     plugins.push_back(plugin);
-    plugin->register_output(chain_register_output(args...));
+    plugin->register_output(chain_plugins(args...));
   }
 
-  const pointer &chain_register_output(const pointer &plugin) {
+  const plugin &chain_plugins(const plugin &plugin) {
     return plugin;
   }
 
   template<typename... Args>
-  const pointer &chain_register_output(const pointer &plugin, Args &&... args) {
-    plugin->register_output(chain_register_output(args...));
+  const plugin &chain_plugins(const plugin &plugin, Args &&... args) {
+    plugin->register_output(chain_plugins(args...));
 
     return plugin;
   }
@@ -60,7 +59,7 @@ class pipeline {
   }
 
  private:
-  std::vector<pointer> plugins;
+  std::vector<plugin> plugins;
   std::vector<std::thread> processors;
   unsigned number_of_processors = std::thread::hardware_concurrency();
   static bool initialized;
@@ -70,9 +69,9 @@ class pipeline {
   void setup_persistency();
 
   template<typename T>
-  std::vector<T> for_each_plugin(const std::function<T(plugin &)> &function);
+  std::vector<T> for_each_plugin(const std::function<T(base_plugin &)> &function);
 
-  void for_each_plugin(const std::function<void(plugin &)> &function);
+  void for_each_plugin(const std::function<void(base_plugin &)> &function);
 
   void process();
 

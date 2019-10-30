@@ -11,10 +11,11 @@
 namespace wolf {
 
 template<typename Serializer>
-class tcp_out : public plugin {
+class tcp_out : public base_plugin {
  public:
-  tcp_out(const not_event_option<std::string> &host, const not_event_option<std::string> &port)
-      : plugin(),
+  tcp_out(const option<std::string> &host,
+          const option<std::string> &port)
+      : base_plugin(),
         io_context_(),
         socket_(io_context_),
         host(host->value()),
@@ -84,7 +85,7 @@ class tcp_out : public plugin {
   }
 
   void check_if_full() {
-    is_full_ = write_msgs_.size() > plugin::buffer_size;
+    is_full_ = write_msgs_.size() > base_plugin::buffer_size;
   }
 
   asio::io_context io_context_;

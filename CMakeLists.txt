@@ -35,18 +35,18 @@ set(SOURCE_FILES
         src/plugins/ysoft/add_local_info.h src/plugins/json_to_string.h src/plugins/tcp_out.h src/plugins/lambda.h
         src/extras/logger.h src/extras/logger.cpp src/plugins/kafka_in.h src/plugins/http_out.h src/plugins/stats.h
         src/base/plugins/mutexed_threaded_plugin.h src/extras/get_time.h src/plugins/stream_sort.h
-        src/extras/get_executable_path.h src/plugins/elapsed.h src/plugins/cin.h src/base/options/option.h
-        src/base/options/constant.h src/base/options/event.h src/base/options/command.h src/plugins/regex.h
+        src/extras/get_executable_path.h src/plugins/elapsed.h src/plugins/cin.h src/base/options/event_option.h
+        src/base/options/event.h src/base/options/command.h src/plugins/regex.h
         src/plugins/ysoft/get_elapsed_preevents.h src/plugins/ysoft/count_logs.h src/serializers/plain.h
-        src/json_to_influx.h src/plugins/filter.h src/plugins/drop.h
+        src/plugins/json_to_influx.h src/plugins/filter.h src/plugins/drop.h
         src/serializers/compressed.h src/serializers/serialize.h src/serializers/deserialize.h
         src/base/plugins/threaded_plugin.cpp src/base/plugins/threaded_plugin.h
         src/base/plugins/mutexed_threaded_plugin.cpp src/base/plugins/mutexed_threaded_plugin.h
         src/base/plugins/mutexed_plugin.cpp src/base/plugins/mutexed_plugin.h src/serializers/compressed.cpp
-        src/serializers/compressed.h src/base/options/option.cpp src/base/options/option.h src/extras/convert_time.cpp
+        src/serializers/compressed.h src/base/options/event_option.cpp src/base/options/event_option.h src/extras/convert_time.cpp
         src/extras/convert_time.h src/extras/get_executable_path.cpp src/extras/get_executable_path.h
         src/extras/get_time.cpp src/extras/get_time.h src/serializers/line.cpp src/serializers/line.h
-        src/plugins/time_sort.h src/plugins/file_out.h src/plugins/file_in.h src/plugins/copy.h src/extras/validators.h)
+        src/plugins/time_sort.h src/plugins/file_out.h src/plugins/file_in.h src/plugins/copy.h src/extras/validators.h src/wolf.h)
 
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
@@ -73,7 +73,7 @@ include_directories(lib/${LIB_PATH}/${CMAKE_BUILD_TYPE}/include)
 link_directories(lib/${LIB_PATH}/${CMAKE_BUILD_TYPE}/lib)
 include_directories(src)
 
-set(TARGETS calf_parser metrics_forwarder correlator parser little_stack_parser forwarder archive_reader)
+set(TARGETS calf_parser metrics_forwarder correlator parser little_stack_parser forwarder)
 
 foreach (executable ${TARGETS})
     add_executable(${executable}${TARGET_POSTFIX} src/${executable}.cpp ${SOURCE_FILES})

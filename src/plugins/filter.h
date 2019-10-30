@@ -12,12 +12,13 @@
 #include <base/plugins/plugin.h>
 namespace wolf {
 
-class filter : public plugin {
+class filter : public base_plugin {
  public:
-  filter(std::function<bool(const json &)> condition) : condition(std::move(condition)) {}
+  filter(std::function<bool(const json &)> condition) :
+  condition(std::move(condition)) {}
 
   template<typename... Args>
-  pointer filtered(pointer plugin, Args &&... args) {
+  plugin filtered(plugin plugin, Args &&... args) {
     return register_named_output("filtered", std::move(plugin), args...);
   }
 

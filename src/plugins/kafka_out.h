@@ -13,27 +13,22 @@
 
 namespace wolf {
 
-class kafka_out : public plugin {
+class kafka_out : public base_plugin {
  public:
-  kafka_out(option<std::string> topic, int partitions, std::string broker_list)
-      : topic(std::move(topic)), partitions(partitions), broker_list(broker_list) {
-    config = {
-        {"metadata.broker.list", broker_list},
-        {"compression.type", "lz4"}
-//        ,
-//        { "topic.metadata.refresh.interval.ms", 20000 }
-        ,
-//        {"debug", "broker,topic,msg"},
-        {"linger.ms", "1000"}
-    };
+  kafka_out(event_option<std::string> topic,
+            const option<int> &partitions,
+            cppkafka::Configuration conf)
+      : topic(std::move(topic)),
+        partitions(partitions->value()),
+        conf(std::move(conf)) {
   }
+  using config = cppkafka::Configuration;
 
  protected:
   using producer = cppkafka::BufferedProducer<std::string>;
-  using configuration = cppkafka::Configuration;
 
   void start() override {
-    p = std::unique_ptr<producer>(new producer(config));
+    p = std::unique_ptr<producer>(new producer(conf));
     p->set_max_buffer_size(32000);
     p->set_flush_method(producer::FlushMethod::Sync);
 
@@ -68,8 +63,8 @@ class kafka_out : public plugin {
   }
 
   std::unique_ptr<producer> p;
-  configuration config;
-  option<std::string> topic;
+  config conf;
+  event_option<std::string> topic;
   std::string broker_list;
   int partitions;
   std::atomic<int> current_partition{0};

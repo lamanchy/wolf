@@ -13,12 +13,13 @@ namespace wolf {
 
 class elapsed : public mutexed_threaded_plugin {
  public:
-  elapsed(int max_seconds_to_keep) : max_seconds_to_keep(max_seconds_to_keep) {}
+  explicit elapsed(const option<int> &max_seconds_to_keep) :
+      max_seconds_to_keep(max_seconds_to_keep->value()) {}
 
  public:
 
   template<typename... Args>
-  pointer register_expired_output(pointer plugin, Args &&... args) {
+  plugin register_expired_output(plugin plugin, Args &&... args) {
     return register_named_output("expired", std::move(plugin), args...);
   }
 

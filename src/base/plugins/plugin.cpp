@@ -2,17 +2,17 @@
 
 namespace wolf {
 
-thread_local bool plugin::is_thread_processor = false;
+thread_local bool base_plugin::is_thread_processor = false;
 
-bool plugin::persistent = true;
+bool base_plugin::persistent = true;
 
-unsigned plugin::buffer_size = 128;
+unsigned base_plugin::buffer_size = 128;
 
-std::atomic<plugin::id_type> plugin::id_counter{0};
+std::atomic<base_plugin::id_type> base_plugin::id_counter{0};
 
 namespace serializer = tao::json::cbor;
 
-void plugin::empty_front_queue() {
+void base_plugin::empty_front_queue() {
   // front_queue_mutex is locked, must be unlocked
   swappable = false;
   front_processing_mutex.lock();
@@ -36,7 +36,7 @@ void plugin::empty_front_queue() {
   front_processing_mutex.unlock();
 }
 
-bool plugin::process_buffer() {
+bool base_plugin::process_buffer() {
   if (are_outputs_full()) return false;
   back_queue_mutex.lock();
   if (back_queue.empty()) {
@@ -134,7 +134,7 @@ bool plugin::process_buffer() {
   return true;
 
 }
-void plugin::safe_prepare(json &&message) {
+void base_plugin::safe_prepare(json &&message) {
   try {
     prepare(std::move(message));
   } catch (std::exception &ex) {
@@ -142,8 +142,8 @@ void plugin::safe_prepare(json &&message) {
         " when processing message: " + std::string(ex.what()));
   }
 }
-bool plugin::are_outputs_full() {
-  if (plugin::persistent)
+bool base_plugin::are_outputs_full() {
+  if (base_plugin::persistent)
     return is_full();
 
   if (is_full())
@@ -155,7 +155,7 @@ bool plugin::are_outputs_full() {
   return false;
 }
 
-void plugin::process_back_queue_front() {
+void base_plugin::process_back_queue_front() {
 //      const unsigned batch_size = 64;
 //      std::queue<json> q;
 //      while (q.size() < batch_size and not back_queue.empty()) {
@@ -173,21 +173,21 @@ void plugin::process_back_queue_front() {
   back_queue_mutex.unlock();
   safe_prepare(std::move(message));
 }
-void plugin::receive(json &&message) {
-  if (plugin::is_thread_processor && !is_full()) {
+void base_plugin::receive(json &&message) {
+  if (base_plugin::is_thread_processor && !is_full()) {
     safe_prepare(std::move(message));
   } else {
     buffer(std::move(message));
   }
 }
-void plugin::buffer(json &&message) {
+void base_plugin::buffer(json &&message) {
   front_queue_mutex.lock();
 
-  if (not plugin::persistent) {
-    while (front_queue.size() >= plugin::buffer_size - 2) {
+  if (not base_plugin::persistent) {
+    while (front_queue.size() >= base_plugin::buffer_size - 2) {
       front_queue_mutex.unlock();
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      if (plugin::is_thread_processor && !is_full()) {
+      if (base_plugin::is_thread_processor && !is_full()) {
         safe_prepare(std::move(message));
         return;
       }
@@ -196,14 +196,14 @@ void plugin::buffer(json &&message) {
   }
   front_queue.push(message);
 
-//    if (front_queue.size() < plugin::buffer_size - 1) front_queue.push(message);
-  if (front_queue.size() >= plugin::buffer_size) {
+//    if (front_queue.size() < base_plugin::buffer_size - 1) front_queue.push(message);
+  if (front_queue.size() >= base_plugin::buffer_size) {
     empty_front_queue(); // unlocks fqm
     return;
   }
   front_queue_mutex.unlock();
 }
-std::string plugin::get_serialized_size(size_t size) {
+std::string base_plugin::get_serialized_size(size_t size) {
   std::string result;
   result.reserve(4);
   while (size > 0) {
@@ -213,7 +213,7 @@ std::string plugin::get_serialized_size(size_t size) {
   result.push_back(string_serializer_end);
   return result;
 }
-size_t plugin::get_deserialized_size(std::string serialized_form) {
+size_t base_plugin::get_deserialized_size(std::string serialized_form) {
   size_t result = 0;
   size_t base = 1;
   serialized_form.pop_back();

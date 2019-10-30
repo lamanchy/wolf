@@ -18,8 +18,12 @@
 namespace wolf {
 class http_out : public threaded_plugin {
  public:
-  http_out(std::string host, std::string port, std::string url) :
-      host(host), port(port), url(url) {};
+  http_out(const option<std::string>& host,
+           const option<std::string>& port,
+           const option<std::string>& url) :
+      host(host->value()),
+      port(port->value()),
+      url(url->value()) {};
 
  protected:
 

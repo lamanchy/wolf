@@ -39,8 +39,8 @@ void pipeline::run() {
   logger.info("Pipeline stopped");
 }
 void pipeline::setup_persistency() {
-  if (plugin::persistent) plugin::buffer_size = 1024;
-  else plugin::buffer_size = 128;
+  if (base_plugin::persistent) base_plugin::buffer_size = 1024;
+  else base_plugin::buffer_size = 128;
 
   std::string path = extras::get_executable_dir();
 
@@ -65,16 +65,16 @@ void pipeline::setup_persistency() {
   cfg->add_disk(disk);
 }
 template<typename T>
-std::vector<T> pipeline::for_each_plugin(const std::function<T(plugin &)> &function) {
+std::vector<T> pipeline::for_each_plugin(const std::function<T(base_plugin &)> &function) {
   // TODO this must be done better, yuck
-  std::set<plugin::id_type> visited;
-  std::queue<pointer> to_process;
-  std::queue<pointer> to_do;
-  std::for_each(plugins.begin(), plugins.end(), [&to_process](pointer &ptr) { to_process.push(ptr); });
+  std::set<base_plugin::id_type> visited;
+  std::queue<plugin> to_process;
+  std::queue<plugin> to_do;
+  std::for_each(plugins.begin(), plugins.end(), [&to_process](plugin &ptr) { to_process.push(ptr); });
   std::vector<T> results;
 
   while (!to_process.empty()) {
-    pointer &ptr = to_process.front();
+    plugin &ptr = to_process.front();
     auto it = visited.find(ptr->id);
     if (it == visited.end()) {
       visited.insert(ptr->id);
@@ -89,24 +89,24 @@ std::vector<T> pipeline::for_each_plugin(const std::function<T(plugin &)> &funct
   }
   return results;
 }
-void pipeline::for_each_plugin(const std::function<void(plugin &)> &function) {
-  const std::function<int(plugin &)> fn([&function](plugin &p) {
+void pipeline::for_each_plugin(const std::function<void(base_plugin &)> &function) {
+  const std::function<int(base_plugin &)> fn([&function](base_plugin &p) {
     function(p);
     return 0;
   });
   for_each_plugin<int>(fn);
 }
 void pipeline::process() {
-  plugin::is_thread_processor = true;
+  base_plugin::is_thread_processor = true;
   while (plugins_running()) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    for_each_plugin([](plugin &p) { while (p.process_buffer()) {}; });
+    for_each_plugin([](base_plugin &p) { while (p.process_buffer()) {}; });
 //      if (not std::all_of(res.begin(), res.end(), [](bool r) { return r; }))
     // TODO build up sleep time
 //      std::this_thread::yield();
   }
-  std::for_each(plugins.begin(), plugins.end(), [this](pointer &) {
-    for_each_plugin([](plugin &p) { while (p.process_buffer()) {}; });
+  std::for_each(plugins.begin(), plugins.end(), [this](plugin &) {
+    for_each_plugin([](base_plugin &p) { while (p.process_buffer()) {}; });
   });
 
   logger.info("ending processor");
@@ -122,7 +122,7 @@ void pipeline::catch_signal(int signal) {
   Logger::getLogger().info("interrupt signal received, stopping wolf");
 }
 void pipeline::start() {
-  for_each_plugin([](plugin &p) { p.start(); });
+  for_each_plugin([](base_plugin &p) { p.start(); });
 
   for (unsigned i = 0; i < number_of_processors; ++i) {
     processors.emplace_back(&pipeline::process, this);
@@ -137,10 +137,10 @@ void pipeline::wait() {
   }
 }
 bool pipeline::plugins_running() {
-  return std::any_of(plugins.begin(), plugins.end(), [](pointer &p) { return p->is_running(); });
+  return std::any_of(plugins.begin(), plugins.end(), [](plugin &p) { return p->is_running(); });
 }
 void pipeline::stop() {
-  for_each_plugin([](plugin &p) { p.stop(); });
+  for_each_plugin([](base_plugin &p) { p.stop(); });
   std::for_each(processors.begin(), processors.end(), [](std::thread &thread) { thread.join(); });
 }
 void pipeline::evaluate_options() {
@@ -158,7 +158,7 @@ void pipeline::evaluate_options() {
 
   config_dir = config_config->value();
   logger.set_logging_dir(logging_config->value());
-  plugin::persistent = persistent_config->value();
+  base_plugin::persistent = persistent_config->value();
 }
 
 }

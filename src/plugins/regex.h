@@ -12,7 +12,7 @@
 
 namespace wolf {
 
-class regex : public plugin {
+class regex : public base_plugin {
  public:
   using named_regex = std::pair<std::string, std::string>;
   explicit regex(const std::vector<named_regex> &regex_pairs) : regex_set(re2::RE2::Options(), re2::RE2::UNANCHORED) {

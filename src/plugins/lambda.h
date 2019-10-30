@@ -10,7 +10,7 @@
 #include <base/plugins/plugin.h>
 
 namespace wolf {
-class lambda : public plugin {
+class lambda : public base_plugin {
  public:
   lambda(std::function<void(json & )> fn) : fn(std::move(fn)) {}
 

@@ -1,84 +1,66 @@
-#include <base/plugins/plugin.h>
-#include <base/pipeline.h>
-#include <plugins/generator.h>
-#include <plugins/tcp_in.h>
-#include <serializers/line.h>
-#include <plugins/string_to_json.h>
-#include <plugins/kafka_out.h>
-#include <plugins/ysoft/add_local_info.h>
-#include <plugins/json_to_string.h>
-#include <plugins/ysoft/normalize_nlog_logs.h>
-#include <plugins/ysoft/normalize_serilog_logs.h>
-#include <plugins/ysoft/normalize_log4j2_logs.h>
-#include <plugins/tcp_out.h>
-#include <plugins/lambda.h>
-#include <whereami/whereami.h>
-#include <plugins/cout.h>
-#include <plugins/cin.h>
-#include <plugins/stream_sort.h>
-#include <plugins/elapsed.h>
-#include <base/options/constant.h>
-#include <base/options/command.h>
-#include <base/options/event.h>
-#include <plugins/kafka_in.h>
-#include <json_to_influx.h>
-#include <plugins/stats.h>
-#include <plugins/time_sort.h>
+#include <wolf.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
 
-  pipeline p = pipeline(argc, argv, false);
+  options o(argc, argv);
 
-  plugin::pointer in, out, common_processing;
+  auto max_seconds_to_keep = o.add<command<int>>("max_seconds_to_keep", "How long to wait for end event", "1800");
+  auto broker_list = o.add<command<std::string>>("broker_list", "List of kafka brokers", "localhost:9092");
+  auto stream_sort_seconds = o.add<command<int>>("stream_sort_seconds", "Seconds to wait with each event", "10");
 
-  bool is_test = p.option<command<bool>>("test", "When testing, use stdin/stdout")->value();
-  int max_seconds_to_keep =
-      p.option<command<int>>("max_seconds_to_keep", "How long to wait for end event", "", "1800")->value();
+  pipeline p(o);
 
-  if (is_test) {
-    in = create<cin>();
-    out = create<cout>();
-  } else {
-    std::string broker_list = p.option<command<std::string>>("broker_list", "List of kafka brokers")->value();
-
-    in = create<kafka_in>(
-        p.option<constant<std::string>>("^correlation_data-.*")->value(),
-        broker_list,
-        p.option<constant<std::string>>("wolf_correlator5")->value()
-    );
-    out = create<kafka_out>(
-        p.option<event<std::string>>("output", true), 12, broker_list
-    );
-  }
-
-  common_processing = create<lambda>(
-      [](json &message) {
-        message.assign_object({
-                                  {"message", message.get_string()},
-                                  {"type", "metrics"}
-                              });
-      }
-  )->register_output(
-      create<json_to_string>(),
-      create<stats>(),
-      out
+  plugin common_processing = p.chain_plugins(
+      make<lambda>(
+          [](json &message) {
+            message.assign_object(
+                {
+                    {"message", message.get_string()},
+                    {"type", "metrics"}
+                });
+          }
+      ),
+      make<json_to_string>(),
+      make<stats>(),
+      make<kafka_out>(
+          make<event<std::string>>("output", true), 12,
+          kafka_out::config({
+                                {"metadata.broker.list", broker_list->value()},
+                                {"compression.type", "lz4"},
+//        { "topic.metadata.refresh.interval.ms", 20000 },
+//        {"debug", "broker,topic,msg"},
+                                {"linger.ms", "1000"}
+                            })
+      )
   );
 
   p.register_plugin(
-      in,
-      create<string_to_json>(),
-      create<lambda>(
+      make<kafka_in>(
+          "^correlation_data-.*",
+          kafka_in::config(
+              {
+                  {"metadata.broker.list", broker_list->value()},
+                  {"group.id", "wolf_correlator5"},
+                  {"client.id", "wolf_correlator5"},
+                  {"auto.offset.reset", "earliest"},
+                  {"queued.max.messages.kbytes", 64},
+                  {"fetch.max.bytes", 64 * 1024},
+                  {"enable.auto.commit", true},
+                  {"heartbeat.interval.ms", 10000},
+                  {"session.timeout.ms", 50000},
+                  {"metadata.max.age.ms", 300000}
+              })
+      ),
+      make<string_to_json>(),
+      make<lambda>(
           [](json &message) {
             message.metadata["output"] = "metrics-" + message["group"].get_string();
           }
       ),
-      create<time_sort>(p.option<command<int>>("stream_sort_seconds",
-                                               "Seconds to wait with each event",
-                                               "",
-                                               "10")->value()),
-      create<elapsed>(max_seconds_to_keep)->register_expired_output(
-          create<json_to_influx>(
+      make<time_sort>(stream_sort_seconds),
+      make<elapsed>(max_seconds_to_keep)->register_expired_output(
+          make<json_to_influx>(
               "elapsed",
               std::vector<std::string>({"elapsedId", "status", "start_host", "group"}),
               std::vector<std::string>({"uniqueId",}),
@@ -86,12 +68,11 @@ int main(int argc, char *argv[]) {
           ),
           common_processing
       ),
-      create<json_to_influx>(
+      make<json_to_influx>(
           "elapsed",
           std::vector<std::string>({"elapsedId", "status", "start_host", "end_host", "group"}),
           std::vector<std::string>({"uniqueId", "duration"}),
-          "start_time",
-          !is_test  // add random nanoseconds if not testing
+          "start_time"
       ),
       common_processing
   );

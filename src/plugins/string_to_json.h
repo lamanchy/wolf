@@ -9,7 +9,7 @@
 
 namespace wolf {
 
-class string_to_json : public plugin {
+class string_to_json : public base_plugin {
  protected:
   void process(json &&message) {
     auto res = json(tao::json::from_string(message.as<std::string>()));

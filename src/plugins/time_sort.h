@@ -12,8 +12,8 @@ namespace wolf {
 class time_sort : public mutexed_threaded_plugin {
  public:
   time_sort(
-      int seconds_to_wait
-  ) : seconds_to_wait(seconds_to_wait) {}
+      const option<int>& seconds_to_wait
+  ) : seconds_to_wait(seconds_to_wait->value()) {}
 
  protected:
   using priority_queue_t = std::priority_queue<

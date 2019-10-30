@@ -18,50 +18,51 @@
 #include <base/json.h>
 
 namespace wolf {
+class base_plugin;
+using plugin = std::shared_ptr<base_plugin>;
 
-class plugin : public std::enable_shared_from_this<plugin> {
+class base_plugin : public std::enable_shared_from_this<base_plugin> {
  public:
-  using pointer = std::shared_ptr<plugin>;
   using id_type = unsigned;
 
   Logger &logger = Logger::getLogger();
 
-  pointer register_output() {
+  plugin register_output() {
     return shared_from_this();
   }
 
   template<typename... Args>
-  pointer register_output(pointer plugin, Args &&... args) {
+  plugin register_output(plugin plugin, Args &&... args) {
     return register_named_output("default", std::move(plugin), args...);
   }
 
-  bool operator==(const plugin &other) const {
+  bool operator==(const base_plugin &other) const {
     return id == other.id;
   }
 
-  bool operator<(const plugin &other) const {
+  bool operator<(const base_plugin &other) const {
     return id < other.id;
   }
 
-  plugin(const plugin &) = delete;
+  base_plugin(const base_plugin &) = delete;
 
-  plugin(plugin &&other) {
+  base_plugin(base_plugin &&other) {
     *this = std::move(other);
   };
 
-  plugin &operator=(const plugin &) = delete;
+  base_plugin &operator=(const base_plugin &) = delete;
 
-  plugin &operator=(plugin &&other) {
+  base_plugin &operator=(base_plugin &&other) {
     id = other.id;
     return *this;
   };
 
   void mark_as_processor() {
-    plugin::is_thread_processor = true;
+    base_plugin::is_thread_processor = true;
   }
 
  protected:
-  plugin() {
+  base_plugin() {
     id = id_counter++;
   }
 
@@ -96,7 +97,7 @@ class plugin : public std::enable_shared_from_this<plugin> {
   }
 
   template<typename... Args>
-  pointer register_named_output(std::string output_name, plugin::pointer plugin, Args &&... args) {
+  plugin register_named_output(std::string output_name, plugin plugin, Args &&... args) {
     auto it = outputs.find(output_name);
     if (it != outputs.end()) throw std::runtime_error("plugin already registered output named: " + output_name);
     outputs.emplace(std::make_pair(output_name, plugin));
@@ -119,7 +120,7 @@ class plugin : public std::enable_shared_from_this<plugin> {
 
   void empty_front_queue();
 
-  std::map<std::string, pointer> outputs;
+  std::map<std::string, plugin> outputs;
   std::queue<json> front_queue;
   std::queue<json> front_processing_queue;
   std::timed_mutex front_queue_mutex;

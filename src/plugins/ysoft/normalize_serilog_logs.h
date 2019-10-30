@@ -10,7 +10,7 @@
 
 namespace wolf {
 
-class normalize_serilog_logs : public plugin {
+class normalize_serilog_logs : public base_plugin {
  protected:
   void process(json &&message) override {
     message["@timestamp"] = extras::convert_time(message["timestamp"].as<std::string>());

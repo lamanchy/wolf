@@ -1,83 +1,72 @@
-#include <base/plugins/plugin.h>
-#include <base/pipeline.h>
-#include <plugins/generator.h>
-#include <plugins/tcp_in.h>
-#include <serializers/line.h>
-#include <plugins/string_to_json.h>
-#include <plugins/kafka_out.h>
-#include <plugins/ysoft/add_local_info.h>
-#include <plugins/json_to_string.h>
-#include <plugins/ysoft/normalize_nlog_logs.h>
-#include <plugins/ysoft/normalize_serilog_logs.h>
-#include <plugins/ysoft/normalize_log4j2_logs.h>
-#include <plugins/tcp_out.h>
-#include <plugins/lambda.h>
-#include <whereami/whereami.h>
-#include <plugins/cin.h>
-#include <plugins/cout.h>
-#include <re2/set.h>
-#include <plugins/regex.h>
-#include <plugins/ysoft/get_elapsed_preevents.h>
-#include <plugins/ysoft/count_logs.h>
-#include <plugins/kafka_in.h>
-#include <base/options/event.h>
-#include <json_to_influx.h>
-#include <plugins/collate.h>
-#include <plugins/http_out.h>
-#include <plugins/elapsed.h>
-#include <plugins/stream_sort.h>
-#include <plugins/stats.h>
+#include <wolf.h>
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
 
-  pipeline p = pipeline(argc, argv, false);
+  options o(argc, argv);
+  auto broker_list = o.add<command<std::string>>("broker_list", "List of kafka brokers", "localhost:9092");
 
-  std::string brokers =
-      p.option<command<std::string>>("broker_list", "List of kafkas brokers")->value();
+  pipeline p(o);
 
-  std::function<plugin::pointer(std::string)> out = [&](const std::string &topic_name) {
-    return create<lambda>(
-        [&, topic_name](json &message) {
+  std::function<plugin(std::string)> out = [&](const std::string &topic_name) {
+    return p.chain_plugins(
+        make<lambda>([&, topic_name](json &message) {
           message.metadata["output"] = topic_name + "-" + message["group"].get_string();
-        }
-    )->register_output(
-        create<json_to_string>(),
-        create<stats>(),
-        create<kafka_out>(
-            p.option<event<std::string>>("output", true), 12, brokers
+        }),
+        make<json_to_string>(),
+        make<stats>(),
+        make<kafka_out>(
+            make<event<std::string>>("output", true), 12,
+            kafka_out::config({
+                                  {"metadata.broker.list", broker_list->value()},
+                                  {"compression.type", "lz4"},
+//        { "topic.metadata.refresh.interval.ms", 20000 },
+//        {"debug", "broker,topic,msg"},
+                                  {"linger.ms", "1000"}
+                              })
         )
     );
   };
 
   p.register_plugin(
-      create<kafka_in>(
+      make<kafka_in>(
           "^unified_logs-.*",
-          brokers,
-          "wolf_parser5"
+          kafka_in::config(
+              {
+                  {"metadata.broker.list", broker_list->value()},
+                  {"group.id", "wolf_parser5"},
+                  {"client.id", "wolf_parser5"},
+                  {"auto.offset.reset", "earliest"},
+                  {"queued.max.messages.kbytes", 64},
+                  {"fetch.max.bytes", 64 * 1024},
+                  {"enable.auto.commit", true},
+                  {"heartbeat.interval.ms", 10000},
+                  {"session.timeout.ms", 50000},
+                  {"metadata.max.age.ms", 300000}
+              })
       ),
-      create<string_to_json>(),
-      create<regex>(regex::parse_file(p.get_config_dir() + "parsers")),
-      create<get_elapsed_preevents>(
+      make<string_to_json>(),
+      make<regex>(regex::parse_file(p.get_config_dir() + "parsers")),
+      make<get_elapsed_preevents>(
           get_elapsed_preevents::parse_file(p.get_config_dir() + "elapsed")
       )->register_preevents_output(
           out("correlation_data")
       ),
-      create<count_logs>(
+      make<count_logs>(
           std::vector<std::string>({"logId", "host", "group", "level", "component", "spocGuid"})
       )->register_stats_output(
-          create<lambda>(
+          make<lambda>(
               [&](json &message) {
                 message.metadata["group"] = message["group"].get_string();
               }
           ),
-          create<json_to_influx>(
+          make<json_to_influx>(
               "logs_count",
               std::vector<std::string>({"logId", "host", "group", "level", "component", "spocGuid"}),
               std::vector<std::string>({"count"}),
               "@timestamp"
           ),
-          create<lambda>(
+          make<lambda>(
               [&](json &message) {
                 message.assign_object({
                                           {"message", message.get_string()},

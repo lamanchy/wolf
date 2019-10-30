@@ -9,9 +9,9 @@
 
 namespace wolf {
 
-class json_to_string : public plugin {
+class json_to_string : public base_plugin {
  public:
-  json_to_string(bool add_newline = false) : add_newline(add_newline) {}
+  json_to_string(const option<bool>& add_newline = false) : add_newline(add_newline->value()) {}
 
  protected:
   void process(json &&message) override {
