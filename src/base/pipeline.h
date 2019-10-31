@@ -7,15 +7,11 @@
 #include <plugins/drop.h>
 #include <base/options/event_option.h>
 #include <cxxopts.hpp>
-#include <base/options/constant.h>
 #include <base/options/command.h>
 
 namespace wolf {
 
 class pipeline {
- private:
-  options opts;
-
  public:
   Logger &logger = Logger::getLogger();
 
@@ -64,6 +60,7 @@ class pipeline {
   unsigned number_of_processors = std::thread::hardware_concurrency();
   static bool initialized;
   std::string config_dir;
+  options opts;
 
   void evaluate_options();
   void setup_persistency();
