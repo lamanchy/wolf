@@ -1,4 +1,5 @@
 #include "pipeline.h"
+#include "sleeper.h"
 
 namespace wolf {
 
@@ -15,7 +16,8 @@ pipeline::pipeline(options _opts) :
   initialized = true;
 
   evaluate_options();
-  setup_persistency();
+  if (is_persistent())
+    setup_persistency();
 
   logger.info("Pipeline initialized");
 
@@ -38,10 +40,8 @@ void pipeline::run() {
   stop();
   logger.info("Pipeline stopped");
 }
-void pipeline::setup_persistency() {
-  if (base_plugin::persistent) base_plugin::buffer_size = 1024;
-  else base_plugin::buffer_size = 128;
 
+void pipeline::setup_persistency() {
   std::string path = extras::get_executable_dir();
 
   logger.info("Configuring STXXL");
@@ -63,7 +63,9 @@ void pipeline::setup_persistency() {
   disk.delete_on_exit = true;
   disk.direct = stxxl::disk_config::DIRECT_TRY;
   cfg->add_disk(disk);
+
 }
+
 template<typename T>
 std::vector<T> pipeline::for_each_plugin(const std::function<T(base_plugin &)> &function) {
   // TODO this must be done better, yuck
@@ -98,12 +100,10 @@ void pipeline::for_each_plugin(const std::function<void(base_plugin &)> &functio
 }
 void pipeline::process() {
   base_plugin::is_thread_processor = true;
+  sleeper sleeper;
   while (plugins_running()) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    for_each_plugin([](base_plugin &p) { while (p.process_buffer()) {}; });
-//      if (not std::all_of(res.begin(), res.end(), [](bool r) { return r; }))
-    // TODO build up sleep time
-//      std::this_thread::yield();
+    sleeper.sleep();
+    for_each_plugin([&sleeper](base_plugin &p) { while (p.process_buffer()) { sleeper.decrease(); }});
   }
   std::for_each(plugins.begin(), plugins.end(), [this](plugin &) {
     for_each_plugin([](base_plugin &p) { while (p.process_buffer()) {}; });
@@ -121,6 +121,7 @@ void pipeline::catch_signal(int signal) {
 
   Logger::getLogger().info("interrupt signal received, stopping wolf");
 }
+
 void pipeline::start() {
   for_each_plugin([](base_plugin &p) { p.start(); });
 
@@ -128,21 +129,26 @@ void pipeline::start() {
     processors.emplace_back(&pipeline::process, this);
   }
 }
+
 void pipeline::wait() {
   while (plugins_running()) {
     if (interrupt_received) {
       break;
     }
+    // TODO wake up with conditional variable
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 }
+
 bool pipeline::plugins_running() {
   return std::any_of(plugins.begin(), plugins.end(), [](plugin &p) { return p->is_running(); });
 }
+
 void pipeline::stop() {
   for_each_plugin([](base_plugin &p) { p.stop(); });
   std::for_each(processors.begin(), processors.end(), [](std::thread &thread) { thread.join(); });
 }
+
 void pipeline::evaluate_options() {
   std::string path = extras::get_executable_dir();
 
@@ -152,13 +158,22 @@ void pipeline::evaluate_options() {
       <command<std::string>>(options::general_config_group_name, "l,logging_dir", "Path to logs", path);
   auto persistent_config = opts.add_named
       <command<bool>>(options::general_config_group_name, "p,persistent", "Can pipeline store events on disk?");
+  auto buffer_size_config = opts.add_named
+      <command<unsigned>>(options::general_config_group_name, "b,buffer_size",
+                          "How much events fits into buffer? Affects RAM usage as well as performance", "4096");
+  auto thread_processors_config = opts.add_named
+      <command<unsigned>>(options::general_config_group_name, "t,threads",
+                          "How many threads wolf uses to process events",
+                          std::to_string(std::thread::hardware_concurrency()));
 
   opts.parse_options();
   opts.print_options();
 
   config_dir = config_config->value();
   logger.set_logging_dir(logging_config->value());
-  base_plugin::persistent = persistent_config->value();
+  queue::persistent = persistent_config->value();
+  queue::buffer_size = buffer_size_config->value();
+  number_of_processors = thread_processors_config->value();
 }
 
 }

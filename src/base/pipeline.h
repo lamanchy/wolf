@@ -26,7 +26,6 @@ class pipeline {
 
   pipeline &operator=(pipeline &&) = delete;
 
-  template<typename... Args>
   void register_plugin(const plugin &plugin) {
     plugins.push_back(plugin);
   }
@@ -37,12 +36,12 @@ class pipeline {
     plugin->register_output(chain_plugins(args...));
   }
 
-  const plugin &chain_plugins(const plugin &plugin) {
+  static const plugin &chain_plugins(const plugin &plugin) {
     return plugin;
   }
 
   template<typename... Args>
-  const plugin &chain_plugins(const plugin &plugin, Args &&... args) {
+  static const plugin &chain_plugins(const plugin &plugin, Args &&... args) {
     plugin->register_output(chain_plugins(args...));
 
     return plugin;
@@ -54,11 +53,23 @@ class pipeline {
     return config_dir;
   }
 
+  static bool is_initialized() {
+    return initialized;
+  }
+
+  bool is_persistent() {
+    if (not is_initialized())
+      logger.fatal("Pipeline is not initialized yet, cannot access persistence info.");
+    return queue::persistent;
+  }
+
  private:
+  static std::atomic<int> interrupt_received;
+  static bool initialized;
+
   std::vector<plugin> plugins;
   std::vector<std::thread> processors;
   unsigned number_of_processors = std::thread::hardware_concurrency();
-  static bool initialized;
   std::string config_dir;
   options opts;
 
@@ -73,8 +84,6 @@ class pipeline {
   void process();
 
   static void catch_signal(int signal);
-
-  static std::atomic<int> interrupt_received;
 
   void start();
 

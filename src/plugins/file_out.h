@@ -13,8 +13,8 @@ namespace wolf {
 
 class file_out : public mutexed_threaded_plugin {
  public:
-  explicit file_out(const option<std::string>& file_name) :
-  file_name(file_name->value()) {
+  explicit file_out(const option<std::string> &file_name) :
+      file_name(file_name->value()) {
     current_date = extras::get_date();
     file.open(get_file_name(), std::ios_base::app | std::ios_base::binary);
   }

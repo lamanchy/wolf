@@ -20,16 +20,12 @@ class kafka_in : public threaded_plugin {
   kafka_in(const option<std::string> &topic,
            config conf)
       : topic(topic->value()),
-        conf(std::move(conf)) {}
+        consumer(std::move(conf)) {}
 
  protected:
 
-  void run() override {
+  void setup() override {
     using namespace cppkafka;
-
-    // Create the consumer
-    Consumer consumer(conf);
-
     // Print the assigned partitions on assignment
     consumer.set_assignment_callback([](const TopicPartitionList &partitions) {
       std::cout << "Got assigned: " << partitions << std::endl;
@@ -43,8 +39,11 @@ class kafka_in : public threaded_plugin {
     // Subscribe to the topic
     consumer.subscribe({topic});
 
-    std::cout << "Consuming messages from topic " << topic << std::endl;
+    logger.info("Consuming messages from topic " + topic);
+  }
 
+  void loop() override {
+    using namespace cppkafka;
     // Now read lines and write them into kafka
     while (running) {
       // Try to consume a message
@@ -74,8 +73,9 @@ class kafka_in : public threaded_plugin {
     }
   }
 
-  config conf;
+ private:
   std::string topic;
+  cppkafka::Consumer consumer;
 };
 
 }

@@ -17,6 +17,7 @@ class json : public tao::json::value {
   json(taojson &&tj) : taojson(std::move(tj)) {}
 
   taojson metadata = tao::json::empty_object;
+  unsigned long size = 1;
 
 //  basic_value<tao::json::traits, tao::json::internal::empty_base> *safe_find(const std::string &key) {
 //    auto a = find(key);

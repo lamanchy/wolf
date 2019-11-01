@@ -12,7 +12,7 @@ namespace wolf {
 template<typename Serializer>
 class file_in : public threaded_plugin {
  public:
-  explicit file_in(const option<std::string>& file_name) {
+  explicit file_in(const option<std::string> &file_name) {
     file.open(file_name->value(), std::ios_base::binary);
   }
 

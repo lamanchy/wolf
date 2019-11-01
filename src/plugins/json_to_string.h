@@ -11,12 +11,13 @@ namespace wolf {
 
 class json_to_string : public base_plugin {
  public:
-  json_to_string(const option<bool>& add_newline = false) : add_newline(add_newline->value()) {}
+  json_to_string(const option<bool> &add_newline = false) : add_newline(add_newline->value()) {}
 
  protected:
   void process(json &&message) override {
     auto res = json(tao::json::to_string(message) + (add_newline ? "\n" : ""));
     res.metadata = message.metadata;
+    res.size = message.size;
     output(std::move(res));
   }
 

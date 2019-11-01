@@ -2,9 +2,9 @@
 
 int main(int argc, char *argv[]) {
   using namespace wolf;
-  
+
   options o(argc, argv);
-  
+
   auto input_port = o.add<command<unsigned short>>("input_port", "Input port", "9070");
   auto stream_sort_seconds = o.add<command<int>>("stream_sort_seconds", "Seconds to wait with each event", "60");
 

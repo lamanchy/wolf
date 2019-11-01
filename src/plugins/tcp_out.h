@@ -85,7 +85,7 @@ class tcp_out : public base_plugin {
   }
 
   void check_if_full() {
-    is_full_ = write_msgs_.size() > base_plugin::buffer_size;
+    is_full_ = write_msgs_.size() > queue::buffer_size;
   }
 
   asio::io_context io_context_;

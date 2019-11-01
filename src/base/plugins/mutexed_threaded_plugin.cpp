@@ -20,5 +20,6 @@ void mutexed_threaded_plugin::run() {
     std::lock_guard<std::mutex> lg(lock);
     locked_loop();
   }
+  running = false;
 }
 }

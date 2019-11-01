@@ -66,6 +66,7 @@ class json_to_influx : public base_plugin {
 
     auto to_output = json(std::move(res.str()));
     to_output.metadata = message.metadata;
+    to_output.size = message.size;
     output(std::move(to_output));
   }
 

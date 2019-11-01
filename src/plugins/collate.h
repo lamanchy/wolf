@@ -34,14 +34,12 @@ class collate : public mutexed_threaded_plugin {
     }
   }
 
-  bool is_full() override {
-    return false;
-  }
-
  private:
   void empty() {
     if (!buffer.empty()) {
-      output(json(std::move(buffer)));
+      json j(std::move(buffer));
+      j.size = count;
+      output(std::move(j));
       buffer.clear();
       count = 0;
     }

@@ -36,10 +36,6 @@ class stream_sort : public mutexed_threaded_plugin {
       std::function<bool(const json &lhs, const json &rhs)>
   >;
 
-  void setup() override {
-    mark_as_processor();
-  }
-
   void unlocked_loop() override {
     lock.lock();
     while (not priority_queue.empty() and is_ready(priority_queue.top())) {

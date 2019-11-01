@@ -16,6 +16,7 @@
 #include <thread>
 #include <extras/logger.h>
 #include <base/json.h>
+#include <base/queue.h>
 
 namespace wolf {
 class base_plugin;
@@ -46,19 +47,19 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
 
   base_plugin(const base_plugin &) = delete;
 
-  base_plugin(base_plugin &&other) {
+  base_plugin(base_plugin &&other) noexcept {
     *this = std::move(other);
   };
 
   base_plugin &operator=(const base_plugin &) = delete;
 
-  base_plugin &operator=(base_plugin &&other) {
+  base_plugin &operator=(base_plugin &&other) noexcept {
     id = other.id;
     return *this;
   };
 
-  void mark_as_processor() {
-    base_plugin::is_thread_processor = true;
+  static bool is_processor() {
+    return is_thread_processor;
   }
 
  protected:
@@ -67,12 +68,6 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
   }
 
   virtual void process(json &&message) {}
-
-  virtual void safe_prepare(json &&message);
-
-  virtual void prepare(json &&message) {
-    process(std::move(message));
-  }
 
   virtual bool is_running() {
     return false;
@@ -88,16 +83,16 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
 
   virtual bool are_outputs_full();
 
-  void output(json &&message) {
-    output("default", std::move(message));
+  void output(json &&message, bool non_blocking = false) {
+    output("default", std::move(message), non_blocking);
   }
 
-  virtual void output(const std::string &output_type, json &&message) {
-    outputs.at(output_type)->receive(std::move(message));
+  void output(const std::string &output_type, json &&message, bool non_blocking = false) {
+    outputs.at(output_type)->receive(std::move(message), non_blocking);
   }
 
   template<typename... Args>
-  plugin register_named_output(std::string output_name, plugin plugin, Args &&... args) {
+  plugin register_named_output(const std::string &output_name, const plugin &plugin, Args &&... args) {
     auto it = outputs.find(output_name);
     if (it != outputs.end()) throw std::runtime_error("plugin already registered output named: " + output_name);
     outputs.emplace(std::make_pair(output_name, plugin));
@@ -107,64 +102,28 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
     return shared_from_this();
   }
 
-  static unsigned buffer_size;
  private:
   friend class pipeline;
+  queue q;
 
   static thread_local bool is_thread_processor;
-  static bool persistent;
-
-  void process_back_queue_front();
 
   bool process_buffer();
 
-  void empty_front_queue();
-
   std::map<std::string, plugin> outputs;
-  std::queue<json> front_queue;
-  std::queue<json> front_processing_queue;
-  std::timed_mutex front_queue_mutex;
-  std::mutex front_processing_mutex;
-  stxxl::queue<char> persistent_queue;
-//  std::queue<char> persistent_queue;
-  std::mutex persistent_queue_mutex;
-  std::queue<json> back_queue;
-  std::queue<json> back_processing_queue;
-  std::mutex back_queue_mutex;
-  std::mutex back_processing_mutex;
-
-  std::atomic<bool> swappable{true};
-
-  std::vector<char> tmp_front_buffer1;
-  std::string tmp_front_buffer2;
-
-  std::vector<char> tmp_back_buffer1;
 
   static std::atomic<id_type> id_counter;
-  id_type id;
+  id_type id{};
 
-//  json get_buffer_stats() {
-//    std::lock_guard<std::mutex> bqlg(back_queue_mutex);
-//    std::lock_guard<std::timed_mutex> fqlg(front_queue_mutex);
-//    std::lock_guard<std::mutex> pqlg(persistent_queue_mutex);
-//    return {
-//        {"front_queue_size", front_queue.size()},
-//        {"back_queue_size", back_queue.size()},
-//        {"persistent_queue_size", persistent_queue.size()}
-//    };
-//  }
+  virtual void prepare(json &&message) {
+    process(std::move(message));
+  }
 
-  void receive(json &&message);
+  virtual void safe_prepare(json &&message);
+
+  void receive(json &&message, bool non_blocking);
 
   void buffer(json &&message);
-
-  constexpr static unsigned string_serializer_divisor = 126;
-  constexpr static char string_serializer_end = 127;
-
-  static std::string get_serialized_size(size_t size);
-
-  static size_t get_deserialized_size(std::string serialized_form);
-
 };
 
 template<typename T, typename... Args>

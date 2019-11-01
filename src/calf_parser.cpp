@@ -33,13 +33,14 @@ int main(int argc, char *argv[]) {
     };
   } else {
     out = [&](const string &type) {
-      return make<collate<line>>(60, 1000)->register_output(
+      return pipeline::chain_plugins(
+          make<collate<line>>(60, 1000),
           make<tcp_out<compressed>>(output_ip, "9070")
       );
     };
   }
 
-  plugin common_processing = p.chain_plugins(
+  plugin common_processing = pipeline::chain_plugins(
       make<add_local_info>(group, max_loglevel),
       make<json_to_string>(),
       out("unified_logs")
@@ -47,6 +48,7 @@ int main(int argc, char *argv[]) {
 
   p.register_plugin(
       make<tcp_in<line>>(9556),
+      make<stats>(),
       make<string_to_json>(),
       make<normalize_nlog_logs>(),
       common_processing

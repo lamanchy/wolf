@@ -52,7 +52,7 @@ class generator : public threaded_plugin {
 //      if (i % (count/20) == 0) {
 //        std::cerr << outputs.at("default")->front_queue.size() << std::endl;
 //        std::cerr << outputs.at("default")->back_queue.size() << std::endl;
-//        std::cerr << outputs.at("default")->persistent_queue.size() << std::endl;
+//        std::cerr << outputs.at("default")->persistent_queue->size() << std::endl;
 //      }
     if (i > count) {
       end_loop();

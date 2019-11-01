@@ -11,8 +11,8 @@ namespace wolf {
 
 class time_sort : public mutexed_threaded_plugin {
  public:
-  time_sort(
-      const option<int>& seconds_to_wait
+  explicit time_sort(
+      const option<int> &seconds_to_wait
   ) : seconds_to_wait(seconds_to_wait->value()) {}
 
  protected:
@@ -21,10 +21,6 @@ class time_sort : public mutexed_threaded_plugin {
       std::deque<json>,
       std::function<bool(const json &lhs, const json &rhs)>
   >;
-
-  void setup() override {
-    mark_as_processor();
-  }
 
   void unlocked_loop() override {
     lock.lock();

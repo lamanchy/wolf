@@ -53,10 +53,6 @@ class count_logs : public mutexed_threaded_plugin {
     output(std::move(message));
   }
 
-  void setup() override {
-    mark_as_processor();
-  }
-
   void unlocked_loop() override {
     for (int i = 0; i < 10; i++)
       if (running)

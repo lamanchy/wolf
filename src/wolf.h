@@ -40,5 +40,4 @@
 #include <plugins/time_sort.h>
 #include <plugins/elapsed.h>
 
-
 #endif //WOLF_SRC_WOLF_H_

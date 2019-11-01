@@ -15,7 +15,7 @@ namespace wolf {
 class filter : public base_plugin {
  public:
   filter(std::function<bool(const json &)> condition) :
-  condition(std::move(condition)) {}
+      condition(std::move(condition)) {}
 
   template<typename... Args>
   plugin filtered(plugin plugin, Args &&... args) {

@@ -14,6 +14,7 @@ class string_to_json : public base_plugin {
   void process(json &&message) {
     auto res = json(tao::json::from_string(message.as<std::string>()));
     res.metadata = message.metadata;
+    res.size = message.size;
     output(std::move(res));
   }
 };
