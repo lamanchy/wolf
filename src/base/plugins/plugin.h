@@ -28,10 +28,6 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
 
   Logger &logger = Logger::getLogger();
 
-  plugin register_output() {
-    return shared_from_this();
-  }
-
   template<typename... Args>
   plugin register_output(plugin plugin, Args &&... args) {
     return register_named_output("default", std::move(plugin), args...);
@@ -93,11 +89,15 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
 
   template<typename... Args>
   plugin register_named_output(const std::string &output_name, const plugin &plugin, Args &&... args) {
+    register_named_output(output_name, plugin);
+    plugin->register_output(args...);
+    return shared_from_this();
+  }
+  template<typename... Args>
+  plugin register_named_output(const std::string &output_name, const plugin &plugin) {
     auto it = outputs.find(output_name);
     if (it != outputs.end()) throw std::runtime_error("plugin already registered output named: " + output_name);
     outputs.emplace(std::make_pair(output_name, plugin));
-
-    plugin->register_output(args...);
 
     return shared_from_this();
   }
