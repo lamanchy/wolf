@@ -7,29 +7,35 @@
 
 #include <chrono>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
 namespace wolf {
 
 class sleeper {
  public:
-  void reset() {
-    current = min;
-  }
+  sleeper ();
+  void reset();
 
-  void decrease() {
-    if (current > min)
-      current /= 2;
-  }
+  void decrease_sleep_time();
 
-  void sleep() {
-    if (current > min)
-      std::this_thread::sleep_for(std::chrono::microseconds(current));
-    if (current < max)
-      current *= 2;
-  }
+  std::chrono::microseconds get_sleep_time();
+
+  void increase_sleep_time();
+
+  void increasing_sleep();
+
+  void sleep_for(std::chrono::microseconds duration);
+
+  void sleep();
+
+  void wake_up();
 
  private:
+  std::mutex m;
+  std::condition_variable cv;
+  bool should_wake_up = false;
   unsigned min{500}, max{1000000}, current{min};
-
 };
 
 }

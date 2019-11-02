@@ -23,7 +23,6 @@ class kafka_in : public threaded_plugin {
         consumer(std::move(conf)) {}
 
  protected:
-
   void setup() override {
     using namespace cppkafka;
     // Print the assigned partitions on assignment
@@ -44,33 +43,32 @@ class kafka_in : public threaded_plugin {
 
   void loop() override {
     using namespace cppkafka;
-    // Now read lines and write them into kafka
-    while (running) {
-      // Try to consume a message
-      Message msg = consumer.poll();
-      if (msg) {
-        // If we managed to get a message
-        if (msg.get_error()) {
-          // Ignore EOF notifications from rdkafka
-          if (not msg.is_eof()) {
-            logger.warn("Received error notification: " + msg.get_error().to_string());
-          }
-        } else {
-          // Print the key (if any)
+    // Try to consume a message
+    Message msg = consumer.poll(std::chrono::milliseconds(0));
+    if (msg) {
+      // If we managed to get a message
+      if (msg.get_error()) {
+        // Ignore EOF notifications from rdkafka
+        if (not msg.is_eof()) {
+          logger.warn("Received error notification: " + msg.get_error().to_string());
+        }
+      } else {
+        // Print the key (if any)
 //          if (msg.get_key()) {
 //            std::cout << msg.get_key() << " -> ";
 //          }
 
-          json j = json(std::string(msg.get_payload()));
-          j.metadata = {
-              {"topic", msg.get_topic()}
-          };
-          output(std::move(j));
-
+        json j = json(std::string(msg.get_payload()));
+        j.metadata = {
+            {"topic", msg.get_topic()}
+        };
+        output(std::move(j));
 //                        consumer.commit(msg);
-        }
       }
+    } else {
+      get_loop_sleeper().sleep_for(std::chrono::seconds(1));
     }
+
   }
 
  private:

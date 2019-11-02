@@ -10,6 +10,10 @@
 namespace wolf {
 
 class mutexed_plugin : public base_plugin {
+ public:
+  mutexed_plugin() {
+    buffer_output();
+  }
  protected:
   void prepare(json &&message) override;
 

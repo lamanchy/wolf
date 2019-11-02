@@ -34,7 +34,7 @@ class file_out : public mutexed_threaded_plugin {
   }
 
   void unlocked_loop() override {
-    std::this_thread::sleep_for(std::chrono::minutes(1));
+    get_loop_sleeper().sleep_for(std::chrono::minutes(1));
   }
 
  private:

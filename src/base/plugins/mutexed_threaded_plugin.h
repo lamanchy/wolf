@@ -9,6 +9,10 @@
 namespace wolf {
 
 class mutexed_threaded_plugin : public threaded_plugin {
+ public:
+  mutexed_threaded_plugin() {
+    buffer_output();
+  }
  protected:
   void prepare(json &&message) override;
 

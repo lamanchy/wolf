@@ -58,6 +58,8 @@ int main(int argc, char *argv[]) {
             message.metadata["output"] = "metrics-" + message["group"].get_string();
           }
       ),
+      // todo make few plugins in a 'mutex' plugin, so order is not changed
+      // or just use one thread...
       make<time_sort>(stream_sort_seconds),
       make<elapsed>(max_seconds_to_keep)->register_expired_output(
           make<json_to_influx>(

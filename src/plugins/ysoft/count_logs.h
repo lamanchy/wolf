@@ -54,9 +54,7 @@ class count_logs : public mutexed_threaded_plugin {
   }
 
   void unlocked_loop() override {
-    for (int i = 0; i < 10; i++)
-      if (running)
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+    get_loop_sleeper().sleep_for(std::chrono::seconds(10));
   }
 
   void locked_loop() override {

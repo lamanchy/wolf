@@ -5,18 +5,14 @@
 #ifndef WOLF_CIN_H
 #define WOLF_CIN_H
 
-#include <base/plugins/threaded_plugin.h>
+#include "istream_in.h"
 
 namespace wolf {
 
-class cin : public threaded_plugin {
- protected:
-  void setup() override {
-    for (std::string line; std::getline(std::cin, line);) {
-      output(json(line));
-    }
-    end_loop();
-  }
+template<typename Serializer>
+class cin : public istream_in<Serializer> {
+ public:
+  explicit cin(const option<std::string> &file_name) : istream_in<Serializer>(std::cin) {}
 };
 
 }

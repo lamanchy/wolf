@@ -8,11 +8,13 @@
 #include <base/options/event_option.h>
 #include <cxxopts.hpp>
 #include <base/options/command.h>
+#include "sleeper.h"
 
 namespace wolf {
 
 class pipeline {
  public:
+  static std::atomic<int> interrupt_received;
   Logger &logger = Logger::getLogger();
 
   explicit pipeline(options opts);
@@ -53,22 +55,10 @@ class pipeline {
     return config_dir;
   }
 
-  static bool is_initialized() {
-    return initialized;
-  }
-
-  bool is_persistent() {
-    if (not is_initialized())
-      logger.fatal("Pipeline is not initialized yet, cannot access persistence info.");
-    return queue::persistent;
-  }
-
  private:
-  static std::atomic<int> interrupt_received;
-  static bool initialized;
-
   std::vector<plugin> plugins;
   std::vector<std::thread> processors;
+  std::unique_ptr<sleeper[]> processors_sleepers;
   unsigned number_of_processors = std::thread::hardware_concurrency();
   std::string config_dir;
   options opts;
@@ -81,7 +71,7 @@ class pipeline {
 
   void for_each_plugin(const std::function<void(base_plugin &)> &function);
 
-  void process();
+  void process(int i);
 
   static void catch_signal(int signal);
 

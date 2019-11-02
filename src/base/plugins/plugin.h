@@ -17,6 +17,7 @@
 #include <extras/logger.h>
 #include <base/json.h>
 #include <base/queue.h>
+#include <base/sleeper.h>
 
 namespace wolf {
 class base_plugin;
@@ -58,16 +59,16 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
     return is_thread_processor;
   }
 
+  void buffer_output() {
+    always_buffered_output = true;
+  }
+
  protected:
   base_plugin() {
     id = id_counter++;
   }
 
   virtual void process(json &&message) {}
-
-  virtual bool is_running() {
-    return false;
-  }
 
   virtual void start() {}
 
@@ -77,14 +78,16 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
     return false;
   }
 
-  virtual bool are_outputs_full();
+  virtual void prepare(json &&message) {
+    process(std::move(message));
+  }
 
   void output(json &&message, bool non_blocking = false) {
     output("default", std::move(message), non_blocking);
   }
 
   void output(const std::string &output_type, json &&message, bool non_blocking = false) {
-    outputs.at(output_type)->receive(std::move(message), non_blocking);
+    outputs.at(output_type)->receive(std::move(message), non_blocking, always_buffered_output);
   }
 
   template<typename... Args>
@@ -93,37 +96,40 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
     plugin->register_output(args...);
     return shared_from_this();
   }
-  template<typename... Args>
-  plugin register_named_output(const std::string &output_name, const plugin &plugin) {
-    auto it = outputs.find(output_name);
-    if (it != outputs.end()) throw std::runtime_error("plugin already registered output named: " + output_name);
-    outputs.emplace(std::make_pair(output_name, plugin));
 
-    return shared_from_this();
+  plugin register_named_output(const std::string &output_name, const plugin &plugin);
+
+  virtual bool is_running() {
+    return false;
   }
 
  private:
   friend class pipeline;
   queue q;
 
+  unsigned num_of_parents = 0;
+  bool always_buffered_output = false;
+
   static thread_local bool is_thread_processor;
 
   bool process_buffer();
+
+  virtual bool are_outputs_full();
 
   std::map<std::string, plugin> outputs;
 
   static std::atomic<id_type> id_counter;
   id_type id{};
 
-  virtual void prepare(json &&message) {
-    process(std::move(message));
-  }
-
   virtual void safe_prepare(json &&message);
 
-  void receive(json &&message, bool non_blocking);
+  void receive(json &&message, bool non_blocking, bool always_buffer);
 
   void buffer(json &&message);
+
+  void do_stop();
+
+  std::vector<id_type> get_all_outputs_ids();
 };
 
 template<typename T, typename... Args>

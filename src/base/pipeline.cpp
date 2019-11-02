@@ -1,22 +1,21 @@
 #include "pipeline.h"
 #include "sleeper.h"
+#include "pipeline_status.h"
 
 namespace wolf {
 
 std::atomic<int> pipeline::interrupt_received{0};
 
-bool pipeline::initialized{false};
-
 pipeline::pipeline(options _opts) :
     opts(std::move(_opts)) {
-  if (initialized) {
+  if (pipeline_status::initialized) {
     logger.error("Pipeline already initialized, cannot create two pipelines.");
     exit(0);
   }
-  initialized = true;
+  pipeline_status::initialized = true;
 
   evaluate_options();
-  if (is_persistent())
+  if (pipeline_status::persistent)
     setup_persistency();
 
   logger.info("Pipeline initialized");
@@ -98,36 +97,37 @@ void pipeline::for_each_plugin(const std::function<void(base_plugin &)> &functio
   });
   for_each_plugin<int>(fn);
 }
-void pipeline::process() {
+void pipeline::process(int i) {
   base_plugin::is_thread_processor = true;
-  sleeper sleeper;
-  while (plugins_running()) {
-    sleeper.sleep();
-    for_each_plugin([&sleeper](base_plugin &p) { while (p.process_buffer()) { sleeper.decrease(); }});
+  auto &sleeper = processors_sleepers[i];
+  while (pipeline_status::is_running()) {
+    for_each_plugin([&sleeper](base_plugin &p) { while (p.process_buffer()) { sleeper.decrease_sleep_time(); }});
+    sleeper.increasing_sleep();
   }
-  std::for_each(plugins.begin(), plugins.end(), [this](plugin &) {
-    for_each_plugin([](base_plugin &p) { while (p.process_buffer()) {}; });
-  });
-
-  logger.info("ending processor");
 }
 void pipeline::catch_signal(int signal) {
   ++interrupt_received;
 
   if (interrupt_received >= 2) {
-    Logger::getLogger().error("Second interrup signal received, suicide now.");
+    Logger::getLogger().error("Second interrup signal received, suiciding now.");
     std::quick_exit(EXIT_FAILURE);
   }
 
   Logger::getLogger().info("interrupt signal received, stopping wolf");
+  pipeline_status::pipeline_sleeper.wake_up();
 }
 
 void pipeline::start() {
+  pipeline_status::running = true;
   for_each_plugin([](base_plugin &p) { p.start(); });
 
-  for (unsigned i = 0; i < number_of_processors; ++i) {
-    processors.emplace_back(&pipeline::process, this);
-  }
+  processors_sleepers = std::unique_ptr<sleeper[]>(new sleeper[number_of_processors]);
+  for (unsigned i = 0; i < number_of_processors; ++i)
+    processors_sleepers[i].wake_up();
+
+  for (unsigned i = 0; i < number_of_processors; ++i)
+    processors.emplace_back(&pipeline::process, this, i);
+
 }
 
 void pipeline::wait() {
@@ -135,8 +135,11 @@ void pipeline::wait() {
     if (interrupt_received) {
       break;
     }
-    // TODO wake up with conditional variable
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    pipeline_status::pipeline_sleeper.sleep();
+//    pipeline_status::pipeline_sleeper.sleep_for(std::chrono::seconds(1));
+//    for_each_plugin([this](base_plugin&plugin){
+//      logger.trace(std::string(typeid(plugin).name()) + " has size " + std::to_string(plugin.q.get_size()));
+//    });
   }
 }
 
@@ -145,7 +148,10 @@ bool pipeline::plugins_running() {
 }
 
 void pipeline::stop() {
-  for_each_plugin([](base_plugin &p) { p.stop(); });
+  std::for_each(plugins.begin(), plugins.end(), [](plugin &p) { p->do_stop(); });
+
+  pipeline_status::running = false;
+  for (unsigned i = 0; i < number_of_processors; ++i) processors_sleepers[i].wake_up();
   std::for_each(processors.begin(), processors.end(), [](std::thread &thread) { thread.join(); });
 }
 
@@ -171,8 +177,8 @@ void pipeline::evaluate_options() {
 
   config_dir = config_config->value();
   logger.set_logging_dir(logging_config->value());
-  queue::persistent = persistent_config->value();
-  queue::buffer_size = buffer_size_config->value();
+  pipeline_status::persistent = persistent_config->value();
+  pipeline_status::buffer_size = buffer_size_config->value();
   number_of_processors = thread_processors_config->value();
 }
 

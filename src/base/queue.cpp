@@ -5,17 +5,15 @@
 #include <thread>
 #include <base/plugins/plugin.h>
 #include "queue.h"
+#include "pipeline_status.h"
 
 namespace wolf {
-bool queue::persistent = true;
-unsigned queue::buffer_size = 128;
-
 void queue::push(json &&message) {
   front_queue_mutex.lock();
   size += message.size;
   front_queue.push(std::move(message));
 
-  if (persistent and front_queue.size() >= queue::buffer_size) {
+  if (pipeline_status::is_persistent() and front_queue.size() >= pipeline_status::get_buffer_size()) {
     empty_front_queue(); // unlocks fqm
     return;
   }

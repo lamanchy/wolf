@@ -13,7 +13,7 @@ class stats : public threaded_plugin {
   void loop() override {
     logger.info("Speed " + std::to_string(i) + " events per sec.");
     i = 0;
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    get_loop_sleeper().sleep_for(std::chrono::seconds(1));
   }
 
   void process(json &&message) override {

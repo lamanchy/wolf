@@ -7,6 +7,7 @@
 
 #include <base/plugins/plugin.h>
 #include <asio.hpp>
+#include <base/pipeline_status.h>
 
 namespace wolf {
 
@@ -44,7 +45,6 @@ class tcp_out : public base_plugin {
         break;
       }
     }
-    should_connect = false;
     socket_.close();
   }
 
@@ -85,7 +85,14 @@ class tcp_out : public base_plugin {
   }
 
   void check_if_full() {
-    is_full_ = write_msgs_.size() > queue::buffer_size;
+    is_full_ = size() > 64000;
+  }
+
+  unsigned long size() {
+    unsigned long sum = 0;
+    for (const auto & ss : write_msgs_)
+      sum += ss.length();
+    return sum;
   }
 
   asio::io_context io_context_;
@@ -93,7 +100,6 @@ class tcp_out : public base_plugin {
   std::deque<std::string> write_msgs_;
   std::mutex lock;
   std::atomic<bool> is_full_{false};
-  std::atomic<bool> should_connect{true};
 
   std::string host;
   std::string port;

@@ -26,12 +26,13 @@ class http_out : public threaded_plugin {
       url(url->value()) {};
 
  protected:
-
   void loop() override {
     if (ioc.run_one() == 0) {
       i = 0;
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      get_loop_sleeper().increasing_sleep();
       ioc.restart();
+    } else {
+      get_loop_sleeper().decrease_sleep_time();
     }
   }
 
@@ -43,18 +44,16 @@ class http_out : public threaded_plugin {
 //    ioc.run();
   }
 
- private:
-  asio::io_context ioc;
-
-  std::string host, port, url, method;
-  std::atomic<unsigned long> i{0};
- protected:
-
   bool is_full() override {
     return i >= 10;
   }
 
  private:
+  asio::io_context ioc;
+
+  std::string host, port, url, method;
+  std::atomic<unsigned long> i{0};
+
   using tcp = asio::ip::tcp;
 
   class session : public std::enable_shared_from_this<session> {

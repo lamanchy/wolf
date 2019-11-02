@@ -83,7 +83,7 @@ class elapsed : public mutexed_threaded_plugin {
   }
 
   void unlocked_loop() override {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    get_loop_sleeper().sleep_for(std::chrono::seconds(1));
   }
 
   void expired_output(json &&message) {

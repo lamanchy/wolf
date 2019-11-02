@@ -8,6 +8,7 @@
 #include <mutex>
 #include <atomic>
 #include "json.h"
+#include "pipeline_status.h"
 namespace wolf {
 class queue {
  public:
@@ -24,11 +25,9 @@ class queue {
   }
 
   bool is_full() {
-    return not persistent and get_size() >= buffer_size;
+    return not pipeline_status::is_persistent() and get_size() >= pipeline_status::get_buffer_size();
   }
 
-  static unsigned buffer_size;
-  static bool persistent;
  private:
   void do_pop(const std::function<void(json && )> &);
   Logger &logger = Logger::getLogger();

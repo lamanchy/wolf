@@ -1,5 +1,20 @@
 #include <wolf.h>
 
+template<typename TimeT = std::chrono::milliseconds>
+struct measure
+{
+  template<typename F, typename ...Args>
+  static typename TimeT::rep execution(F&& func, Args&&... args)
+  {
+    auto start = std::chrono::steady_clock::now();
+    std::forward<decltype(func)>(func)(std::forward<Args>(args)...);
+    auto duration = std::chrono::duration_cast< TimeT>
+        (std::chrono::steady_clock::now() - start);
+    return duration.count();
+  }
+};
+
+
 int main(int argc, char *argv[]) {
   using namespace wolf;
   using std::string;
@@ -13,7 +28,13 @@ int main(int argc, char *argv[]) {
   auto max_loglevel = opts.add<command<string>>(
       "max_loglevel", "Define max loglevel, one of OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL", "INFO");
 
+
+  // todo this should not be possible
+  auto b = make<json_to_string>();
   pipeline p(opts);
+  // todo this should not be possible
+  auto max_loglevel2 = opts.add<command<string>>(
+      "max_loglevel2", "Define max loglevel, one of OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL", "INFO");
 
   std::function<plugin(string)> out;
 
@@ -83,6 +104,9 @@ int main(int argc, char *argv[]) {
       out("metrics")
   );
   p.run();
+
+  // todo this should not be possible
+  auto a = make<json_to_string>();
 
   return 0;
 }

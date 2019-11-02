@@ -17,17 +17,14 @@ class add_local_info : public base_plugin {
   add_local_info(const option<std::string> &group,
                  const option<std::string> &max_loglevel) :
       group(group->value()),
-      max_loglevel(max_loglevel->value()) {}
-
- protected:
-
-  void start() override {
-    auto it = std::find(loglevels.begin(), loglevels.end(), max_loglevel);
+      max_loglevel(max_loglevel->value()) {
+    auto it = std::find(loglevels.begin(), loglevels.end(), this->max_loglevel);
     if (it == loglevels.end()) {
-      throw std::invalid_argument(max_loglevel + "is not valid loglevel");
+      throw std::invalid_argument(this->max_loglevel + "is not valid loglevel");
     }
   }
 
+ protected:
   void process(json &&message) override {
     auto host = message.find("host");
     if (host == nullptr) {

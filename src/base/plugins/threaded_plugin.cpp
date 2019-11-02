@@ -2,29 +2,42 @@
 // Created by lamanchy on 27.5.19.
 //
 
+#include <base/pipeline_status.h>
 #include "threaded_plugin.h"
 
 namespace wolf {
 
 void threaded_plugin::run() {
   setup();
-  while (loop_running) {
+  while (is_loop_running()) {
     loop();
   }
-  running = false;
+  flush();
+  mark_as_stopped();
 }
+bool threaded_plugin::is_loop_running() { return loop_running; }
+
+void threaded_plugin::mark_as_stopped() {
+  running = false;
+  pipeline_status::notify_sleeper();
+}
+
 void threaded_plugin::stop() {
   end_loop();
   thread.join();
 }
+
 void threaded_plugin::start() {
   running = true;
   loop_running = true;
   thread = std::thread(&threaded_plugin::run, this);
 }
+
 void threaded_plugin::end_loop() {
   loop_running = false;
+  loop_sleeper.wake_up();
 }
+
 bool threaded_plugin::is_running() {
   return running;
 }

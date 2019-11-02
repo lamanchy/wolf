@@ -22,45 +22,41 @@ class time_sort : public mutexed_threaded_plugin {
       std::function<bool(const json &lhs, const json &rhs)>
   >;
 
-  void unlocked_loop() override {
-    lock.lock();
+  void locked_loop() override {
+    using namespace std::chrono;
     std::sort(events.begin(), events.end(), [this](const json &lhs, const json &rhs) -> bool {
       return lhs.find("@timestamp")->get_string() < rhs.find("@timestamp")->get_string();
     });
+
     bool is_first = true;
-    std::chrono::time_point<std::chrono::system_clock> prev_time;
-    long real_duration = std::chrono::nanoseconds(std::chrono::seconds(seconds_to_wait)).count();
-    std::vector<json> to_keep;
-    std::vector<json> to_output;
-    for (auto event : events) {
-      if (
-          (
-              std::chrono::system_clock::now().time_since_epoch().count()
-                  - event.metadata.find("time_sort_inserted_time")->get_signed()
-          ) > real_duration
-              and (
-                  is_first
-                      or
-                          std::chrono::duration_cast<std::chrono::seconds>(
-                              extras::string_to_time(event.find("@timestamp")->get_string())
-                                  - prev_time).count() > seconds_to_wait
-              )
-          ) {
-        // old enough AND (first or has good distance)
-        to_output.push_back(std::move(event));
+    time_point<system_clock> prev_time;
+    long real_duration = nanoseconds(seconds(seconds_to_wait)).count();
+
+    auto old_enough = [&](const json &event) {
+      return (
+          system_clock::now().time_since_epoch().count() - event.metadata.find("time_sort_inserted_time")->get_signed()
+      ) > real_duration;
+    };
+    auto has_good_distance = [&](const json &event) {
+      return (
+          duration_cast<seconds>(extras::string_to_time(event.find("@timestamp")->get_string()) - prev_time).count()
+      ) > seconds_to_wait;
+    };
+
+    for (auto event_i = events.begin(); event_i != events.end();) {
+      if (old_enough(*event_i) and (is_first or has_good_distance(*event_i))) {
+        output(std::move(*event_i), true);
+        event_i = events.erase(event_i);
       } else {
-        // too young
         is_first = false;
-        prev_time = extras::string_to_time(event.find("@timestamp")->get_string());
-        to_keep.push_back(std::move(event));
+        prev_time = extras::string_to_time(event_i->find("@timestamp")->get_string());
+        ++event_i;
       }
     }
-    events = std::move(to_keep);
-    lock.unlock();
-    for (auto event: to_output)
-      output(std::move(event));
+  }
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+  void unlocked_loop() override {
+    get_loop_sleeper().sleep_for(std::chrono::seconds(1));
   }
 
   void process(json &&message) override {
