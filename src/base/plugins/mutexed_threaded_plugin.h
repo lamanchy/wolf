@@ -21,10 +21,9 @@ class mutexed_threaded_plugin : public threaded_plugin {
 
   void run() override;
 
-  std::mutex lock;
-
  private:
   void loop() override {}
+  std::mutex lock;
 };
 
 }

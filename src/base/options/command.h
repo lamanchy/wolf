@@ -2,7 +2,7 @@
 #define WOLF_COMMAND_H
 
 #include <utility>
-#include "event_option.h"
+#include "base_option.h"
 namespace wolf {
 
 template<typename T>

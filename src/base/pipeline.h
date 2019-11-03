@@ -5,7 +5,7 @@
 #include <thread>
 #include <base/plugins/base_plugin.h>
 #include <plugins/drop.h>
-#include <base/options/event_option.h>
+#include <base/options/base_option.h>
 #include <cxxopts.hpp>
 #include <base/options/command.h>
 #include <base/options/options.h>

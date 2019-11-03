@@ -28,9 +28,6 @@ class option_type : public base_option {
 
  protected:
   option_type() = default;
-
- private:
-  friend class options;
 };
 
 template<typename T>

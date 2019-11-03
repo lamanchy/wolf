@@ -9,15 +9,13 @@
 #include <memory>
 #include <cxxopts.hpp>
 #include <vector>
-#include "event_option.h"
+#include "base_option.h"
 
 namespace wolf {
 
 class options {
  public:
   options(int argc, char *argv[]);
-
-  void print_help();
 
   template<typename T, typename... Args>
   std::shared_ptr<T> add(Args &&... args) {
@@ -38,6 +36,7 @@ class options {
 
   void parse_options();
   void print_options();
+  void print_help();
 
   static const std::string general_config_group_name;
 

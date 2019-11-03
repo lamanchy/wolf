@@ -46,6 +46,11 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
     return *this;
   };
 
+  template<typename... Args>
+  plugin register_output(plugin plugin, Args &&... args) {
+    return register_named_output("default", std::move(plugin), args...);
+  }
+
  protected:
   base_plugin() {
     id = id_counter++;
@@ -82,11 +87,6 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
   }
 
   template<typename... Args>
-  plugin register_output(plugin plugin, Args &&... args) {
-    return register_named_output("default", std::move(plugin), args...);
-  }
-
-  template<typename... Args>
   plugin register_named_output(const std::string &output_name, const plugin &plugin, Args &&... args) {
     register_named_output(output_name, plugin);
     plugin->register_output(args...);
@@ -96,39 +96,29 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
   plugin register_named_output(const std::string &output_name, const plugin &plugin);
 
   Logger &logger = Logger::getLogger();
+
  private:
   using id_type = unsigned;
-
-  static bool is_processor() {
-    return is_thread_processor;
-  }
-
   friend class pipeline;
-  queue q;
-
-  unsigned num_of_parents = 0;
-  bool always_buffered_output = false;
-
-  static thread_local bool is_thread_processor;
-
-  bool process_buffer();
-
-  virtual bool are_outputs_full();
-
-  std::map<std::string, plugin> outputs;
-
-  static std::atomic<id_type> id_counter;
-  id_type id{};
-
-  virtual void safe_prepare(json &&message);
 
   void receive(json &&message, bool non_blocking, bool always_buffer);
-
   void buffer(json &&message);
+  bool process_buffer();
+  void safe_prepare(json &&message);
+
+  bool are_outputs_full();
+  std::vector<id_type> get_all_outputs_ids();
 
   void do_stop();
 
-  std::vector<id_type> get_all_outputs_ids();
+  queue q;
+  unsigned num_of_parents = 0;
+  bool always_buffered_output = false;
+  std::map<std::string, plugin> outputs;
+  id_type id{};
+
+  static thread_local bool is_thread_processor;
+  static std::atomic<id_type> id_counter;
 };
 
 }

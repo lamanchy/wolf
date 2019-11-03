@@ -6,7 +6,7 @@
 #define WOLF_FILE_IN_H
 
 #include <base/plugins/threaded_plugin.h>
-#include <base/options/event_option.h>
+#include <base/options/base_option.h>
 #include "istream_in.h"
 namespace wolf {
 

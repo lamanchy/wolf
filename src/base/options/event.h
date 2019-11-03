@@ -7,7 +7,7 @@
 #ifndef WOLF_EVENT_H
 #define WOLF_EVENT_H
 
-#include "event_option.h"
+#include "base_option.h"
 namespace wolf {
 
 template<typename T>

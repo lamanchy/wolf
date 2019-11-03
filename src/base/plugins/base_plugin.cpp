@@ -38,7 +38,7 @@ bool base_plugin::are_outputs_full() {
 }
 
 void base_plugin::receive(json &&message, bool non_blocking, bool always_buffer) {
-  if (is_processor()) {
+  if (is_thread_processor) {
     if (always_buffer or is_full()) buffer(std::move(message));
     else safe_prepare(std::move(message));
   } else {

@@ -17,6 +17,7 @@ class mutexed_plugin : public base_plugin {
  protected:
   void prepare(json &&message) override;
 
+ private:
   std::mutex lock;
 };
 
