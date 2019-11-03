@@ -57,32 +57,28 @@ class pipeline {
   }
 
  private:
-  std::vector<plugin> plugins;
-  std::vector<std::thread> processors;
-  std::unique_ptr<sleeper[]> processors_sleepers;
-  unsigned number_of_processors = std::thread::hardware_concurrency();
-  std::string config_dir;
-  options opts;
+  static void catch_signal(int signal);
 
   void evaluate_options();
   void setup_persistency();
 
   template<typename T>
   std::vector<T> for_each_plugin(const std::function<T(base_plugin &)> &function);
-
   void for_each_plugin(const std::function<void(base_plugin &)> &function);
 
   void process(int i);
 
-  static void catch_signal(int signal);
-
   void start();
-
-  bool plugins_running();
-
   void wait();
-
+  bool plugins_running();
   void stop();
+
+  std::vector<plugin> plugins;
+  std::vector<std::thread> processors;
+  std::unique_ptr<sleeper[]> processors_sleepers;
+  unsigned number_of_processors = std::thread::hardware_concurrency();
+  std::string config_dir;
+  options opts;
 };
 
 }

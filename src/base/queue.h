@@ -29,11 +29,16 @@ class queue {
   }
 
  private:
+  static std::string get_serialized_size(size_t size);
+  static size_t get_deserialized_size(std::string serialized_form);
+
   void do_pop(const std::function<void(json && )> &);
-  Logger &logger = Logger::getLogger();
-
   void empty_front_queue();
+  void check_if_all_is_empty();
+  void load_from_persistent_queue();
+  void try_setting_swappable();
 
+  Logger &logger = Logger::getLogger();
   std::queue<json> front_queue;
   std::queue<json> front_processing_queue;
   std::timed_mutex front_queue_mutex;
@@ -52,27 +57,8 @@ class queue {
   std::vector<char> tmp_back_buffer1;
   std::atomic<unsigned long> size{0};
 
-//  json get_buffer_stats() {
-//    std::lock_guard<std::mutex> bqlg(back_queue_mutex);
-//    std::lock_guard<std::timed_mutex> fqlg(front_queue_mutex);
-//    std::lock_guard<std::mutex> pqlg(persistent_queue_mutex);
-//    return {
-//        {"front_queue_size", front_queue.size()},
-//        {"back_queue_size", back_queue.size()},
-//        {"persistent_queue_size", persistent_queue->size()}
-//    };
-//  }
-
   constexpr static unsigned string_serializer_divisor = 126;
   constexpr static char string_serializer_end = 127;
-
-  static std::string get_serialized_size(size_t size);
-
-  static size_t get_deserialized_size(std::string serialized_form);
-
-  void check_if_all_is_empty();
-  void load_from_persistent_queue();
-  void try_setting_swappable();
 };
 }
 
