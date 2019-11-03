@@ -7,7 +7,7 @@
 #ifndef WOLF_REGEX_H
 #define WOLF_REGEX_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 #include <re2/set.h>
 
 namespace wolf {

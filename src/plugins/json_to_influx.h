@@ -5,7 +5,7 @@
 #ifndef WOLF_JSON_TO_INFLUX_H
 #define WOLF_JSON_TO_INFLUX_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 #include <extras/convert_time.h>
 
 #include <utility>

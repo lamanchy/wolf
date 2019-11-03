@@ -5,10 +5,11 @@
 #ifndef WOLF_SRC_WOLF_H_
 #define WOLF_SRC_WOLF_H_
 
+#include <base/make.h>
 #include <base/pipeline.h>
 #include <base/options/options.h>
 #include <base/options/command.h>
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 #include <base/options/event.h>
 #include <plugins/tcp_in.h>
 #include <serializers/line.h>

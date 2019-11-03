@@ -5,7 +5,7 @@
 #ifndef WOLF_DESERIALIZE_H
 #define WOLF_DESERIALIZE_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 namespace wolf {
 
 template<typename Serializer>

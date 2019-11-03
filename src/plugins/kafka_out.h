@@ -7,7 +7,7 @@
 #ifndef WOLF_KAFKA_OUT_H
 #define WOLF_KAFKA_OUT_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 #include <cppkafka/cppkafka.h>
 #include <base/plugins/mutexed_plugin.h>
 

@@ -2,7 +2,7 @@
 #define WOLF_THREADED_PLUGIN_H
 
 #include <thread>
-#include "plugin.h"
+#include "base_plugin.h"
 
 namespace wolf {
 

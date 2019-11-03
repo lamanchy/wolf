@@ -5,7 +5,7 @@
 #ifndef WOLF_DROP_H
 #define WOLF_DROP_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 namespace wolf {
 
 class drop : public base_plugin {

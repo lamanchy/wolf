@@ -3,7 +3,7 @@
 
 #include <csignal>
 #include <thread>
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 #include <plugins/drop.h>
 #include <base/options/event_option.h>
 #include <cxxopts.hpp>

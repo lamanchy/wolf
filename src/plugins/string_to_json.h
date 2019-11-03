@@ -5,7 +5,7 @@
 #ifndef WOLF_STRING_TO_JSON_H
 #define WOLF_STRING_TO_JSON_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 
 namespace wolf {
 

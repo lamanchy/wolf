@@ -3,7 +3,7 @@
 //
 
 #include <thread>
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 #include "queue.h"
 #include "pipeline_status.h"
 

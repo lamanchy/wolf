@@ -3,8 +3,9 @@
 
 #include <cxxopts.hpp>
 #include <extras/logger.h>
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 #include <base/json.h>
+#include <base/make.h>
 
 namespace wolf {
 

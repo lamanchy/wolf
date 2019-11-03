@@ -7,7 +7,7 @@
 #ifndef WOLF_COUNT_LOGS_H
 #define WOLF_COUNT_LOGS_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 #include <base/plugins/mutexed_threaded_plugin.h>
 #include <extras/convert_time.h>
 namespace wolf {

@@ -5,7 +5,7 @@
 #ifndef WOLF_TCP_OUT_H
 #define WOLF_TCP_OUT_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 #include <asio.hpp>
 #include <base/pipeline_status.h>
 

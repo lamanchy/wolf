@@ -7,7 +7,7 @@
 #ifndef WOLF_LAMBDA_H
 #define WOLF_LAMBDA_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 
 namespace wolf {
 class lambda : public base_plugin {

@@ -9,7 +9,7 @@
 #ifndef WOLF_GET_ELAPSED_PREEVENTS_H
 #define WOLF_GET_ELAPSED_PREEVENTS_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 namespace wolf {
 
 class get_elapsed_preevents : public base_plugin {

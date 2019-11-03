@@ -8,7 +8,7 @@
 #define WOLF_ADD_LOCAL_INFO_H
 
 #include <asio/ip/host_name.hpp>
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 
 namespace wolf {
 

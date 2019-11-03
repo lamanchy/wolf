@@ -9,7 +9,7 @@
 #ifndef WOLF_IF_H
 #define WOLF_IF_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 namespace wolf {
 
 class filter : public base_plugin {

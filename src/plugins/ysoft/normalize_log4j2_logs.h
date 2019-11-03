@@ -5,7 +5,7 @@
 #ifndef WOLF_NORMALIZE_LOG4J2_LOGS_H
 #define WOLF_NORMALIZE_LOG4J2_LOGS_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 #include <extras/convert_time.h>
 
 namespace wolf {

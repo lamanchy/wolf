@@ -5,7 +5,7 @@
 #ifndef WOLF_COPY_H
 #define WOLF_COPY_H
 
-#include <base/plugins/plugin.h>
+#include <base/plugins/base_plugin.h>
 namespace wolf {
 
 class copy : public base_plugin {

@@ -25,15 +25,6 @@ using plugin = std::shared_ptr<base_plugin>;
 
 class base_plugin : public std::enable_shared_from_this<base_plugin> {
  public:
-  using id_type = unsigned;
-
-  Logger &logger = Logger::getLogger();
-
-  template<typename... Args>
-  plugin register_output(plugin plugin, Args &&... args) {
-    return register_named_output("default", std::move(plugin), args...);
-  }
-
   bool operator==(const base_plugin &other) const {
     return id == other.id;
   }
@@ -55,14 +46,6 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
     return *this;
   };
 
-  static bool is_processor() {
-    return is_thread_processor;
-  }
-
-  void buffer_output() {
-    always_buffered_output = true;
-  }
-
  protected:
   base_plugin() {
     id = id_counter++;
@@ -78,6 +61,14 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
     return false;
   }
 
+  virtual bool is_running() {
+    return false;
+  }
+
+  void buffer_output() {
+    always_buffered_output = true;
+  }
+
   virtual void prepare(json &&message) {
     process(std::move(message));
   }
@@ -91,6 +82,11 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
   }
 
   template<typename... Args>
+  plugin register_output(plugin plugin, Args &&... args) {
+    return register_named_output("default", std::move(plugin), args...);
+  }
+
+  template<typename... Args>
   plugin register_named_output(const std::string &output_name, const plugin &plugin, Args &&... args) {
     register_named_output(output_name, plugin);
     plugin->register_output(args...);
@@ -99,11 +95,14 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
 
   plugin register_named_output(const std::string &output_name, const plugin &plugin);
 
-  virtual bool is_running() {
-    return false;
+  Logger &logger = Logger::getLogger();
+ private:
+  using id_type = unsigned;
+
+  static bool is_processor() {
+    return is_thread_processor;
   }
 
- private:
   friend class pipeline;
   queue q;
 
@@ -131,11 +130,6 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
 
   std::vector<id_type> get_all_outputs_ids();
 };
-
-template<typename T, typename... Args>
-std::shared_ptr<T> make(Args &&... args) {
-  return std::shared_ptr<T>(new T(std::forward<Args>(args)...));
-}
 
 }
 
