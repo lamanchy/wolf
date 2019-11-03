@@ -28,14 +28,14 @@ file(LOCK ${CMAKE_SOURCE_DIR}/lib DIRECTORY RELEASE)
 set(SOURCE_FILES
         src/base/plugins/base_plugin.h src/base/plugins/base_plugin.cpp src/base/pipeline.h src/base/pipeline.cpp
         src/base/plugins/threaded_plugin.h src/whereami/whereami.c src/whereami/whereami.h
-        src/plugins/generator.h src/plugins/cout.h src/plugins/tcp_in.h src/base/serializer.h src/serializers/line.h
-        src/plugins/string_to_json.h src/base/json.h src/plugins/kafka_out.h src/base/plugins/mutexed_plugin.h
+        src/plugins/inputs/generator.h src/plugins/outputs/cout.h src/plugins/inputs/tcp_in.h src/base/serializer.h src/serializers/line.h
+        src/plugins/string_to_json.h src/base/json.h src/plugins/outputs/kafka_out.h src/base/plugins/mutexed_plugin.h
         src/plugins/collate.h src/plugins/ysoft/normalize_nlog_logs.h src/extras/convert_time.h
         src/plugins/ysoft/normalize_log4j2_logs.h src/plugins/ysoft/normalize_serilog_logs.h
-        src/plugins/ysoft/add_local_info.h src/plugins/json_to_string.h src/plugins/tcp_out.h src/plugins/lambda.h
-        src/extras/logger.h src/extras/logger.cpp src/plugins/kafka_in.h src/plugins/http_out.h src/plugins/stats.h
+        src/plugins/ysoft/add_local_info.h src/plugins/json_to_string.h src/plugins/outputs/tcp_out.h src/plugins/lambda.h
+        src/extras/logger.h src/extras/logger.cpp src/plugins/inputs/kafka_in.h src/plugins/outputs/http_out.h src/plugins/stats.h
         src/base/plugins/mutexed_threaded_plugin.h src/extras/get_time.h src/plugins/stream_sort.h
-        src/extras/get_executable_path.h src/plugins/elapsed.h src/plugins/cin.h src/base/options/base_option.h
+        src/extras/get_executable_path.h src/plugins/elapsed.h src/plugins/inputs/cin.h src/base/options/base_option.h
         src/base/options/event.h src/base/options/command.h src/plugins/regex.h
         src/plugins/ysoft/get_elapsed_preevents.h src/plugins/ysoft/count_logs.h src/serializers/plain.h
         src/plugins/json_to_influx.h src/plugins/filter.h src/plugins/drop.h
@@ -46,7 +46,7 @@ set(SOURCE_FILES
         src/serializers/compressed.h src/base/options/base_option.h src/extras/convert_time.cpp
         src/extras/convert_time.h src/extras/get_executable_path.cpp src/extras/get_executable_path.h
         src/extras/get_time.cpp src/extras/get_time.h src/serializers/line.cpp src/serializers/line.h
-        src/plugins/time_sort.h src/plugins/file_out.h src/plugins/file_in.h src/plugins/copy.h src/extras/validators.h src/wolf.h src/base/queue.cpp src/base/queue.h src/base/sleeper.cpp src/base/sleeper.h src/plugins/istream_in.h src/base/pipeline_status.cpp src/base/pipeline_status.h src/base/options/options.cpp src/base/options/options.h src/base/make.h)
+        src/plugins/time_sort.h src/plugins/outputs/file_out.h src/plugins/inputs/file_in.h src/plugins/copy.h src/extras/validators.h src/wolf.h src/base/queue.cpp src/base/queue.h src/base/sleeper.cpp src/base/sleeper.h src/plugins/inputs/istream_in.h src/base/pipeline_status.cpp src/base/pipeline_status.h src/base/options/options.cpp src/base/options/options.h src/base/make.h)
 
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
