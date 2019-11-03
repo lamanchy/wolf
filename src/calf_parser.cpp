@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
 
   // todo this should not be possible
-  auto b = make<json_to_string>();
+  plugin b = make<json_to_string>();
   pipeline p(opts);
   // todo this should not be possible
   auto max_loglevel2 = opts.add<command<string>>(

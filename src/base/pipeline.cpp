@@ -158,16 +158,16 @@ void pipeline::stop() {
 void pipeline::evaluate_options() {
   std::string path = extras::get_executable_dir();
 
-  auto config_config = opts.add_named
+  auto config_config = opts.add_grouped
       <command<std::string>>(options::general_config_group_name, "c,config_dir", "Path to configs", path);
-  auto logging_config = opts.add_named
+  auto logging_config = opts.add_grouped
       <command<std::string>>(options::general_config_group_name, "l,logging_dir", "Path to logs", path);
-  auto persistent_config = opts.add_named
+  auto persistent_config = opts.add_grouped
       <command<bool>>(options::general_config_group_name, "p,persistent", "Can pipeline store events on disk?");
-  auto buffer_size_config = opts.add_named
+  auto buffer_size_config = opts.add_grouped
       <command<unsigned>>(options::general_config_group_name, "b,buffer_size",
                           "How much events fits into buffer? Affects RAM usage as well as performance", "4096");
-  auto thread_processors_config = opts.add_named
+  auto thread_processors_config = opts.add_grouped
       <command<unsigned>>(options::general_config_group_name, "t,threads",
                           "How many threads wolf uses to process events",
                           std::to_string(std::thread::hardware_concurrency()));

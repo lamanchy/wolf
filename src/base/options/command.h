@@ -1,14 +1,7 @@
-#include <utility>
-
-#include <utility>
-
-//
-// Created by lamanchy on 7.2.19.
-//
-
 #ifndef WOLF_COMMAND_H
 #define WOLF_COMMAND_H
 
+#include <utility>
 #include "event_option.h"
 namespace wolf {
 
@@ -28,33 +21,7 @@ class command : public not_event_option_type<T> {
     return _value;
   }
 
-  std::string value_to_string() {
-    return value_to_string_impl(static_cast<T *>(0));
-  }
-
-  template<typename U>
-  std::string value_to_string_impl(U *) {
-    std::stringstream ss;
-    ss << _value;
-    return ss.str();
-  }
-
-  std::string value_to_string_impl(bool *) {
-    std::stringstream ss;
-    ss << (_value ? "true" : "false");
-    return ss.str();
-  }
-
-  template<typename U>
-  std::string value_to_string_impl(std::vector<U> *) {
-    std::stringstream ss;
-    for (auto i : _value)
-      ss << i << ", ";
-    return ss.str();
-  }
-
   void print_info() override {
-
     std::string nam = name;
     while (nam.size() < 30) nam.push_back(' ');
     logger.info("    " + nam + value_to_string());
@@ -81,9 +48,15 @@ class command : public not_event_option_type<T> {
 
     validated = true;
   }
+
+ private:
+  std::string value_to_string() {
+    return value_to_string_impl(static_cast<T *>(0));
+  }
   void validate(const cxxopts::ParseResult &res) {
     validate_impl(res, static_cast<T *>(0));
   }
+
   template<typename U>
   void validate_impl(const cxxopts::ParseResult &res, U *) {
     if (res.count(name) == 0 and default_value == "")
@@ -91,12 +64,29 @@ class command : public not_event_option_type<T> {
     if (res.count(name) > 1)
       logger.fatal("Duplicate option " + name);
   }
-
   template<typename U>
   void validate_impl(const cxxopts::ParseResult &res, std::vector<U> *) {}
   void validate_impl(const cxxopts::ParseResult &res, bool *) {}
 
- private:
+  template<typename U>
+  std::string value_to_string_impl(U *) {
+    std::stringstream ss;
+    ss << _value;
+    return ss.str();
+  }
+  template<typename U>
+  std::string value_to_string_impl(std::vector<U> *) {
+    std::stringstream ss;
+    for (auto i : _value)
+      ss << i << ", ";
+    return ss.str();
+  }
+  std::string value_to_string_impl(bool *) {
+    std::stringstream ss;
+    ss << (_value ? "true" : "false");
+    return ss.str();
+  }
+
   Logger &logger = Logger::getLogger();
   T _value;
   std::string default_value;

@@ -1,8 +1,8 @@
 //
-// Created by lamanchy on 27.5.19.
+// Created by lomic on 11/2/2019.
 //
 
-#include "event_option.h"
+#include "options.h"
 wolf::options::options(int argc, char **argv) :
     g_opts(wolf::extras::get_executable_name()),
     argc(argc),
@@ -32,7 +32,8 @@ void wolf::options::parse_options() {
     logger.fatal("Error parsing options: " + std::string(ex.what()));
   }
 }
-std::string wolf::options::general_config_group_name{"General configuration"};
+const std::string wolf::options::general_config_group_name{"General configuration"};
+
 void wolf::options::print_options() {
   logger.info("Provided options:");
   for (const auto &o : all_options)

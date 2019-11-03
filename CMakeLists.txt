@@ -43,10 +43,10 @@ set(SOURCE_FILES
         src/base/plugins/threaded_plugin.cpp src/base/plugins/threaded_plugin.h
         src/base/plugins/mutexed_threaded_plugin.cpp src/base/plugins/mutexed_threaded_plugin.h
         src/base/plugins/mutexed_plugin.cpp src/base/plugins/mutexed_plugin.h src/serializers/compressed.cpp
-        src/serializers/compressed.h src/base/options/event_option.cpp src/base/options/event_option.h src/extras/convert_time.cpp
+        src/serializers/compressed.h src/base/options/event_option.h src/extras/convert_time.cpp
         src/extras/convert_time.h src/extras/get_executable_path.cpp src/extras/get_executable_path.h
         src/extras/get_time.cpp src/extras/get_time.h src/serializers/line.cpp src/serializers/line.h
-        src/plugins/time_sort.h src/plugins/file_out.h src/plugins/file_in.h src/plugins/copy.h src/extras/validators.h src/wolf.h src/base/queue.cpp src/base/queue.h src/base/sleeper.cpp src/base/sleeper.h src/plugins/istream_in.h src/base/pipeline_status.cpp src/base/pipeline_status.h)
+        src/plugins/time_sort.h src/plugins/file_out.h src/plugins/file_in.h src/plugins/copy.h src/extras/validators.h src/wolf.h src/base/queue.cpp src/base/queue.h src/base/sleeper.cpp src/base/sleeper.h src/plugins/istream_in.h src/base/pipeline_status.cpp src/base/pipeline_status.h src/base/options/options.cpp src/base/options/options.h)
 
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Debug)

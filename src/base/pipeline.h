@@ -8,6 +8,7 @@
 #include <base/options/event_option.h>
 #include <cxxopts.hpp>
 #include <base/options/command.h>
+#include <base/options/options.h>
 #include "sleeper.h"
 
 namespace wolf {
