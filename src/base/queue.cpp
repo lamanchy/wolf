@@ -4,6 +4,7 @@
 
 #include <thread>
 #include <base/plugins/base_plugin.h>
+#include <extras/gzip.h>
 #include "queue.h"
 #include "pipeline_status.h"
 
@@ -82,9 +83,9 @@ void queue::load_from_persistent_queue() {
   while (true) {
     s.push_back(persistent_queue->front());
     persistent_queue->pop();
-    if (s.back() == string_serializer_end) break;
+    if (s.back() == extras::gzip::string_serializer_end) break;
   }
-  size_t deserialized_size = get_deserialized_size(s);
+  size_t deserialized_size = extras::gzip::get_deserialized_size(s);
 
   tmp_back_buffer1.reserve(std::max(deserialized_size, tmp_back_buffer1.capacity()));
   char *ptr = &tmp_back_buffer1[0];
@@ -105,9 +106,9 @@ void queue::load_from_persistent_queue() {
     s.clear();
     while (true) {
       s.push_back(*ptr++);
-      if (s.back() == string_serializer_end) break;
+      if (s.back() == extras::gzip::string_serializer_end) break;
     }
-    deserialized_size = get_deserialized_size(s);
+    deserialized_size = extras::gzip::get_deserialized_size(s);
 
     tao::json::events::to_value consumer;
     tao::json::cbor::events::from_string(consumer, tao::basic_string_view<char>(ptr, deserialized_size));
@@ -148,7 +149,7 @@ void queue::empty_front_queue() {
   // serialize and decompress events to pq
   while (!front_processing_queue.empty()) {
     std::string s(serializer::to_string(front_processing_queue.front()));
-    for (char c: get_serialized_size(s.size())) tmp_front_buffer1.push_back(c);
+    for (char c: extras::gzip::get_serialized_size(s.size())) tmp_front_buffer1.push_back(c);
     tmp_front_buffer1.insert(tmp_front_buffer1.end(), s.begin(), s.end());
     front_processing_queue.pop();
   }
@@ -158,7 +159,7 @@ void queue::empty_front_queue() {
   persistent_queue_mutex.lock();
   if (persistent_queue == nullptr)
     persistent_queue = std::unique_ptr<stxxl::queue<char>>(new stxxl::queue<char>());
-  for (char c: get_serialized_size(tmp_front_buffer2.size())) persistent_queue->push(c);
+  for (char c: extras::gzip::get_serialized_size(tmp_front_buffer2.size())) persistent_queue->push(c);
   for (char c: tmp_front_buffer2) persistent_queue->push(c);
   persistent_queue_mutex.unlock();
   tmp_front_buffer2.clear();
@@ -173,25 +174,6 @@ void queue::do_pop(const std::function<void(json &&)> &fn) {
   fn(std::move(message));
 }
 
-std::string queue::get_serialized_size(size_t size) {
-  std::string result;
-  result.reserve(4);
-  while (size > 0) {
-    result.push_back((char) (size % string_serializer_divisor));
-    size /= string_serializer_divisor;
-  }
-  result.push_back(string_serializer_end);
-  return result;
-}
-size_t queue::get_deserialized_size(std::string serialized_form) {
-  size_t result = 0;
-  size_t base = 1;
-  serialized_form.pop_back();
-  for (char &c : serialized_form) {
-    result += c * base;
-    base *= string_serializer_divisor;
-  }
-  return result;
-}
+
 
 }

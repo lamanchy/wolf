@@ -37,12 +37,14 @@ bool base_plugin::are_outputs_full() {
   return false;
 }
 
-void base_plugin::receive(json &&message, bool non_blocking, bool always_buffer) {
-  if (is_thread_processor) {
-    if (always_buffer or is_full()) buffer(std::move(message));
+void base_plugin::receive(json &&message, const base_plugin& sender) {
+  if (sender.never_buffer) {
+    safe_prepare(std::move(message));
+  } else if (is_thread_processor) {
+    if (sender.should_prefer_buffering or is_full()) buffer(std::move(message));
     else safe_prepare(std::move(message));
   } else {
-    if (not non_blocking and q.is_full()) {
+    if (sender.non_processors_are_blocking and q.is_full()) {
       sleeper sleeper;
       while (q.is_full())
         sleeper.increasing_sleep();

@@ -16,6 +16,19 @@ class json : public tao::json::value {
 
   json(taojson &&tj) : taojson(std::move(tj)) {}
 
+  json copy_metadata(const json & source) {
+    metadata = source.metadata;
+    return *this;
+  }
+  json copy_size(const json & source) {
+    size = source.size;
+    return *this;
+  }
+
+  json copy_all(const json & source) {
+    return copy_metadata(source).copy_size(source);
+  }
+
   taojson metadata = tao::json::empty_object;
   unsigned long size = 1;
 };

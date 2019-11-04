@@ -12,15 +12,18 @@
 #include <utility>
 
 namespace wolf {
+namespace from {
 
-class kafka_in : public threaded_plugin {
+class kafka : public threaded_plugin {
  public:
   using config = cppkafka::Configuration;
 
-  kafka_in(const option<std::string> &topic,
+  kafka(const option<std::string> &topic,
            config conf)
       : topic(topic->value()),
-        consumer(std::move(conf)) {}
+        consumer(std::move(conf)) {
+    non_processors_should_block();
+  }
 
  protected:
   void setup() override {
@@ -76,6 +79,7 @@ class kafka_in : public threaded_plugin {
   cppkafka::Consumer consumer;
 };
 
+}
 }
 
 #endif //WOLF_KAFKA_IN_H

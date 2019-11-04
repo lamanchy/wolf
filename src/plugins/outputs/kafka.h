@@ -12,10 +12,11 @@
 #include <base/plugins/mutexed_plugin.h>
 
 namespace wolf {
+namespace to {
 
-class kafka_out : public threaded_plugin {
+class kafka : public threaded_plugin {
  public:
-  kafka_out(event_option<std::string> topic,
+  kafka(event_option<std::string> topic,
             const option<int> &partitions,
             cppkafka::Configuration conf)
       : topic(std::move(topic)),
@@ -63,6 +64,7 @@ class kafka_out : public threaded_plugin {
   std::atomic<int> current_partition{0};
 };
 
+}
 }
 
 #endif //WOLF_KAFKA_OUT_H

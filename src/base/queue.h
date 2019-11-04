@@ -29,9 +29,6 @@ class queue {
   }
 
  private:
-  static std::string get_serialized_size(size_t size);
-  static size_t get_deserialized_size(std::string serialized_form);
-
   void do_pop(const std::function<void(json && )> &);
   void empty_front_queue();
   void check_if_all_is_empty();
@@ -56,9 +53,6 @@ class queue {
 
   std::vector<char> tmp_back_buffer1;
   std::atomic<unsigned long> size{0};
-
-  constexpr static unsigned string_serializer_divisor = 126;
-  constexpr static char string_serializer_end = 127;
 };
 }
 

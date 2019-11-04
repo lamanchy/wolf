@@ -10,11 +10,11 @@
 #include <base/pipeline_status.h>
 
 namespace wolf {
+namespace to {
 
-template<typename Serializer>
-class tcp_out : public base_plugin {
+class tcp : public base_plugin {
  public:
-  tcp_out(const option<std::string> &host,
+  tcp(const option<std::string> &host,
           const option<std::string> &port)
       : base_plugin(),
         io_context_(),
@@ -28,7 +28,7 @@ class tcp_out : public base_plugin {
   void process(json &&message) override {
     lock.lock();
     bool write_in_progress = not write_msgs_.empty();
-    write_msgs_.push_back(s.serialize(std::move(message)));
+    write_msgs_.push_back(message.get_string());
     check_if_full();
     lock.unlock();
 
@@ -103,10 +103,9 @@ class tcp_out : public base_plugin {
 
   std::string host;
   std::string port;
-
-  Serializer s;
 };
 
+}
 }
 
 #endif //WOLF_TCP_OUT_H

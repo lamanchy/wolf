@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
   pipeline p(o);
 
   p.register_plugin(
-      make<kafka_in>("^metrics-.*", kafka_in::config(
+      make<from::kafka>("^metrics-.*", from::kafka::config(
           {
               {"metadata.broker.list", broker_list->value()},
               {"group.id", "wolf_metrics_forwarder5"},
@@ -23,15 +23,15 @@ int main(int argc, char *argv[]) {
               {"session.timeout.ms", 50000},
               {"metadata.max.age.ms", 300000}
           })),
-      make<string_to_json>(),
+      make<from::string>(),
       make<lambda>(
           [](json &message) {
             message.assign_string(std::string(message["message"].get_string() + "\n"));
           }
       ),
       make<stats>(),
-      make<collate<plain>>(),
-      make<http_out>(influx_ip, "8086", "/write?db=metric_db")
+      make<collate>(),
+      make<to::http>(influx_ip, "8086", "/write?db=metric_db")
   );
 
   p.run();

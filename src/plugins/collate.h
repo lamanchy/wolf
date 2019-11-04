@@ -9,14 +9,12 @@
 
 namespace wolf {
 
-template<typename Serializer>
 class collate : public mutexed_threaded_plugin {
  public:
   collate(const option<unsigned int> &secondsToWait = 1,
           const option<unsigned int> &maxEvents = 10000) :
       max_events(maxEvents->value()),
       seconds_to_wait(secondsToWait->value()) {
-
   }
  protected:
 
@@ -32,8 +30,8 @@ class collate : public mutexed_threaded_plugin {
   }
 
   void process(json &&message) override {
-    buffer += s.serialize(std::move(message));
-    count += 1;
+    buffer += message.get_string();
+    count += message.size;
     if (count > max_events) {
       empty();
     }
@@ -54,8 +52,6 @@ class collate : public mutexed_threaded_plugin {
   unsigned int seconds_to_wait;
   std::string buffer;
   unsigned int count = 0;
-  Serializer s;
-
 };
 
 }

@@ -119,7 +119,7 @@ void pipeline::catch_signal(int signal) {
 
 void pipeline::start() {
   pipeline_status::running = true;
-  for_each_plugin([](base_plugin &p) { p.start(); });
+  for_each_plugin([](base_plugin &p) { p.do_start(); });
 
   processors_sleepers = std::unique_ptr<sleeper[]>(new sleeper[number_of_processors]);
   for (unsigned i = 0; i < number_of_processors; ++i)

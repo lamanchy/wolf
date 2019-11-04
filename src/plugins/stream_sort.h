@@ -40,7 +40,7 @@ class stream_sort : public mutexed_threaded_plugin {
     while (not priority_queue.empty() and is_ready(priority_queue.top())) {
       // TODO can it be std::moved outside? (can, but with custom implementation)
       json j = priority_queue.top();
-      output(std::move(j), true);
+      output(std::move(j));
       priority_queue.pop();
     }
   }

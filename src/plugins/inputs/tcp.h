@@ -16,11 +16,14 @@
 #include <extras/logger.h>
 
 namespace wolf {
+namespace from {
 
-template<typename Serializer>
-class tcp_in : public threaded_plugin {
+class tcp : public threaded_plugin {
  public:
-  explicit tcp_in(const option<unsigned short> &port) : port(port->value()) {}
+  explicit tcp(const option<unsigned short> &port) : port(port->value()) {
+    should_never_buffer();
+    non_processors_should_block();
+  }
 
  protected:
   void setup() override {
@@ -47,7 +50,7 @@ class tcp_in : public threaded_plugin {
    public:
     using pointer = typename boost::shared_ptr<tcp_connection>;
 
-    static pointer create(tcp_in *p, asio::io_context &io_context) {
+    static pointer create(tcp *p, asio::io_context &io_context) {
       return pointer(new tcp_connection(p, io_context));
     }
 
@@ -65,12 +68,10 @@ class tcp_in : public threaded_plugin {
     }
 
    private:
-    tcp_in *p;
-    Serializer s;
+    tcp *p;
 
-    tcp_connection(tcp_in *p, asio::io_context &io_context)
-        : p(p), socket_(io_context) {
-    }
+    tcp_connection(tcp *p, asio::io_context &io_context)
+        : p(p), socket_(io_context) {}
 
     void handle_write(const asio::error_code &error,
                       size_t bytes_transferred) {
@@ -78,15 +79,12 @@ class tcp_in : public threaded_plugin {
 
       if (message_.size() > 0) {
         asio::streambuf::const_buffers_type bufs = message_.data();
-        s.deserialize(
-            std::string(asio::buffers_begin(bufs), asio::buffers_begin(bufs) + message_.size()),
-            [this](json &&message) {
-              message.metadata = {
-                  {"source", "tcp"},
-                  {"port", p->port}
-              };
-              p->output(std::move(message));
-            });
+        json message(std::string(asio::buffers_begin(bufs), asio::buffers_begin(bufs) + message_.size()));
+        message.metadata = {
+            {"source", "tcp"},
+            {"port", p->port}
+        };
+        p->output(std::move(message));
       }
       message_.consume(bytes_transferred);
 
@@ -101,13 +99,13 @@ class tcp_in : public threaded_plugin {
 
   class tcp_server {
    public:
-    tcp_server(tcp_in *p, asio::io_context &io_context, unsigned short port)
+    tcp_server(tcp *p, asio::io_context &io_context, unsigned short port)
         : p(p), acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
       start_accept();
     }
 
    private:
-    tcp_in *p;
+    tcp *p;
     using pointer = typename tcp_connection::pointer;
 
     void start_accept() {
@@ -133,6 +131,7 @@ class tcp_in : public threaded_plugin {
 
 };
 
+}
 }
 
 #endif //WOLF_TCP_IN_H

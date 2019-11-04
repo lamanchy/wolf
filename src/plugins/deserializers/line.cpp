@@ -4,8 +4,10 @@
 
 #include <mutex>
 #include "line.h"
-void wolf::line::deserialize(std::string &&string, const std::function<void(json &&)> &fn) {
+void wolf::from::line::process(json &&message) {
+  logger.trace("line");
   std::lock_guard<std::mutex> lg(m);
+  std::string string = message.get_string();
   auto begin = string.begin();
   auto mark = string.begin();
   auto end = string.end();
@@ -18,7 +20,7 @@ void wolf::line::deserialize(std::string &&string, const std::function<void(json
       }
       res += std::string(begin, mark);
       if (!res.empty()) {
-        fn(json(res));
+        output(json(res).copy_metadata(message));
       }
       begin = ++mark;
     } else {

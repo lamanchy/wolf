@@ -5,16 +5,17 @@
 #ifndef WOLF_CIN_H
 #define WOLF_CIN_H
 
-#include "istream_in.h"
+#include "istream.h"
 
 namespace wolf {
+namespace from {
 
-template<typename Serializer>
-class cin : public istream_in<Serializer> {
+class cin : public istream {
  public:
-  explicit cin(const option<std::string> &file_name) : istream_in<Serializer>(std::cin) {}
+  explicit cin(const option<std::string> &file_name) : istream(std::cin) {}
 };
 
+}
 }
 
 #endif //WOLF_CIN_H

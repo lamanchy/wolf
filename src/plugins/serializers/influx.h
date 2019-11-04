@@ -10,10 +10,11 @@
 
 #include <utility>
 namespace wolf {
+namespace to {
 
-class json_to_influx : public base_plugin {
+class influx : public base_plugin {
  public:
-  json_to_influx(std::string measurement,
+  influx(std::string measurement,
                  std::vector<std::string> tags,
                  std::vector<std::string> fields,
                  std::string time = "@timestamp",
@@ -89,6 +90,7 @@ class json_to_influx : public base_plugin {
   }
 };
 
+}
 }
 
 #endif //WOLF_JSON_TO_INFLUX_H

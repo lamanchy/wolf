@@ -21,11 +21,11 @@ int main(int argc, char *argv[]) {
                 });
           }
       ),
-      make<json_to_string>(),
+      make<to::string>(),
       make<stats>(),
-      make<kafka_out>(
+      make<to::kafka>(
           make<event<std::string>>("output", true), 12,
-          kafka_out::config({
+          to::kafka::config({
                                 {"metadata.broker.list", broker_list->value()},
                                 {"compression.type", "lz4"},
 //        { "topic.metadata.refresh.interval.ms", 20000 },
@@ -36,9 +36,9 @@ int main(int argc, char *argv[]) {
   );
 
   p.register_plugin(
-      make<kafka_in>(
+      make<from::kafka>(
           "^correlation_data-.*",
-          kafka_in::config(
+          from::kafka::config(
               {
                   {"metadata.broker.list", broker_list->value()},
                   {"group.id", "wolf_correlator5"},
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
                   {"metadata.max.age.ms", 300000}
               })
       ),
-      make<string_to_json>(),
+      make<from::string>(),
       make<lambda>(
           [](json &message) {
             message.metadata["output"] = "metrics-" + message["group"].get_string();
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
       // or just use one thread...
       make<time_sort>(stream_sort_seconds),
       make<elapsed>(max_seconds_to_keep)->register_expired_output(
-          make<json_to_influx>(
+          make<to::influx>(
               "elapsed",
               std::vector<std::string>({"elapsedId", "status", "start_host", "group"}),
               std::vector<std::string>({"uniqueId",}),
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
           ),
           common_processing
       ),
-      make<json_to_influx>(
+      make<to::influx>(
           "elapsed",
           std::vector<std::string>({"elapsedId", "status", "start_host", "end_host", "group"}),
           std::vector<std::string>({"uniqueId", "duration"}),

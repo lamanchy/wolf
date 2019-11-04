@@ -7,12 +7,15 @@
 
 #include <base/plugins/threaded_plugin.h>
 namespace wolf {
+namespace from {
 
-template<typename Serializer>
-class istream_in : public threaded_plugin {
+class istream : public threaded_plugin {
  public:
-  explicit istream_in(std::istream &istream) :
-      istream(istream) {}
+  explicit istream(std::istream &stream) :
+      stream(stream) {
+    should_never_buffer();
+    non_processors_should_block();
+  }
 
  protected:
   void setup() override {
@@ -22,11 +25,9 @@ class istream_in : public threaded_plugin {
   void loop() override {
     if (future_string.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
       auto line = future_string.get();
-      setup_future();
+      output(json(line));
 
-      s.deserialize(line, [this](json &&message) {
-        output(std::move(message));
-      });
+      setup_future();
     }
 
     get_loop_sleeper().sleep_for(std::chrono::seconds(1));
@@ -39,18 +40,18 @@ class istream_in : public threaded_plugin {
 
   std::string get_string_from_istream() {
     std::string line;
-    if (not std::getline(istream, line)) {
+    if (not std::getline(stream, line)) {
       end_loop();
       return std::string();
     }
     return line;
   }
 
-  std::istream &istream;
+  std::istream & stream;
   std::future<std::string> future_string;
-  Serializer s;
 };
 
+}
 }
 
 #endif //WOLF_SRC_PLUGINS_ISTREAM_IN_H_

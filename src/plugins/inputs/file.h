@@ -7,13 +7,13 @@
 
 #include <base/plugins/threaded_plugin.h>
 #include <base/options/base_option.h>
-#include "istream_in.h"
+#include "istream.h"
 namespace wolf {
+namespace from {
 
-template<typename Serializer>
-class file_in : public istream_in<Serializer> {
+class file : public istream_in {
  public:
-  explicit file_in(const option<std::string> &file_name) : istream_in<Serializer>(file) {
+  explicit file(const option<std::string> &file_name) : istream_in(file) {
     file.open(file_name->value(), std::ios_base::binary);
   }
 
@@ -21,6 +21,7 @@ class file_in : public istream_in<Serializer> {
   std::ifstream file;
 };
 
+}
 }
 
 #endif //WOLF_FILE_IN_H

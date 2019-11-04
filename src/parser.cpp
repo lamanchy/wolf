@@ -13,11 +13,11 @@ int main(int argc, char *argv[]) {
         make<lambda>([&, topic_name](json &message) {
           message.metadata["output"] = topic_name + "-" + message["group"].get_string();
         }),
-        make<json_to_string>(),
+        make<to::string>(),
         make<stats>(),
-        make<kafka_out>(
+        make<to::kafka>(
             make<event<std::string>>("output", true), 12,
-            kafka_out::config({
+            to::kafka::config({
                                   {"metadata.broker.list", broker_list->value()},
                                   {"compression.type", "lz4"},
 //        { "topic.metadata.refresh.interval.ms", 20000 },
@@ -29,9 +29,9 @@ int main(int argc, char *argv[]) {
   };
 
   p.register_plugin(
-      make<kafka_in>(
+      make<from::kafka>(
           "^unified_logs-.*",
-          kafka_in::config(
+          from::kafka::config(
               {
                   {"metadata.broker.list", broker_list->value()},
                   {"group.id", "wolf_parser5"},
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
                   {"metadata.max.age.ms", 300000}
               })
       ),
-      make<string_to_json>(),
+      make<from::string>(),
       make<regex>(regex::parse_file(p.get_config_dir() + "parsers")),
       make<get_elapsed_preevents>(
           get_elapsed_preevents::parse_file(p.get_config_dir() + "elapsed")
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
                 message.metadata["group"] = message["group"].get_string();
               }
           ),
-          make<json_to_influx>(
+          make<to::influx>(
               "logs_count",
               std::vector<std::string>({"logId", "host", "group", "level", "component", "spocGuid"}),
               std::vector<std::string>({"count"}),

@@ -45,7 +45,7 @@ class time_sort : public mutexed_threaded_plugin {
 
     for (auto event_i = events.begin(); event_i != events.end();) {
       if (old_enough(*event_i) and (is_first or has_good_distance(*event_i))) {
-        output(std::move(*event_i), true);
+        output(std::move(*event_i));
         event_i = events.erase(event_i);
       } else {
         is_first = false;

@@ -17,8 +17,8 @@ int main(int argc, char *argv[]) {
           }
       )->register_output(
           make<stats>(),
-          make<collate<plain>>(),
-          make<http_out>("localhost", "8086", "/write?db=metric_db")
+          make<collate>(),
+          make<to::http>("localhost", "8086", "/write?db=metric_db")
       );
 
   plugin sort_by_time = make<stream_sort>(
@@ -29,9 +29,10 @@ int main(int argc, char *argv[]) {
   );
 
   p.register_plugin(
-      make<tcp_in<compressed>>(input_port),
-      make<deserialize<line>>(),
-      make<string_to_json>(),
+      make<from::tcp>(input_port),
+      make<from::compressed>(),
+      make<from::line>(),
+      make<from::string>(),
 
       make<filter>(
           [](const json &message) {
@@ -54,7 +55,7 @@ int main(int argc, char *argv[]) {
       )->register_preevents_output(
           sort_by_time,
           make<elapsed>(1800)->register_expired_output(
-              make<json_to_influx>(
+              make<to::influx>(
                   "elapsed",
                   std::vector<std::string>({"elapsedId", "status", "start_host", "group"}),
                   std::vector<std::string>({"uniqueId",}),
@@ -62,7 +63,7 @@ int main(int argc, char *argv[]) {
               ),
               metrics_output
           ),
-          make<json_to_influx>(
+          make<to::influx>(
               "elapsed",
               std::vector<std::string>({"elapsedId", "status", "start_host", "end_host", "group"}),
               std::vector<std::string>({"uniqueId", "duration"}),
@@ -74,7 +75,7 @@ int main(int argc, char *argv[]) {
       make<count_logs>(
           std::vector<std::string>({"logId", "host", "group", "level", "component", "spocGuid"})
       )->register_stats_output(
-          make<json_to_influx>(
+          make<to::influx>(
               "logs_count",
               std::vector<std::string>({"logId", "host", "group", "level", "component", "spocGuid"}),
               std::vector<std::string>({"count"}),
@@ -107,7 +108,7 @@ int main(int argc, char *argv[]) {
             message["rest"] = rest;
           }
       ),
-      make<json_to_influx>(
+      make<to::influx>(
           "logs",
           std::vector<std::string>({"logId", "host", "group", "level", "component"}),
           std::vector<std::string>({"message", "rest"}),
@@ -118,8 +119,8 @@ int main(int argc, char *argv[]) {
             message.assign_string(std::string(message.get_string() + "\n"));
           }
       ),
-      make<collate<plain>>(1, 1000),
-      make<http_out>("localhost", "8086", "/write?db=log_db")
+      make<collate>(1, 1000),
+      make<to::http>("localhost", "8086", "/write?db=log_db")
   );
 
   p.run();

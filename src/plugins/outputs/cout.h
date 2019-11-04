@@ -4,6 +4,7 @@
 #include <base/plugins/mutexed_plugin.h>
 
 namespace wolf {
+namespace to {
 
 class cout : public mutexed_plugin {
  public:
@@ -38,6 +39,7 @@ class cout : public mutexed_plugin {
   bool print_metadata;
 };
 
+}
 }
 
 #endif //WOLF_COUT_H

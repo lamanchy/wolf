@@ -16,9 +16,10 @@
 #include <string>
 
 namespace wolf {
-class http_out : public threaded_plugin {
+namespace to {
+class http : public threaded_plugin {
  public:
-  http_out(const option<std::string> &host,
+  http(const option<std::string> &host,
            const option<std::string> &port,
            const option<std::string> &url) :
       host(host->value()),
@@ -225,6 +226,7 @@ class http_out : public threaded_plugin {
 
 };
 
+}
 }
 
 #endif //WOLF_HTTP_OUT_H

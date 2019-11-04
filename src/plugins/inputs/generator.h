@@ -4,20 +4,18 @@
 #include <base/plugins/threaded_plugin.h>
 
 namespace wolf {
+namespace from {
 
 class generator : public threaded_plugin {
   unsigned i = 0;
   unsigned count = 10000;
-
- public:
-  void register_options(options &opts) {
-//    opts.add_options("Generator")
-//        ("c,count", "Number of generated messages", cxxopts::value<unsigned>(count));
+  generator() {
+    non_processors_should_block();
   }
 
  protected:
   void setup() override {
-    std::cout << i << " " << count << " " << running << std::endl;
+    std::cout << i << " " << count << " " << std::endl;
   }
 
   void loop() override {
@@ -62,6 +60,7 @@ class generator : public threaded_plugin {
   }
 };
 
+}
 }
 
 #endif //WOLF_GENERATOR_H

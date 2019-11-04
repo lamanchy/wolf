@@ -12,7 +12,7 @@ namespace wolf {
 class mutexed_plugin : public base_plugin {
  public:
   mutexed_plugin() {
-    buffer_output();
+    processors_should_prefer_buffering();
   }
  protected:
   void prepare(json &&message) override;

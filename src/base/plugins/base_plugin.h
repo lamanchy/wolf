@@ -6,12 +6,10 @@
 #include <asio.hpp>
 #include <tao/json.hpp>
 #include <chrono>
-#include <gzip/decompress.hpp>
 #include <queue>
 #include <mutex>
 #include <stxxl/bits/containers/queue.h>
 #include <atomic>
-#include <gzip/compress.hpp>
 #include <cxxopts.hpp>
 #include <thread>
 #include <extras/logger.h>
@@ -70,20 +68,28 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
     return false;
   }
 
-  void buffer_output() {
-    always_buffered_output = true;
+  void processors_should_prefer_buffering() {
+    should_prefer_buffering = true;
+  }
+
+  void non_processors_should_block() {
+    non_processors_are_blocking = true;
+  }
+
+  void should_never_buffer() {
+    never_buffer = true;
   }
 
   virtual void prepare(json &&message) {
     process(std::move(message));
   }
 
-  void output(json &&message, bool non_blocking = false) {
-    output("default", std::move(message), non_blocking);
+  void output(json &&message) {
+    output("default", std::move(message));
   }
 
-  void output(const std::string &output_type, json &&message, bool non_blocking = false) {
-    outputs.at(output_type)->receive(std::move(message), non_blocking, always_buffered_output);
+  void output(const std::string &output_type, json &&message) {
+    outputs.at(output_type)->receive(std::move(message), *this);
   }
 
   template<typename... Args>
@@ -101,7 +107,7 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
   using id_type = unsigned;
   friend class pipeline;
 
-  void receive(json &&message, bool non_blocking, bool always_buffer);
+  void receive(json &&message, const base_plugin& sender);
   void buffer(json &&message);
   bool process_buffer();
   void safe_prepare(json &&message);
@@ -109,11 +115,26 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
   bool are_outputs_full();
   std::vector<id_type> get_all_outputs_ids();
 
+  void propagate_blocking() {
+    if (non_processors_are_blocking and never_buffer) {
+      for (const auto& output : outputs) {
+        output.second->non_processors_are_blocking = true;
+        output.second->propagate_blocking();
+      }
+    }
+  }
+
+  void do_start() {
+    propagate_blocking();
+    start();
+  }
   void do_stop();
 
   queue q;
   unsigned num_of_parents = 0;
-  bool always_buffered_output = false;
+  bool should_prefer_buffering = false;
+  bool non_processors_are_blocking = false;
+  bool never_buffer = false;
   std::map<std::string, plugin> outputs;
   id_type id{};
 
