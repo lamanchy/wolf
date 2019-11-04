@@ -10,15 +10,14 @@
 #include <base/plugins/threaded_plugin.h>
 #include <stdio.h>
 #include <utility>
+#include <plugins/common/kafka.h>
 
 namespace wolf {
-namespace from {
+namespace kafka {
 
-class kafka : public threaded_plugin {
+class input : public threaded_plugin {
  public:
-  using config = cppkafka::Configuration;
-
-  kafka(const option<std::string> &topic,
+  input(const option<std::string> &topic,
            config conf)
       : topic(topic->value()),
         consumer(std::move(conf)) {

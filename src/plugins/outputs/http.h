@@ -16,10 +16,10 @@
 #include <string>
 
 namespace wolf {
-namespace to {
-class http : public threaded_plugin {
+namespace http {
+class output : public threaded_plugin {
  public:
-  http(const option<std::string> &host,
+  output(const option<std::string> &host,
            const option<std::string> &port,
            const option<std::string> &url) :
       host(host->value()),

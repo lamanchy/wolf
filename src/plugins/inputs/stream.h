@@ -7,11 +7,11 @@
 
 #include <base/plugins/threaded_plugin.h>
 namespace wolf {
-namespace from {
+namespace stream {
 
-class istream : public threaded_plugin {
+class input : public threaded_plugin {
  public:
-  explicit istream(std::istream &stream) :
+  explicit input(std::istream &stream) :
       stream(stream) {
     should_never_buffer();
     non_processors_should_block();

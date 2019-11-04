@@ -4,7 +4,6 @@
 #include <base/plugins/threaded_plugin.h>
 
 namespace wolf {
-namespace from {
 
 class generator : public threaded_plugin {
   unsigned i = 0;
@@ -60,7 +59,6 @@ class generator : public threaded_plugin {
   }
 };
 
-}
 }
 
 #endif //WOLF_GENERATOR_H

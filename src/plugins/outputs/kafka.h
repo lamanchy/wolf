@@ -10,20 +10,20 @@
 #include <base/plugins/base_plugin.h>
 #include <cppkafka/cppkafka.h>
 #include <base/plugins/mutexed_plugin.h>
+#include <plugins/common/kafka.h>
 
 namespace wolf {
-namespace to {
+namespace kafka {
 
-class kafka : public threaded_plugin {
+class output : public threaded_plugin {
  public:
-  kafka(event_option<std::string> topic,
+  output(event_option<std::string> topic,
             const option<int> &partitions,
             cppkafka::Configuration conf)
       : topic(std::move(topic)),
         partitions(partitions->value()),
         p(std::move(conf)) {
   }
-  using config = cppkafka::Configuration;
 
  protected:
   using producer = cppkafka::BufferedProducer<std::string>;

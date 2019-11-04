@@ -37,10 +37,10 @@ int main(int argc, char *argv[]) {
 
   if (output->value() == "kafka") {
     out = [&](const string &type) {
-      return make<to::kafka>(
+      return make<kafka::output>(
           type + "-" + group->value(),
           12,
-          to::kafka::config({
+          kafka::config({
                                 {"metadata.broker.list", output_ip->value() + ":9092"},
                                 {"compression.type", "lz4"},
 //        { "topic.metadata.refresh.interval.ms", 20000 },
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
           make<to::line>(),
           make<collate>(60, 1000),
           make<to::compressed>(),
-          make<to::tcp>(output_ip, "9070")
+          make<tcp::output>(output_ip, "9070")
       );
     };
   }
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
   );
 
   p.register_plugin(
-      make<from::tcp>(9556),
+      make<tcp::input>(9556),
       make<from::line>(),
       make<stats>(),
       make<from::string>(),
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
   );
 
   p.register_plugin(
-      make<from::tcp>(9555),
+      make<tcp::input>(9555),
       make<from::line>(),
       make<from::string>(),
       make<normalize_log4j2_logs>(),
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
   );
 
   p.register_plugin(
-      make<from::tcp>(9559),
+      make<tcp::input>(9559),
       make<from::line>(),
       make<from::string>(),
       make<normalize_serilog_logs>(),
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
   );
 
   p.register_plugin(
-      make<from::tcp>(9557),
+      make<tcp::input>(9557),
       make<from::line>(),
       make<lambda>(
           [group](json &message) {

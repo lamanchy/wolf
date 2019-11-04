@@ -16,11 +16,11 @@
 #include <extras/logger.h>
 
 namespace wolf {
-namespace from {
+namespace tcp {
 
-class tcp : public threaded_plugin {
+class input : public threaded_plugin {
  public:
-  explicit tcp(const option<unsigned short> &port) : port(port->value()) {
+  explicit input(const option<unsigned short> &port) : port(port->value()) {
     should_never_buffer();
     non_processors_should_block();
   }
@@ -50,7 +50,7 @@ class tcp : public threaded_plugin {
    public:
     using pointer = typename boost::shared_ptr<tcp_connection>;
 
-    static pointer create(tcp *p, asio::io_context &io_context) {
+    static pointer create(input *p, asio::io_context &io_context) {
       return pointer(new tcp_connection(p, io_context));
     }
 
@@ -68,9 +68,9 @@ class tcp : public threaded_plugin {
     }
 
    private:
-    tcp *p;
+    input *p;
 
-    tcp_connection(tcp *p, asio::io_context &io_context)
+    tcp_connection(input *p, asio::io_context &io_context)
         : p(p), socket_(io_context) {}
 
     void handle_write(const asio::error_code &error,
@@ -99,13 +99,13 @@ class tcp : public threaded_plugin {
 
   class tcp_server {
    public:
-    tcp_server(tcp *p, asio::io_context &io_context, unsigned short port)
+    tcp_server(input *p, asio::io_context &io_context, unsigned short port)
         : p(p), acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
       start_accept();
     }
 
    private:
-    tcp *p;
+    input *p;
     using pointer = typename tcp_connection::pointer;
 
     void start_accept() {

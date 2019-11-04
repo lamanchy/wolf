@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
   pipeline p(o);
 
   p.register_plugin(
-      make<from::kafka>("^metrics-.*", from::kafka::config(
+      make<kafka::input>("^metrics-.*", kafka::config(
           {
               {"metadata.broker.list", broker_list->value()},
               {"group.id", "wolf_metrics_forwarder5"},
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
       ),
       make<stats>(),
       make<collate>(),
-      make<to::http>(influx_ip, "8086", "/write?db=metric_db")
+      make<http::output>(influx_ip, "8086", "/write?db=metric_db")
   );
 
   p.run();

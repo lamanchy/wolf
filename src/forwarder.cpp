@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
   pipeline p(o);
 
   p.register_plugin(
-      make<from::kafka>("^parsed_logs-.*", from::kafka::config(
+      make<kafka::input>("^parsed_logs-.*", kafka::config(
           {
               {"metadata.broker.list", broker_list->value()},
               {"group.id", "wolf_logs_forwarder5"},
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
       ),
       make<stats>(),
       make<collate>(),
-      make<to::http>(es_ip, "9200", "/_bulk")
+      make<http::output>(es_ip, "9200", "/_bulk")
   );
 
   p.run();

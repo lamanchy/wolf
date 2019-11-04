@@ -15,9 +15,9 @@ int main(int argc, char *argv[]) {
         }),
         make<to::string>(),
         make<stats>(),
-        make<to::kafka>(
+        make<kafka::output>(
             make<event<std::string>>("output", true), 12,
-            to::kafka::config({
+            kafka::config({
                                   {"metadata.broker.list", broker_list->value()},
                                   {"compression.type", "lz4"},
 //        { "topic.metadata.refresh.interval.ms", 20000 },
@@ -29,9 +29,9 @@ int main(int argc, char *argv[]) {
   };
 
   p.register_plugin(
-      make<from::kafka>(
+      make<kafka::input>(
           "^unified_logs-.*",
-          from::kafka::config(
+          kafka::config(
               {
                   {"metadata.broker.list", broker_list->value()},
                   {"group.id", "wolf_parser5"},

@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
       )->register_output(
           make<stats>(),
           make<collate>(),
-          make<to::http>("localhost", "8086", "/write?db=metric_db")
+          make<http::output>("localhost", "8086", "/write?db=metric_db")
       );
 
   plugin sort_by_time = make<stream_sort>(
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   );
 
   p.register_plugin(
-      make<from::tcp>(input_port),
+      make<tcp::input>(input_port),
       make<from::compressed>(),
       make<from::line>(),
       make<from::string>(),
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
           }
       ),
       make<collate>(1, 1000),
-      make<to::http>("localhost", "8086", "/write?db=log_db")
+      make<http::output>("localhost", "8086", "/write?db=log_db")
   );
 
   p.run();

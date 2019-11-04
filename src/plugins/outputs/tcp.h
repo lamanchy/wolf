@@ -10,11 +10,11 @@
 #include <base/pipeline_status.h>
 
 namespace wolf {
-namespace to {
+namespace tcp {
 
-class tcp : public base_plugin {
+class output : public base_plugin {
  public:
-  tcp(const option<std::string> &host,
+  output(const option<std::string> &host,
           const option<std::string> &port)
       : base_plugin(),
         io_context_(),

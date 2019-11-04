@@ -10,10 +10,11 @@
 #include <base/plugins/mutexed_threaded_plugin.h>
 #include <extras/get_time.h>
 namespace wolf {
+namespace file {
 
-class file : public mutexed_threaded_plugin {
+class output : public mutexed_threaded_plugin {
  public:
-  explicit file(const option<std::string> &file_name) :
+  explicit output(const option<std::string> &file_name) :
       file_name(file_name->value()) {
     current_date = extras::get_date();
     file.open(get_file_name(), std::ios_base::app | std::ios_base::binary);
@@ -47,6 +48,7 @@ class file : public mutexed_threaded_plugin {
   std::string current_date;
 };
 
+}
 }
 
 #endif //WOLF_FILE_OUT_H

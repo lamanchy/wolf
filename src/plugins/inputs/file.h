@@ -7,13 +7,13 @@
 
 #include <base/plugins/threaded_plugin.h>
 #include <base/options/base_option.h>
-#include "istream.h"
+#include "stream.h"
 namespace wolf {
-namespace from {
+namespace file {
 
-class file : public istream_in {
+ class input : public stream::input {
  public:
-  explicit file(const option<std::string> &file_name) : istream_in(file) {
+  explicit input(const option<std::string> &file_name) : stream::input(file) {
     file.open(file_name->value(), std::ios_base::binary);
   }
 

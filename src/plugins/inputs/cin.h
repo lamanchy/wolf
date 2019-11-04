@@ -5,17 +5,15 @@
 #ifndef WOLF_CIN_H
 #define WOLF_CIN_H
 
-#include "istream.h"
+#include "stream.h"
 
 namespace wolf {
-namespace from {
 
-class cin : public istream {
+ class cin : public stream::input {
  public:
-  explicit cin(const option<std::string> &file_name) : istream(std::cin) {}
+  explicit cin(const option<std::string> &file_name) : stream::input(std::cin) {}
 };
 
-}
 }
 
 #endif //WOLF_CIN_H
