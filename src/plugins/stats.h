@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 17.11.18.
-//
-
-#ifndef WOLF_STATS_H
-#define WOLF_STATS_H
+#pragma once
 
 #include <base/plugins/threaded_plugin.h>
 namespace wolf {
@@ -27,4 +22,4 @@ class stats : public threaded_plugin {
 
 }
 
-#endif //WOLF_STATS_H
+

@@ -1,6 +1,4 @@
-//
-// Created by lamanchy on 27.5.19.
-//
+
 
 #include "compressed.h"
 
@@ -38,7 +36,8 @@ void compressed::process(json &&next) {
       auto pos = message.find(extras::gzip::string_serializer_end);
       if (pos == std::string::npos) break;
 
-      size_t size = extras::gzip::get_deserialized_size(message.substr(extras::gzip::get_prefix().length(), pos - extras::gzip::get_prefix().length() + 1));
+      size_t size = extras::gzip::get_deserialized_size(message.substr(extras::gzip::get_prefix().length(),
+                                                                       pos - extras::gzip::get_prefix().length() + 1));
 
       if (message.length() < 1 + pos + size) break;
 

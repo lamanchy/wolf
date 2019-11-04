@@ -1,5 +1,4 @@
-#ifndef WOLF_PIPELINE_H
-#define WOLF_PIPELINE_H
+#pragma once
 
 #include <csignal>
 #include <thread>
@@ -83,4 +82,4 @@ class pipeline {
 
 }
 
-#endif //WOLF_PIPELINE_H
+

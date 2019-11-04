@@ -1,6 +1,4 @@
-//
-// Created by lomic on 11/2/2019.
-//
+
 
 #include "options.h"
 wolf::options::options(int argc, char **argv) :

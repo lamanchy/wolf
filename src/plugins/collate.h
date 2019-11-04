@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 8/15/18.
-//
-
-#ifndef WOLF_COLLATE_H
-#define WOLF_COLLATE_H
+#pragma once
 
 #include <base/plugins/mutexed_threaded_plugin.h>
 
@@ -56,4 +51,4 @@ class collate : public mutexed_threaded_plugin {
 
 }
 
-#endif //WOLF_COLLATE_H
+

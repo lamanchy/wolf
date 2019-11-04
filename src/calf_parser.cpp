@@ -41,12 +41,12 @@ int main(int argc, char *argv[]) {
           type + "-" + group->value(),
           12,
           kafka::config({
-                                {"metadata.broker.list", output_ip->value() + ":9092"},
-                                {"compression.type", "lz4"},
+                            {"metadata.broker.list", output_ip->value() + ":9092"},
+                            {"compression.type", "lz4"},
 //        { "topic.metadata.refresh.interval.ms", 20000 },
 //        {"debug", "broker,topic,msg"},
-                                {"linger.ms", "1000"}
-                            })
+                            {"linger.ms", "1000"}
+                        })
       );
     };
   } else {

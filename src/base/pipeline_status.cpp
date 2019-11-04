@@ -1,6 +1,4 @@
-//
-// Created by lomic on 11/1/2019.
-//
+
 
 #include "pipeline_status.h"
 namespace wolf {

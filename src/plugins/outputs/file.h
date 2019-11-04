@@ -1,14 +1,8 @@
-#include <utility>
-
-//
-// Created by lamanchy on 17.7.19.
-//
-
-#ifndef WOLF_FILE_OUT_H
-#define WOLF_FILE_OUT_H
+#pragma once
 
 #include <base/plugins/mutexed_threaded_plugin.h>
 #include <extras/get_time.h>
+#include <base/options/base_option.h>
 namespace wolf {
 namespace file {
 
@@ -51,4 +45,4 @@ class output : public mutexed_threaded_plugin {
 }
 }
 
-#endif //WOLF_FILE_OUT_H
+

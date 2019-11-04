@@ -1,5 +1,4 @@
-#ifndef WOLF_GENERATOR_H
-#define WOLF_GENERATOR_H
+#pragma once
 
 #include <base/plugins/threaded_plugin.h>
 
@@ -61,4 +60,4 @@ class generator : public threaded_plugin {
 
 }
 
-#endif //WOLF_GENERATOR_H
+

@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 8/14/18.
-//
-
-#ifndef WOLF_JSON_H
-#define WOLF_JSON_H
+#pragma once
 
 #include <tao/json/value.hpp>
 
@@ -16,16 +11,16 @@ class json : public tao::json::value {
 
   json(taojson &&tj) : taojson(std::move(tj)) {}
 
-  json copy_metadata(const json & source) {
+  json copy_metadata(const json &source) {
     metadata = source.metadata;
     return *this;
   }
-  json copy_size(const json & source) {
+  json copy_size(const json &source) {
     size = source.size;
     return *this;
   }
 
-  json copy_all(const json & source) {
+  json copy_all(const json &source) {
     return copy_metadata(source).copy_size(source);
   }
 
@@ -35,4 +30,4 @@ class json : public tao::json::value {
 
 }
 
-#endif //WOLF_JSON_H
+

@@ -1,7 +1,4 @@
-
-
-#ifndef WOLF_GET_EXECUTABLE_PATH_H
-#define WOLF_GET_EXECUTABLE_PATH_H
+#pragma once
 
 #include <iso646.h>
 #include <string>
@@ -19,4 +16,4 @@ std::string get_separator();
 }
 }
 
-#endif //WOLF_GET_EXECUTABLE_PATH_H
+

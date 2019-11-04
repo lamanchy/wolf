@@ -1,13 +1,4 @@
-#include <utility>
-
-#include <utility>
-
-//
-// Created by lamanchy on 11.3.19.
-//
-
-#ifndef WOLF_GET_ELAPSED_PREEVENTS_H
-#define WOLF_GET_ELAPSED_PREEVENTS_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 namespace wolf {
@@ -119,4 +110,4 @@ class get_elapsed_preevents : public base_plugin {
 };
 }
 
-#endif //WOLF_GET_ELAPSED_PREEVENTS_H
+

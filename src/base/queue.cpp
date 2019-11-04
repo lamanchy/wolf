@@ -1,6 +1,4 @@
-//
-// Created by lomic on 10/31/2019.
-//
+
 
 #include <thread>
 #include <base/plugins/base_plugin.h>
@@ -173,7 +171,5 @@ void queue::do_pop(const std::function<void(json &&)> &fn) {
   back_queue_mutex.unlock();
   fn(std::move(message));
 }
-
-
 
 }

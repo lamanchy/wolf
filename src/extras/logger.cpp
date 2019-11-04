@@ -1,6 +1,4 @@
-//
-// Created by lamanchy on 22.10.2018.
-//
+
 #include "logger.h"
 
 Logger &Logger::getLogger() {

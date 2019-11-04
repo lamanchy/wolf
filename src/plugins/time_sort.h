@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 21.6.19.
-//
-
-#ifndef WOLF_TIME_SORT_H
-#define WOLF_TIME_SORT_H
+#pragma once
 
 #include <base/plugins/mutexed_threaded_plugin.h>
 #include <extras/convert_time.h>
@@ -71,4 +66,4 @@ class time_sort : public mutexed_threaded_plugin {
 
 }
 
-#endif //WOLF_TIME_SORT_H
+

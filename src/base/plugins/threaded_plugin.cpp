@@ -1,8 +1,3 @@
-//
-// Created by lamanchy on 27.5.19.
-//
-
-#include <base/pipeline_status.h>
 #include "threaded_plugin.h"
 
 namespace wolf {

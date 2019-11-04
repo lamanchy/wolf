@@ -1,5 +1,4 @@
-#ifndef WOLF_OPTION_H
-#define WOLF_OPTION_H
+#pragma once
 
 #include <cxxopts.hpp>
 #include <extras/logger.h>
@@ -15,7 +14,6 @@ class base_option {
   virtual void validate_options(const cxxopts::ParseResult &opts) {}
   virtual void print_info() {};
 };
-
 
 template<typename T>
 class option_type : public base_option {
@@ -70,5 +68,3 @@ class constant : public not_event_option_type<T> {
 };
 
 }
-
-#endif //WOLF_OPTION_H

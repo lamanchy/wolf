@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 16.11.18.
-//
-
-#ifndef WOLF_HTTP_OUT_H
-#define WOLF_HTTP_OUT_H
+#pragma once
 
 #include <base/plugins/threaded_plugin.h>
 
@@ -20,8 +15,8 @@ namespace http {
 class output : public threaded_plugin {
  public:
   output(const option<std::string> &host,
-           const option<std::string> &port,
-           const option<std::string> &url) :
+         const option<std::string> &port,
+         const option<std::string> &url) :
       host(host->value()),
       port(port->value()),
       url(url->value()) {};
@@ -229,4 +224,4 @@ class output : public threaded_plugin {
 }
 }
 
-#endif //WOLF_HTTP_OUT_H
+

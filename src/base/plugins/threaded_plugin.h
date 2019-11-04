@@ -1,8 +1,7 @@
-#ifndef WOLF_THREADED_PLUGIN_H
-#define WOLF_THREADED_PLUGIN_H
+#pragma once
 
-#include <thread>
 #include "base_plugin.h"
+#include <thread>
 
 namespace wolf {
 
@@ -28,7 +27,7 @@ class threaded_plugin : public base_plugin {
 
   bool is_loop_running();
 
-  sleeper & get_loop_sleeper() {
+  sleeper &get_loop_sleeper() {
     return loop_sleeper;
   }
 
@@ -41,4 +40,4 @@ class threaded_plugin : public base_plugin {
 
 }
 
-#endif //WOLF_THREADED_PLUGIN_H
+

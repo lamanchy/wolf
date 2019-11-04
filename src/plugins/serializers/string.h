@@ -1,9 +1,4 @@
-//
-// Created by lomic on 11/3/2019.
-//
-
-#ifndef WOLF_SRC_SERIALIZERS_STRING_H_
-#define WOLF_SRC_SERIALIZERS_STRING_H_
+#pragma once
 
 #include <tao/json.hpp>
 #include <base/plugins/base_plugin.h>
@@ -20,4 +15,4 @@ class string : public base_plugin {
 }
 }
 
-#endif //WOLF_SRC_SERIALIZERS_STRING_H_
+

@@ -1,11 +1,4 @@
-#include <utility>
-
-//
-// Created by lamanchy on 10.3.19.
-//
-
-#ifndef WOLF_REGEX_H
-#define WOLF_REGEX_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 #include <re2/set.h>
@@ -93,4 +86,4 @@ class regex : public base_plugin {
 
 }
 
-#endif //WOLF_REGEX_H
+

@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 8/19/18.
-//
-
-#ifndef WOLF_CONVERT_TIME_H
-#define WOLF_CONVERT_TIME_H
+#pragma once
 
 #include <iso646.h>
 #include <vector>
@@ -27,4 +22,4 @@ std::string convert_time(const std::uint64_t &seconds, const std::uint64_t &nano
 }
 }
 
-#endif //WOLF_CONVERT_TIME_H
+

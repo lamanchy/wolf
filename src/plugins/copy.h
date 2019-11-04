@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 18.7.19.
-//
-
-#ifndef WOLF_COPY_H
-#define WOLF_COPY_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 namespace wolf {
@@ -30,4 +25,4 @@ class copy : public base_plugin {
 
 }
 
-#endif //WOLF_COPY_H
+

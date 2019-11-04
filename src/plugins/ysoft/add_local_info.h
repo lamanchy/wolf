@@ -1,11 +1,4 @@
-#include <utility>
-
-//
-// Created by lamanchy on 8/19/18.
-//
-
-#ifndef WOLF_ADD_LOCAL_INFO_H
-#define WOLF_ADD_LOCAL_INFO_H
+#pragma once
 
 #include <asio/ip/host_name.hpp>
 #include <base/plugins/base_plugin.h>
@@ -61,4 +54,4 @@ class add_local_info : public base_plugin {
 
 }
 
-#endif //WOLF_ADD_LOCAL_INFO_H
+

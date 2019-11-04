@@ -1,9 +1,4 @@
-//
-// Created by lomic on 10/31/2019.
-//
-
-#ifndef WOLF_SRC_BASE_SLEEPER_H_
-#define WOLF_SRC_BASE_SLEEPER_H_
+#pragma once
 
 #include <chrono>
 #include <thread>
@@ -14,7 +9,7 @@ namespace wolf {
 
 class sleeper {
  public:
-  sleeper ();
+  sleeper();
 
   void sleep();
   void increasing_sleep();
@@ -35,4 +30,4 @@ class sleeper {
 
 }
 
-#endif //WOLF_SRC_BASE_SLEEPER_H_
+

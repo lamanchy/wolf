@@ -1,5 +1,4 @@
-#ifndef WOLF_COUT_H
-#define WOLF_COUT_H
+#pragma once
 
 #include <base/plugins/mutexed_plugin.h>
 
@@ -40,4 +39,4 @@ class cout : public mutexed_plugin {
 
 }
 
-#endif //WOLF_COUT_H
+

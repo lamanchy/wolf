@@ -1,9 +1,4 @@
-//
-// Created by lomic on 11/2/2019.
-//
-
-#ifndef WOLF_SRC_BASE_OPTIONS_OPTIONS_H_
-#define WOLF_SRC_BASE_OPTIONS_OPTIONS_H_
+#pragma once
 
 #include <string>
 #include <memory>
@@ -51,4 +46,4 @@ class options {
 
 }
 
-#endif //WOLF_SRC_BASE_OPTIONS_OPTIONS_H_
+

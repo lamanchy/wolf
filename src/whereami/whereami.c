@@ -56,15 +56,13 @@ extern "C" {
 #pragma warning(pop)
 #endif
 
-static int WAI_PREFIX(getModulePath_)(HMODULE module, char* out, int capacity, int* dirname_length)
-{
+static int WAI_PREFIX(getModulePath_)(HMODULE module, char *out, int capacity, int *dirname_length) {
   wchar_t buffer1[MAX_PATH];
   wchar_t buffer2[MAX_PATH];
-  wchar_t* path = NULL;
+  wchar_t *path = NULL;
   int length = -1;
 
-  for (;;)
-  {
+  for (;;) {
     DWORD size;
     int length_, length__;
 
@@ -72,46 +70,39 @@ static int WAI_PREFIX(getModulePath_)(HMODULE module, char* out, int capacity, i
 
     if (size == 0)
       break;
-    else if (size == (DWORD)(sizeof(buffer1) / sizeof(buffer1[0])))
-    {
+    else if (size == (DWORD) (sizeof(buffer1) / sizeof(buffer1[0]))) {
       DWORD size_ = size;
-      do
-      {
-        wchar_t* path_;
+      do {
+        wchar_t *path_;
 
-        path_ = (wchar_t*)WAI_REALLOC(path, sizeof(wchar_t) * size_ * 2);
+        path_ = (wchar_t *) WAI_REALLOC(path, sizeof(wchar_t) * size_ * 2);
         if (!path_)
           break;
         size_ *= 2;
         path = path_;
         size = GetModuleFileNameW(module, path, size_);
-      }
-      while (size == size_);
+      } while (size == size_);
 
       if (size == size_)
         break;
-    }
-    else
+    } else
       path = buffer1;
 
     if (!_wfullpath(buffer2, path, MAX_PATH))
       break;
-    length_ = (int)wcslen(buffer2);
-    length__ = WideCharToMultiByte(CP_UTF8, 0, buffer2, length_ , out, capacity, NULL, NULL);
+    length_ = (int) wcslen(buffer2);
+    length__ = WideCharToMultiByte(CP_UTF8, 0, buffer2, length_, out, capacity, NULL, NULL);
 
     if (length__ == 0)
       length__ = WideCharToMultiByte(CP_UTF8, 0, buffer2, length_, NULL, 0, NULL, NULL);
     if (length__ == 0)
       break;
 
-    if (length__ <= capacity && dirname_length)
-    {
+    if (length__ <= capacity && dirname_length) {
       int i;
 
-      for (i = length__ - 1; i >= 0; --i)
-      {
-        if (out[i] == '\\')
-        {
+      for (i = length__ - 1; i >= 0; --i) {
+        if (out[i] == '\\') {
           *dirname_length = i;
           break;
         }
@@ -131,15 +122,13 @@ static int WAI_PREFIX(getModulePath_)(HMODULE module, char* out, int capacity, i
 
 WAI_NOINLINE
 WAI_FUNCSPEC
-int WAI_PREFIX(getExecutablePath)(char* out, int capacity, int* dirname_length)
-{
+int WAI_PREFIX(getExecutablePath)(char *out, int capacity, int *dirname_length) {
   return WAI_PREFIX(getModulePath_)(NULL, out, capacity, dirname_length);
 }
 
 WAI_NOINLINE
 WAI_FUNCSPEC
-int WAI_PREFIX(getModulePath)(char* out, int capacity, int* dirname_length)
-{
+int WAI_PREFIX(getModulePath)(char *out, int capacity, int *dirname_length) {
   HMODULE module;
   int length = -1;
 
@@ -147,7 +136,9 @@ int WAI_PREFIX(getModulePath)(char* out, int capacity, int* dirname_length)
 #pragma warning(push)
 #pragma warning(disable: 4054)
 #endif
-  if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR)WAI_RETURN_ADDRESS(), &module))
+  if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                        (LPCTSTR) WAI_RETURN_ADDRESS(),
+                        &module))
 #if defined(_MSC_VER)
 #pragma warning(pop)
 #endif

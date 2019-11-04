@@ -1,6 +1,4 @@
-//
-// Created by lamanchy on 27.5.19.
-//
+
 
 #include <chrono>
 #include <ctime>

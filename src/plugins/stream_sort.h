@@ -1,13 +1,4 @@
-#include <utility>
-
-#include <utility>
-
-//
-// Created by lamanchy on 17.12.18.
-//
-
-#ifndef WOLF_STREAM_SORT_H
-#define WOLF_STREAM_SORT_H
+#pragma once
 
 #include <base/plugins/mutexed_threaded_plugin.h>
 namespace wolf {
@@ -61,4 +52,4 @@ class stream_sort : public mutexed_threaded_plugin {
 
 }
 
-#endif //WOLF_STREAM_SORT_H
+

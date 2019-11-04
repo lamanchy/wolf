@@ -1,9 +1,6 @@
-//
-// Created by lomic on 11/4/2019.
-//
+
 
 #include "gzip.h"
-
 
 namespace wolf {
 namespace extras {

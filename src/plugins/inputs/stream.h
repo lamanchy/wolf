@@ -1,9 +1,4 @@
-//
-// Created by lomic on 11/1/2019.
-//
-
-#ifndef WOLF_SRC_PLUGINS_ISTREAM_IN_H_
-#define WOLF_SRC_PLUGINS_ISTREAM_IN_H_
+#pragma once
 
 #include <base/plugins/threaded_plugin.h>
 namespace wolf {
@@ -47,11 +42,11 @@ class input : public threaded_plugin {
     return line;
   }
 
-  std::istream & stream;
+  std::istream &stream;
   std::future<std::string> future_string;
 };
 
 }
 }
 
-#endif //WOLF_SRC_PLUGINS_ISTREAM_IN_H_
+

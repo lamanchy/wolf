@@ -1,5 +1,4 @@
-#ifndef WOLF_PLUGIN_H
-#define WOLF_PLUGIN_H
+#pragma once
 
 #include <iso646.h>
 #include <utility>
@@ -107,7 +106,7 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
   using id_type = unsigned;
   friend class pipeline;
 
-  void receive(json &&message, const base_plugin& sender);
+  void receive(json &&message, const base_plugin &sender);
   void buffer(json &&message);
   bool process_buffer();
   void safe_prepare(json &&message);
@@ -117,7 +116,7 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
 
   void propagate_blocking() {
     if (non_processors_are_blocking and never_buffer) {
-      for (const auto& output : outputs) {
+      for (const auto &output : outputs) {
         output.second->non_processors_are_blocking = true;
         output.second->propagate_blocking();
       }
@@ -143,5 +142,3 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
 };
 
 }
-
-#endif //WOLF_PLUGIN_H

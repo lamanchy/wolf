@@ -1,5 +1,4 @@
-#ifndef WOLF_COMMAND_H
-#define WOLF_COMMAND_H
+#pragma once
 
 #include <utility>
 #include "base_option.h"
@@ -96,5 +95,3 @@ class command : public not_event_option_type<T> {
 };
 
 }
-
-#endif //WOLF_COMMAND_H

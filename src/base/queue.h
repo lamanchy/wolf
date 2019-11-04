@@ -1,9 +1,5 @@
-//
-// Created by lomic on 10/31/2019.
-//
+#pragma once
 
-#ifndef WOLF_SRC_BASE_QUEUE_H_
-#define WOLF_SRC_BASE_QUEUE_H_
 #include <stxxl/queue>
 #include <mutex>
 #include <atomic>
@@ -14,7 +10,7 @@ class queue {
  public:
   void push(json &&message);
 
-  void try_pop(const std::function<void(json && )> &);
+  void try_pop(const std::function<void(json &&)> &);
 
   unsigned long get_size() {
     return size;
@@ -29,7 +25,7 @@ class queue {
   }
 
  private:
-  void do_pop(const std::function<void(json && )> &);
+  void do_pop(const std::function<void(json &&)> &);
   void empty_front_queue();
   void check_if_all_is_empty();
   void load_from_persistent_queue();
@@ -56,4 +52,4 @@ class queue {
 };
 }
 
-#endif //WOLF_SRC_BASE_QUEUE_H_
+

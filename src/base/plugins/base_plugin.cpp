@@ -37,7 +37,7 @@ bool base_plugin::are_outputs_full() {
   return false;
 }
 
-void base_plugin::receive(json &&message, const base_plugin& sender) {
+void base_plugin::receive(json &&message, const base_plugin &sender) {
   if (sender.never_buffer) {
     safe_prepare(std::move(message));
   } else if (is_thread_processor) {
@@ -68,7 +68,7 @@ void base_plugin::do_stop() {
 
   stop();
 
-  for (const auto& output : outputs){
+  for (const auto &output : outputs) {
     output.second->num_of_parents -= 1;
     output.second->do_stop();
   }
@@ -77,7 +77,7 @@ void base_plugin::do_stop() {
 
 std::vector<base_plugin::id_type> base_plugin::get_all_outputs_ids() {
   auto res = std::vector<id_type>({id});
-  for (const auto& output : outputs)
+  for (const auto &output : outputs)
     for (auto _id : output.second->get_all_outputs_ids())
       res.push_back(_id);
 

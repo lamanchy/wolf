@@ -1,6 +1,4 @@
-//
-// Created by lamanchy on 17.7.19.
-//
+
 #include <gzip/compress.hpp>
 #include <iostream>
 #include <fstream>

@@ -1,9 +1,4 @@
-//
-// Created by lomic on 10/30/2019.
-//
-
-#ifndef WOLF_SRC_WOLF_H_
-#define WOLF_SRC_WOLF_H_
+#pragma once
 
 #include <base/make.h>
 #include <base/pipeline.h>
@@ -43,4 +38,3 @@
 #include <plugins/serializers/string.h> // NOLINT(modernize-deprecated-headers,hicpp-deprecated-headers)
 #include <plugins/deserializers/string.h> // NOLINT(modernize-deprecated-headers,hicpp-deprecated-headers)
 
-#endif //WOLF_SRC_WOLF_H_

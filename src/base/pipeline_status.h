@@ -1,9 +1,4 @@
-//
-// Created by lomic on 11/1/2019.
-//
-
-#ifndef WOLF_SRC_BASE_PIPELINE_STATUS_H_
-#define WOLF_SRC_BASE_PIPELINE_STATUS_H_
+#pragma once
 
 #include <atomic>
 #include "sleeper.h"
@@ -33,4 +28,4 @@ class pipeline_status {
 
 }
 
-#endif //WOLF_SRC_BASE_PIPELINE_STATUS_H_
+

@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 8/13/18.
-//
-
-#ifndef WOLF_TCP_IN_H
-#define WOLF_TCP_IN_H
+#pragma once
 
 #include <asio.hpp>
 #include <base/plugins/threaded_plugin.h>
@@ -134,4 +129,4 @@ class input : public threaded_plugin {
 }
 }
 
-#endif //WOLF_TCP_IN_H
+

@@ -1,11 +1,4 @@
-#include <utility>
-
-//
-// Created by lamanchy on 5.2.19.
-//
-
-#ifndef WOLF_ELAPSED_H
-#define WOLF_ELAPSED_H
+#pragma once
 
 #include <base/plugins/mutexed_threaded_plugin.h>
 #include <extras/convert_time.h>
@@ -101,4 +94,4 @@ class elapsed : public mutexed_threaded_plugin {
 
 }
 
-#endif //WOLF_ELAPSED_H
+

@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 17.11.18.
-//
-
-#ifndef WOLF_MUTEXED_THREADED_PLUGIN_H
-#define WOLF_MUTEXED_THREADED_PLUGIN_H
+#pragma once
 
 #include "threaded_plugin.h"
 namespace wolf {
@@ -27,5 +22,3 @@ class mutexed_threaded_plugin : public threaded_plugin {
 };
 
 }
-
-#endif //WOLF_MUTEXED_THREADED_PLUGIN_H

@@ -1,7 +1,3 @@
-//
-// Created by lamanchy on 27.5.19.
-//
-
 #include "mutexed_threaded_plugin.h"
 
 namespace wolf {

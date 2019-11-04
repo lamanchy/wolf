@@ -1,13 +1,4 @@
-#include <utility>
-
-#include <utility>
-
-//
-// Created by lamanchy on 3.5.19.
-//
-
-#ifndef WOLF_IF_H
-#define WOLF_IF_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 namespace wolf {
@@ -37,4 +28,4 @@ class filter : public base_plugin {
 
 }
 
-#endif //WOLF_IF_H
+

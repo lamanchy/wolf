@@ -1,11 +1,4 @@
-#include <utility>
-
-//
-// Created by lamanchy on 8/14/18.
-//
-
-#ifndef WOLF_KAFKA_OUT_H
-#define WOLF_KAFKA_OUT_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 #include <cppkafka/cppkafka.h>
@@ -18,8 +11,8 @@ namespace kafka {
 class output : public threaded_plugin {
  public:
   output(event_option<std::string> topic,
-            const option<int> &partitions,
-            cppkafka::Configuration conf)
+         const option<int> &partitions,
+         cppkafka::Configuration conf)
       : topic(std::move(topic)),
         partitions(partitions->value()),
         p(std::move(conf)) {
@@ -67,4 +60,4 @@ class output : public threaded_plugin {
 }
 }
 
-#endif //WOLF_KAFKA_OUT_H
+

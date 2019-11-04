@@ -1,11 +1,4 @@
-#include <utility>
-
-//
-// Created by lamanchy on 10/1/18.
-//
-
-#ifndef WOLF_LAMBDA_H
-#define WOLF_LAMBDA_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 
@@ -25,4 +18,4 @@ class lambda : public base_plugin {
 };
 }
 
-#endif //WOLF_LAMBDA_H
+

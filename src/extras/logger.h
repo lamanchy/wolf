@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 22.10.2018.
-//
-
-#ifndef WOLF_LOGGER_H
-#define WOLF_LOGGER_H
+#pragma once
 
 #include <iso646.h>
 #include <string>
@@ -54,4 +49,4 @@ class Logger {
   void operator=(Logger const &) = delete;
 };
 
-#endif //WOLF_LOGGER_H
+

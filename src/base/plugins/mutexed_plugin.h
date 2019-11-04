@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 8/15/18.
-//
-
-#ifndef WOLF_MUTEXED_PLUGIN_H
-#define WOLF_MUTEXED_PLUGIN_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 
@@ -23,4 +18,4 @@ class mutexed_plugin : public base_plugin {
 
 }
 
-#endif //WOLF_MUTEXED_PLUGIN_H
+

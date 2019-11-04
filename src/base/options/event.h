@@ -1,11 +1,4 @@
-#include <utility>
-
-//
-// Created by lamanchy on 7.2.19.
-//
-
-#ifndef WOLF_EVENT_H
-#define WOLF_EVENT_H
+#pragma once
 
 #include "base_option.h"
 namespace wolf {
@@ -33,5 +26,3 @@ class event : public option_type<T> {
 };
 
 }
-
-#endif //WOLF_EVENT_H

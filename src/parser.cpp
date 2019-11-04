@@ -18,12 +18,12 @@ int main(int argc, char *argv[]) {
         make<kafka::output>(
             make<event<std::string>>("output", true), 12,
             kafka::config({
-                                  {"metadata.broker.list", broker_list->value()},
-                                  {"compression.type", "lz4"},
+                              {"metadata.broker.list", broker_list->value()},
+                              {"compression.type", "lz4"},
 //        { "topic.metadata.refresh.interval.ms", 20000 },
 //        {"debug", "broker,topic,msg"},
-                                  {"linger.ms", "1000"}
-                              })
+                              {"linger.ms", "1000"}
+                          })
         )
     );
   };

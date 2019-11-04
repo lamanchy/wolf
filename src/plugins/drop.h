@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 4.5.19.
-//
-
-#ifndef WOLF_DROP_H
-#define WOLF_DROP_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 namespace wolf {
@@ -15,4 +10,4 @@ class drop : public base_plugin {
 
 }
 
-#endif //WOLF_DROP_H
+

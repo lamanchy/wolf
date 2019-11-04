@@ -1,11 +1,4 @@
-#include <utility>
-
-//
-// Created by lamanchy on 11.3.19.
-//
-
-#ifndef WOLF_COUNT_LOGS_H
-#define WOLF_COUNT_LOGS_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 #include <base/plugins/mutexed_threaded_plugin.h>
@@ -76,4 +69,4 @@ class count_logs : public mutexed_threaded_plugin {
 
 }
 
-#endif //WOLF_COUNT_LOGS_H
+

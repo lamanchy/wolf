@@ -1,9 +1,4 @@
-//
-// Created by lomic on 11/4/2019.
-//
-
-#ifndef WOLF_SRC_EXTRAS_GZIP_H_
-#define WOLF_SRC_EXTRAS_GZIP_H_
+#pragma once
 
 #include <string>
 #include <gzip/compress.hpp>
@@ -22,4 +17,4 @@ class gzip {
 };
 }
 }
-#endif //WOLF_SRC_EXTRAS_GZIP_H_
+

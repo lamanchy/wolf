@@ -1,5 +1,4 @@
-#ifndef WOLF_SRC_SERIALIZERS_LINE_H_
-#define WOLF_SRC_SERIALIZERS_LINE_H_
+#pragma once
 
 #include <iostream>
 #include <base/plugins/base_plugin.h>
@@ -17,5 +16,5 @@ class line : public base_plugin {
 }
 }
 
-#endif //WOLF_SRC_SERIALIZERS_LINE_H_
+
 

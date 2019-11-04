@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 14.11.18.
-//
-
-#ifndef WOLF_KAFKA_IN_H
-#define WOLF_KAFKA_IN_H
+#pragma once
 
 #include <cppkafka/cppkafka.h>
 #include <base/plugins/mutexed_plugin.h>
@@ -18,7 +13,7 @@ namespace kafka {
 class input : public threaded_plugin {
  public:
   input(const option<std::string> &topic,
-           config conf)
+        config conf)
       : topic(topic->value()),
         consumer(std::move(conf)) {
     non_processors_should_block();
@@ -81,4 +76,4 @@ class input : public threaded_plugin {
 }
 }
 
-#endif //WOLF_KAFKA_IN_H
+

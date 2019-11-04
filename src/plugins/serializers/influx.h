@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 29.3.19.
-//
-
-#ifndef WOLF_JSON_TO_INFLUX_H
-#define WOLF_JSON_TO_INFLUX_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 #include <extras/convert_time.h>
@@ -15,10 +10,10 @@ namespace to {
 class influx : public base_plugin {
  public:
   influx(std::string measurement,
-                 std::vector<std::string> tags,
-                 std::vector<std::string> fields,
-                 std::string time = "@timestamp",
-                 bool add_random_nanoseconds = true)
+         std::vector<std::string> tags,
+         std::vector<std::string> fields,
+         std::string time = "@timestamp",
+         bool add_random_nanoseconds = true)
       : measurement(std::move(measurement)),
         tags(std::move(tags)),
         fields(std::move(fields)),
@@ -93,4 +88,4 @@ class influx : public base_plugin {
 }
 }
 
-#endif //WOLF_JSON_TO_INFLUX_H
+

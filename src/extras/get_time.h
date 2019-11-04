@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 17.12.18.
-//
-
-#ifndef WOLF_GET_TIME_H
-#define WOLF_GET_TIME_H
+#pragma once
 
 #include <string>
 #include <chrono>
@@ -15,4 +10,4 @@ std::string get_date();
 }
 }
 
-#endif //WOLF_GET_TIME_H
+

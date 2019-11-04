@@ -1,9 +1,4 @@
-//
-// Created by lamanchy on 9/29/18.
-//
-
-#ifndef WOLF_TCP_OUT_H
-#define WOLF_TCP_OUT_H
+#pragma once
 
 #include <base/plugins/base_plugin.h>
 #include <asio.hpp>
@@ -15,7 +10,7 @@ namespace tcp {
 class output : public base_plugin {
  public:
   output(const option<std::string> &host,
-          const option<std::string> &port)
+         const option<std::string> &port)
       : base_plugin(),
         io_context_(),
         socket_(io_context_),
@@ -90,7 +85,7 @@ class output : public base_plugin {
 
   unsigned long size() {
     unsigned long sum = 0;
-    for (const auto & ss : write_msgs_)
+    for (const auto &ss : write_msgs_)
       sum += ss.length();
     return sum;
   }
@@ -108,4 +103,4 @@ class output : public base_plugin {
 }
 }
 
-#endif //WOLF_TCP_OUT_H
+
