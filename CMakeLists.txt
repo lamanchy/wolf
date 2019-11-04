@@ -45,7 +45,15 @@ set(SOURCE_FILES
         src/base/options/base_option.h src/extras/convert_time.cpp
         src/extras/convert_time.h src/extras/get_executable_path.cpp src/extras/get_executable_path.h
         src/extras/get_time.cpp src/extras/get_time.h
-        src/plugins/time_sort.h src/plugins/outputs/file.h src/plugins/inputs/file.h src/plugins/copy.h src/extras/validators.h src/wolf.h src/base/queue.cpp src/base/queue.h src/base/sleeper.cpp src/base/sleeper.h src/plugins/inputs/stream.h src/base/pipeline_status.cpp src/base/pipeline_status.h src/base/options/options.cpp src/base/options/options.h src/base/make.h src/plugins/deserializers/compressed.cpp src/plugins/deserializers/compressed.h src/plugins/deserializers/line.cpp src/plugins/deserializers/line.h src/plugins/deserializers/string.cpp src/plugins/deserializers/string.h src/plugins/serializers/compressed.cpp src/plugins/serializers/compressed.h src/plugins/serializers/line.cpp src/plugins/serializers/line.h src/plugins/serializers/string.cpp src/plugins/serializers/string.h src/extras/gzip.cpp src/extras/gzip.h src/plugins/common/kafka.h)
+        src/plugins/time_sort.h src/plugins/outputs/file.h src/plugins/inputs/file.h src/plugins/copy.h
+        src/extras/validators.h src/wolf.h src/base/queue.cpp src/base/queue.h src/base/sleeper.cpp src/base/sleeper.h
+        src/plugins/inputs/stream.h src/base/pipeline_status.cpp src/base/pipeline_status.h src/base/options/options.cpp
+        src/base/options/options.h src/base/make.h src/plugins/deserializers/compressed.cpp
+        src/plugins/deserializers/compressed.h src/plugins/deserializers/line.cpp src/plugins/deserializers/line.h
+        src/plugins/deserializers/string.cpp src/plugins/deserializers/string.h src/plugins/serializers/compressed.cpp
+        src/plugins/serializers/compressed.h src/plugins/serializers/line.cpp src/plugins/serializers/line.h
+        src/plugins/serializers/string.cpp src/plugins/serializers/string.h src/extras/gzip.cpp src/extras/gzip.h
+        src/plugins/common/kafka.h)
 
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
