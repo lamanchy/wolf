@@ -26,34 +26,29 @@ endif()
 file(LOCK ${CMAKE_SOURCE_DIR}/lib DIRECTORY RELEASE)
 
 set(SOURCE_FILES
-        src/base/plugins/base_plugin.h src/base/plugins/base_plugin.cpp src/base/pipeline.h src/base/pipeline.cpp
-        src/base/plugins/threaded_plugin.h src/whereami/whereami.c src/whereami/whereami.h
-        src/plugins/inputs/generator.h src/plugins/outputs/cout.h src/plugins/inputs/tcp.h
-        src/base/json.h src/plugins/outputs/kafka.h src/base/plugins/mutexed_plugin.h
-        src/plugins/collate.h src/plugins/ysoft/normalize_nlog_logs.h src/extras/convert_time.h
-        src/plugins/ysoft/normalize_log4j2_logs.h src/plugins/ysoft/normalize_serilog_logs.h
-        src/plugins/ysoft/add_local_info.h src/plugins/outputs/tcp.h src/plugins/lambda.h
-        src/extras/logger.h src/extras/logger.cpp src/plugins/inputs/kafka.h src/plugins/outputs/http.h src/plugins/stats.h
-        src/base/plugins/mutexed_threaded_plugin.h src/extras/get_time.h src/plugins/stream_sort.h
-        src/extras/get_executable_path.h src/plugins/elapsed.h src/plugins/inputs/cin.h src/base/options/base_option.h
-        src/base/options/event.h src/base/options/command.h src/plugins/regex.h
-        src/plugins/ysoft/get_elapsed_preevents.h src/plugins/ysoft/count_logs.h
-        src/plugins/serializers/influx.h src/plugins/filter.h src/plugins/drop.h
-        src/base/plugins/threaded_plugin.cpp src/base/plugins/threaded_plugin.h
-        src/base/plugins/mutexed_threaded_plugin.cpp src/base/plugins/mutexed_threaded_plugin.h
-        src/base/plugins/mutexed_plugin.cpp src/base/plugins/mutexed_plugin.h
-        src/base/options/base_option.h src/extras/convert_time.cpp
-        src/extras/convert_time.h src/extras/get_executable_path.cpp src/extras/get_executable_path.h
-        src/extras/get_time.cpp src/extras/get_time.h
-        src/plugins/time_sort.h src/plugins/outputs/file.h src/plugins/inputs/file.h src/plugins/copy.h
-        src/extras/validators.h src/wolf.h src/base/queue.cpp src/base/queue.h src/base/sleeper.cpp src/base/sleeper.h
-        src/plugins/inputs/stream.h src/base/pipeline_status.cpp src/base/pipeline_status.h src/base/options/options.cpp
-        src/base/options/options.h src/base/make.h src/plugins/deserializers/compressed.cpp
-        src/plugins/deserializers/compressed.h src/plugins/deserializers/line.cpp src/plugins/deserializers/line.h
-        src/plugins/deserializers/string.cpp src/plugins/deserializers/string.h src/plugins/serializers/compressed.cpp
-        src/plugins/serializers/compressed.h src/plugins/serializers/line.cpp src/plugins/serializers/line.h
-        src/plugins/serializers/string.cpp src/plugins/serializers/string.h src/extras/gzip.cpp src/extras/gzip.h
-        src/plugins/common/kafka.h)
+        src/base/plugins/base_plugin.cpp
+        src/base/pipeline.cpp
+        src/whereami/whereami.c
+        src/extras/logger.cpp
+        src/base/plugins/threaded_plugin.cpp
+        src/base/plugins/mutexed_threaded_plugin.cpp
+        src/base/plugins/mutexed_plugin.cpp
+        src/extras/convert_time.cpp
+        src/extras/get_executable_path.cpp
+        src/extras/get_time.cpp
+        src/base/queue.cpp
+        src/base/sleeper.cpp
+        src/base/pipeline_status.cpp
+        src/base/options/options.cpp
+        src/plugins/deserializers/compressed.cpp
+        src/plugins/deserializers/line.cpp
+        src/plugins/deserializers/string.cpp
+        src/plugins/serializers/compressed.cpp
+        src/plugins/serializers/line.cpp
+        src/plugins/serializers/string.cpp
+        src/extras/gzip.cpp)
+
+add_library(wolf STATIC ${SOURCE_FILES})
 
 
 if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
@@ -80,11 +75,13 @@ include_directories(SYSTEM lib/${LIB_PATH}/${CMAKE_BUILD_TYPE}/include)
 link_directories(lib/${LIB_PATH}/${CMAKE_BUILD_TYPE}/lib)
 include_directories(src)
 
-set(TARGETS calf_parser metrics_forwarder correlator parser little_stack_parser forwarder)
+set(TARGETS calf_parser metrics_forwarder correlator parser little_stack_parser forwarder gzip_test)
+
+target_link_libraries(wolf ${LIBRARIES})
 
 foreach (executable ${TARGETS})
-    add_executable(${executable}${TARGET_POSTFIX} src/${executable}.cpp ${SOURCE_FILES})
-    target_link_libraries(${executable}${TARGET_POSTFIX} ${LIBRARIES})
+    add_executable(${executable}${TARGET_POSTFIX} src/${executable}.cpp)
+    target_link_libraries(${executable}${TARGET_POSTFIX} wolf)
 endforeach ()
 
 foreach (target ${TARGETS})

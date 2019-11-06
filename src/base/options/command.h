@@ -33,7 +33,7 @@ class command : public not_event_option_type<T> {
       } else {
         opts(name, desc, cxxopts::value<T>(_value)->default_value(default_value));
       }
-    } catch (cxxopts::option_exists_error &ex) {
+    } catch (cxxopts::option_exists_error &) {
       logger.fatal("Option " + name + " cannot be registered, it already exists");
     }
   }
