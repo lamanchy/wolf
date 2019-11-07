@@ -83,8 +83,8 @@ class output : public base_plugin {
     is_full_ = size() > 64000;
   }
 
-  unsigned long size() {
-    unsigned long sum = 0;
+  size_t size() {
+    size_t sum = 0;
     for (const auto &ss : write_msgs_)
       sum += ss.length();
     return sum;

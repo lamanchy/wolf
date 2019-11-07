@@ -1,8 +1,12 @@
 #pragma once
 
 #include <string>
+
+#pragma warning( push )
+#pragma warning( disable : 4068 )
 #include <gzip/compress.hpp>
 #include <gzip/decompress.hpp>
+#pragma warning( pop )
 
 namespace wolf {
 namespace extras {

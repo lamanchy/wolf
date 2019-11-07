@@ -1,5 +1,8 @@
 
+#pragma warning( push )
+#pragma warning( disable : 4068 )
 #include <gzip/compress.hpp>
+#pragma warning( pop )
 #include <iostream>
 #include <fstream>
 #include <gzip/decompress.hpp>

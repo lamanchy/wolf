@@ -25,7 +25,7 @@ class time_sort : public mutexed_threaded_plugin {
 
     bool is_first = true;
     time_point<system_clock> prev_time;
-    long real_duration = nanoseconds(seconds(seconds_to_wait)).count();
+    auto real_duration = nanoseconds(seconds(seconds_to_wait)).count();
 
     auto old_enough = [&](const json &event) {
       return (

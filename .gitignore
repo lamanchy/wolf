@@ -1,6 +1,7 @@
 /.idea
 
-/bin
 /build
-/lib
 /venv
+
+/lib/*
+!/lib/CMakeLists.txt

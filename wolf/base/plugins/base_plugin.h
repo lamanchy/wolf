@@ -7,7 +7,6 @@
 #include <chrono>
 #include <queue>
 #include <mutex>
-#include <stxxl/bits/containers/queue.h>
 #include <atomic>
 #include <cxxopts.hpp>
 #include <thread>
