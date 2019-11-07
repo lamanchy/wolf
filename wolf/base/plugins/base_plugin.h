@@ -49,6 +49,12 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
 
  protected:
   base_plugin() {
+    if (!pipeline_status::is_initialized())
+      logger.fatal("Cannot create plugin before pipeline initialization");
+
+    if (pipeline_status::was_started())
+      logger.fatal("Cannot create plugin when pipeline was already started");
+
     id = id_counter++;
   }
 

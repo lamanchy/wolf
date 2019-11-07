@@ -17,17 +17,17 @@ void wolf::options::parse_options() {
     for (const auto &o : all_options)
       o->validate_options(result);
 
-    parsed = true;
   } catch (cxxopts::option_not_exists_exception &ex) {
     bool should_print_help;
     g_opts.add_options(general_config_group_name)("h,help", "Print help", cxxopts::value(should_print_help));
     g_opts.allow_unrecognised_options();
     auto result = g_opts.parse(argc, argv);
-    if (should_print_help) {
-      print_help();
-      exit(0);
-    }
-    logger.fatal("Error parsing options: " + std::string(ex.what()));
+
+    if (not should_print_help)
+      logger.fatal("Error parsing options: " + std::string(ex.what()));
+
+    print_help();
+    exit(0);
   }
 }
 const std::string wolf::options::general_config_group_name{"General configuration"};

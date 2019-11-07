@@ -12,7 +12,6 @@ pipeline::pipeline(options _opts) :
     logger.error("Pipeline already initialized, cannot create two pipelines.");
     exit(0);
   }
-  pipeline_status::initialized = true;
 
   evaluate_options();
   if (pipeline_status::persistent)
@@ -20,10 +19,7 @@ pipeline::pipeline(options _opts) :
 
   logger.info("Pipeline initialized");
 
-  // drop is just an empty plugin, condition is never true,
-  // however, without this line linker fails, I already spent
-  // too much time trying to fix that, so...
-  if (wolf::extras::get_separator().empty()) drop();
+  pipeline_status::initialized = true;
 }
 
 void pipeline::run() {
@@ -119,6 +115,7 @@ void pipeline::catch_signal(int signal) {
 
 void pipeline::start() {
   pipeline_status::running = true;
+  pipeline_status::started = true;
   for_each_plugin([](base_plugin &p) { p.do_start(); });
 
   processors_sleepers = std::unique_ptr<sleeper[]>(new sleeper[number_of_processors]);
