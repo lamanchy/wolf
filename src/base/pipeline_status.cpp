@@ -1,6 +1,6 @@
 
 
-#include "pipeline_status.h"
+#include <base/pipeline_status.h>
 namespace wolf {
 bool pipeline_status::initialized{false};
 bool pipeline_status::started{false};

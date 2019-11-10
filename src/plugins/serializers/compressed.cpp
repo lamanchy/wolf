@@ -1,6 +1,6 @@
 
 
-#include "compressed.h"
+#include <plugins/serializers/compressed.h>
 #include <iso646.h>
 #include <extras/gzip.h>
 

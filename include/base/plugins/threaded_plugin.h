@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base_plugin.h"
+#include <base/plugins/base_plugin.h>
 #include <thread>
 
 namespace wolf {

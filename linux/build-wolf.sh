@@ -12,16 +12,16 @@ fi
 
 for build_type in Debug Release
 do
-    build_path=${basepath}/build/${build_path_part}/${build_type}
+    build_path=${basepath}/build/linux-${build_path_part}/${build_type}
 
     mkdir -p ${build_path}
     cd ${build_path}
 
-    cmake -DCMAKE_BUILD_TYPE=${build_type} -DCMAKE_INSTALL_PREFIX=${basepath}/bin -DWOLF_BUILD_SOURCE=$build_path_part -G "CodeBlocks - Unix Makefiles" ${basepath}
+    cmake -DCMAKE_BUILD_TYPE=${build_type} -DCMAKE_INSTALL_PREFIX=${basepath}/bin -G "CodeBlocks - Unix Makefiles" ${basepath}
 
     cmake --build ${build_path} -- -j 4 || exit 1
 
     # python3 ${basepath}/tests/run_all_tests.py ${build_path_part} || exit 1
 
-    cmake --build ${build_path} --target install -- -j 4
+    cmake --build ${build_path} --target install -- -j 4 || exit 1
 done

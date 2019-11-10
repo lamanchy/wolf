@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stream.h"
+#include <plugins/inputs/stream.h>
 
 namespace wolf {
 

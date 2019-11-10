@@ -1,6 +1,4 @@
-#include "pipeline.h"
-#include "sleeper.h"
-#include "pipeline_status.h"
+#include <base/pipeline.h>
 
 namespace wolf {
 

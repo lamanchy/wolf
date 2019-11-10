@@ -1,12 +1,6 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.13)
 project(wolf)
 set(CMAKE_CXX_STANDARD 11)
-
-# set wolf_build_source if building from docker or wsl
-# to allow multiple builds inside one directory
-if (NOT WOLF_BUILD_SOURCE)
-    set(WOLF_BUILD_SOURCE local)
-endif ()
 
 # check for current platform
 if (WIN32)
@@ -17,8 +11,15 @@ else ()
     message(FATAL_ERROR "Unknown system")
 endif ()
 
-# wolf library
-include(wolf/CMakeLists.txt)
+# build libraries
+include(cmake/build_libraries.cmake)
 
-# executables
-add_subdirectory(src)
+# wolf library
+include(src/CMakeLists.txt)
+include(include/CMakeLists.txt)
+
+# specify compile flags
+include(cmake/compile_flags.cmake)
+
+# specify install definitions
+include(cmake/install_definitions.cmake)

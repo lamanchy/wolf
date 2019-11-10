@@ -3,8 +3,8 @@
 #include <stxxl/queue>
 #include <mutex>
 #include <atomic>
-#include "json.h"
-#include "pipeline_status.h"
+#include <base/json.h>
+#include <base/pipeline_status.h>
 namespace wolf {
 class queue {
  public:

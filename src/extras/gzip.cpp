@@ -1,6 +1,6 @@
 
 
-#include "gzip.h"
+#include <extras/gzip.h>
 
 namespace wolf {
 namespace extras {

@@ -1,4 +1,4 @@
-#include "mutexed_threaded_plugin.h"
+#include <base/plugins/mutexed_threaded_plugin.h>
 
 namespace wolf {
 

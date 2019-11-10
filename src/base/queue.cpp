@@ -3,8 +3,8 @@
 #include <thread>
 #include <base/plugins/base_plugin.h>
 #include <extras/gzip.h>
-#include "queue.h"
-#include "pipeline_status.h"
+#include <base/queue.h>
+#include <base/pipeline_status.h>
 
 namespace wolf {
 void queue::push(json &&message) {

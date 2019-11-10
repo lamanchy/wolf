@@ -1,6 +1,6 @@
 
 
-#include "compressed.h"
+#include <plugins/deserializers/compressed.h>
 
 namespace wolf {
 namespace from {

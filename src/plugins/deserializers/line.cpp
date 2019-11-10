@@ -1,7 +1,7 @@
 
 
 #include <mutex>
-#include "line.h"
+#include <plugins/deserializers/line.h>
 void wolf::from::line::process(json &&message) {
   logger.trace("line");
   std::lock_guard<std::mutex> lg(m);

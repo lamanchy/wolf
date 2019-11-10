@@ -1,6 +1,6 @@
 #pragma once
 
-#include "threaded_plugin.h"
+#include <base/plugins/threaded_plugin.h>
 namespace wolf {
 
 class mutexed_threaded_plugin : public threaded_plugin {

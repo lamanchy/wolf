@@ -2,6 +2,3 @@
 
 /build
 /venv
-
-/lib/*
-!/lib/CMakeLists.txt

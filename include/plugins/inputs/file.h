@@ -2,7 +2,7 @@
 
 #include <base/plugins/threaded_plugin.h>
 #include <base/options/base_option.h>
-#include "stream.h"
+#include <plugins/inputs/stream.h>
 namespace wolf {
 namespace file {
 
