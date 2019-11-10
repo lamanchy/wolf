@@ -1,20 +1,3 @@
-# define libraries
-if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-    if (WIN32)
-        set(LIBRARIES re2.lib cppkafka.lib rdkafka.lib zlibstaticd.lib stxxl_debug.lib rdkafka++.lib)
-    elseif (UNIX)
-        set(LIBRARIES libre2.a libcppkafka.a librdkafka.a libstxxl_debug.a libz.a librdkafka++.a)
-    endif ()
-else ()
-    if (WIN32)
-        set(LIBRARIES re2.lib cppkafka.lib rdkafka.lib zlibstatic.lib stxxl.lib rdkafka++.lib)
-    elseif (UNIX)
-        set(LIBRARIES libre2.a libcppkafka.a librdkafka.a libstxxl.a libz.a librdkafka++.a)
-    endif ()
-endif ()
-list(TRANSFORM LIBRARIES PREPEND ${WOLF_LIBS_PATH}/lib/)
-
-# todo make private
-target_include_directories(wolf PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_include_directories(wolf SYSTEM PUBLIC ${WOLF_LIBS_PATH}/include)
-target_link_libraries(wolf ${LIBRARIES})
+target_include_directories(wolf PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(wolf SYSTEM PRIVATE ${WOLF_LIBS_PATH}/include)
+target_link_directories(wolf PRIVATE ${WOLF_LIBS_PATH}/lib)
