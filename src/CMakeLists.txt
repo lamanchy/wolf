@@ -25,6 +25,6 @@ set(SOURCE_FILES
 
         libs/whereami/whereami.c
         )
-list(TRANSFORM SOURCE_FILES PREPEND ${CMAKE_SOURCE_DIR}/src/)
+list(TRANSFORM SOURCE_FILES PREPEND ${WOLF_PATH}/src/)
 
 add_library(wolf STATIC ${SOURCE_FILES})
