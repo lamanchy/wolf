@@ -9,6 +9,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <extras/logger.h>
+#include <plugins/json_to_string.h>
 
 namespace wolf {
 namespace tcp {
@@ -98,7 +99,7 @@ class input : public threaded_plugin {
         : p(p), acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
       start_accept();
     }
-
+    Logger &logger = Logger::getLogger();  
    private:
     input *p;
     using pointer = typename tcp_connection::pointer;
@@ -115,6 +116,7 @@ class input : public threaded_plugin {
     void handle_accept(pointer new_connection,
                        const std::error_code &error) {
       if (not error) {
+        logger.info("Handling new connection");
         new_connection->start();
       }
 
