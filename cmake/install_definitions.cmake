@@ -6,7 +6,7 @@ if (NOT EXISTS ${CMAKE_INSTALL_PREFIX}/include)
     execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${WOLF_LIBS_PATH}/include ${CMAKE_INSTALL_PREFIX}/include)
     execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${WOLF_LIBS_PATH}/lib ${CMAKE_INSTALL_PREFIX}/lib)
 else()
-    message(STATUS \"skipping libraries install, only done for the first time\")
+    message(STATUS \"skipping libraries install, only done for the first time, remove ${CMAKE_INSTALL_PREFIX}/include to repeat\")
 endif()
 ")
 

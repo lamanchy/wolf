@@ -27,6 +27,7 @@ endif ()
 get_filename_component(CPPKAFKA_BOOST_ROOT ${WOLF_LIBS_PATH} DIRECTORY)
 
 ExternalProject_Add(_asio
+        PREFIX asio
         GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
         GIT_TAG asio-1-12-2
         CONFIGURE_COMMAND ""
@@ -42,7 +43,8 @@ ExternalProject_Add(_asio
         UPDATE_DISCONNECTED ON
         )
 
-ExternalProject_Add(_boost_headers
+ExternalProject_Add(_boost_h
+        PREFIX boost_h
         URL https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.bz2
         URL_HASH SHA256=d73a8da01e8bf8c7eda40b4c84915071a8c8a0df4a6734537ddde4a8580524ee
         CONFIGURE_COMMAND ""
@@ -59,6 +61,7 @@ ExternalProject_Add(_boost_headers
         )
 
 ExternalProject_Add(_date
+        PREFIX date
         GIT_REPOSITORY https://github.com/HowardHinnant/date.git
         # GIT_TAG needs master >{
         CONFIGURE_COMMAND ""
@@ -75,6 +78,7 @@ ExternalProject_Add(_date
         )
 
 ExternalProject_Add(_re2
+        PREFIX re2
         GIT_REPOSITORY https://github.com/google/re2.git
         GIT_TAG 2019-03-01
         CMAKE_ARGS
@@ -98,6 +102,7 @@ ExternalProject_Add(_re2
         )
 
 ExternalProject_Add(_librdkafka
+        PREFIX librdkafka
         GIT_REPOSITORY https://github.com/edenhill/librdkafka.git
         GIT_TAG v0.11.6
         CMAKE_ARGS
@@ -123,7 +128,8 @@ ExternalProject_Add(_librdkafka
         )
 
 ExternalProject_Add(_cppkafka
-        DEPENDS _boost_headers _librdkafka
+        PREFIX cppkafka
+        DEPENDS _boost_h _librdkafka
         GIT_REPOSITORY https://github.com/mfontanini/cppkafka.git
         GIT_TAG v0.3.1
         CMAKE_ARGS
@@ -152,6 +158,7 @@ ExternalProject_Add(_cppkafka
         )
 
 ExternalProject_Add(_taojson
+        PREFIX taojson
         GIT_REPOSITORY https://github.com/taocpp/json.git
         GIT_TAG 1.0.0-beta.11
         CMAKE_ARGS
@@ -176,6 +183,7 @@ ExternalProject_Add(_taojson
         )
 
 ExternalProject_Add(_stxxl
+        PREFIX stxxl
         GIT_REPOSITORY https://github.com/stxxl/stxxl.git
         GIT_TAG 1.4.1
         CMAKE_ARGS
@@ -200,6 +208,7 @@ ExternalProject_Add(_stxxl
         )
 
 ExternalProject_Add(_cxxopts
+        PREFIX cxxopts
         GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
         # GIT_TAG needs master >{
         CMAKE_ARGS
@@ -222,6 +231,7 @@ ExternalProject_Add(_cxxopts
         )
 
 ExternalProject_Add(_zlib
+        PREFIX zlib
         GIT_REPOSITORY https://github.com/madler/zlib.git
         GIT_TAG v1.2.11
         CMAKE_ARGS
@@ -244,6 +254,7 @@ ExternalProject_Add(_zlib
         )
 
 ExternalProject_Add(_gzip-hpp
+        PREFIX gzip-hpp
         DEPENDS _zlib
         GIT_REPOSITORY https://github.com/mapbox/gzip-hpp.git
         GIT_TAG v0.1.0
