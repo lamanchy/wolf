@@ -22,7 +22,7 @@
 - build with:
     - `docker build -t wolf_lib -f .\docker\wolf_lib\windows.Dockerfile .`
 - run (compile wolf) with:
-    - `docker run -it --rm -v ${PWD}:C:\wolf_lib wolf_lib`
+    - `docker run --rm -v ${PWD}:C:\wolf_lib wolf_lib`
 
 ## Wolf app image
 
@@ -32,7 +32,7 @@
 - build with:
     - `docker build -t wolf_app -f .\docker\wolf_app\windows.Dockerfile .`
 - run (compile wolf app) with:
-    - `docker run -it --rm -v ${PWD}:C:\wolf_app wolf_app`
+    - `docker run --rm -v ${PWD}:C:\wolf_app wolf_app`
     - where `${PWD}` is directory with wolf app
         - empty directory, when creating new app
 
