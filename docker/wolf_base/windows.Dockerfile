@@ -12,8 +12,8 @@ RUN (iex ((new-object net.webclient).DownloadString('https://chocolatey.org/inst
 RUN choco install git -y --no-progress; `
     choco install python -y --no-progress; `
     choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress; `
-    choco install visualcpp-build-tools --params "'/IncludeRequired'" --version 15.0.26228.20170424 -y --no-progress; `
-    Write-Host 'Waiting for Visual C++ Build Tools to finish';
-#    Wait-Process -Name vs_installer;
+    choco install visualcpp-build-tools --version 15.0.26228.20170424 -y --no-progress; `
+    Write-Host 'Waiting for Visual C++ Build Tools to finish'; `
+    Wait-Process -Name vs_installer;
 
 COPY . wolf_lib
