@@ -10,7 +10,7 @@ jobs:
     - name: Build the Docker image
       run: |
         echo "1"
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u lamanchy --password-stdin | echo "done"
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u lamanchy --password-stdin | echo
         echo "1"
         docker image list
         docker system prune -af
