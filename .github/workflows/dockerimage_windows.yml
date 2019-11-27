@@ -10,6 +10,8 @@ jobs:
     - name: Build the Docker image
       run: |
         docker image list
+        docker system prune -af
+        docker image list
         docker login -u "lamanchy" -p "${{ secrets.DOCKER_PASSWORD }}"
         Get-PSDrive C | Select-Object Used,Free
         docker build . --file docker\wolf_base\windows.Dockerfile --tag lamanchy/wolf_base --force-rm
