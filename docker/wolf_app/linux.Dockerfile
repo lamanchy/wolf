@@ -16,7 +16,7 @@ RUN cp -rf /wolf_lib/examples/app /wolf && `
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD "echo 'Initializing wolf app?' && `
-     $ [ "$(ls -A /wolf)" ] && (echo "True"; cp -rf /wolf_lib/examples/app/* /wolf) || echo "False" && `
+     $ [ `"$(ls -A /wolf)`" ] && (echo `"True`"; cp -rf /wolf_lib/examples/app/* /wolf) || echo `"False`" && `
      cd /wolf-build && `
      cmake --build . --target install -- -j 4"
 
