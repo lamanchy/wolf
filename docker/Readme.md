@@ -30,9 +30,9 @@
 - when run over empty directory, it initializes it
 - contains built wolf lib with all dependencies
 - build with:
-    - `docker build -t wolf_app -f .\docker\wolf_app\windows.Dockerfile .`
+    - `docker build -t wolf -f .\docker\wolf_app\windows.Dockerfile .`
 - run (compile wolf app) with:
-    - `docker run --rm -v ${PWD}:C:\wolf_app wolf_app`
+    - `docker run --rm -v ${PWD}:C:\wolf wolf`
     - where `${PWD}` is directory with wolf app
         - empty directory, when creating new app
 
