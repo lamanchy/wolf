@@ -7,9 +7,9 @@ jobs:
 
     steps:
       - uses: azure/docker-login@v1
-          with:
-            username: 'lamanchy'
-            password: ${{ secrets.DOCKER_PASSWORD }}
+        with:
+          username: 'lamanchy'
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - uses: actions/checkout@v1
       - name: Build the Docker image
         run: |
