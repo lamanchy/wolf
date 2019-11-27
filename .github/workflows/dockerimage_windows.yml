@@ -6,19 +6,21 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Build the Docker image
-      run: |
-        # free some space on builder
-        docker rmi mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-ltsc2019
-        docker rmi mcr.microsoft.com/dotnet/framework/runtime:4.8-windowsservercore-ltsc2019
-        docker rmi mcr.microsoft.com/windows/nanoserver:1809
-        docker rmi microsoft/aspnetcore-build:1.0-2.0
-        # log into docker
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u lamanchy --password-stdin | echo
-        # build base
-        docker build . --file docker\wolf_base\windows.Dockerfile --tag lamanchy/wolf_base --force-rm
-        # build app
-        docker build . --file docker\wolf_app\windows.Dockerfile --tag lamanchy/wolf_win --force-rm
-        # push to docker
-        docker push lamanchy/wolf_win
+      - uses: azure/docker-login@v1
+          with:
+            username: 'lamanchy'
+            password: ${{ secrets.DOCKER_PASSWORD }}
+      - uses: actions/checkout@v1
+      - name: Build the Docker image
+        run: |
+          # free some space on builder
+          docker rmi mcr.microsoft.com/dotnet/framework/aspnet:4.8-windowsservercore-ltsc2019
+          docker rmi mcr.microsoft.com/dotnet/framework/runtime:4.8-windowsservercore-ltsc2019
+          docker rmi mcr.microsoft.com/windows/nanoserver:1809
+          docker rmi microsoft/aspnetcore-build:1.0-2.0
+          # build base
+          docker build . --file docker\wolf_base\windows.Dockerfile --tag lamanchy/wolf_base --force-rm
+          # build app
+          docker build . --file docker\wolf_app\windows.Dockerfile --tag lamanchy/wolf_win --force-rm
+          # push to docker
+          docker push lamanchy/wolf_win

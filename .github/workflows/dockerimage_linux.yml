@@ -6,10 +6,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Build the Docker image
-      run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u lamanchy --password-stdin
-        docker build . --file docker/wolf_base/linux.Dockerfile --tag lamanchy/wolf_base
-        docker build . --file docker/wolf_app/linux.Dockerfile --tag lamanchy/wolf_linux
-        docker push lamanchy/wolf_linux
+      - uses: azure/docker-login@v1
+          with:
+            username: 'lamanchy'
+            password: ${{ secrets.DOCKER_PASSWORD }}
+      - uses: actions/checkout@v1
+      - name: Build the Docker image
+        run: |
+          docker build . --file docker/wolf_base/linux.Dockerfile --tag lamanchy/wolf_base
+          docker build . --file docker/wolf_app/linux.Dockerfile --tag lamanchy/wolf_linux
+          docker push lamanchy/wolf_linux
