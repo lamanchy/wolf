@@ -32,7 +32,7 @@
 - build with:
     - `docker build -t wolf_win -f .\docker\wolf_app\windows.Dockerfile .`
 - run (compile wolf app) with:
-    - `docker run --rm -v ${PWD}:C:\wolf_win wolf_win`
+    - `docker run --rm -v ${PWD}:C:\wolf wolf_win`
     - where `${PWD}` is directory with wolf app
         - empty directory, when creating new app
 
