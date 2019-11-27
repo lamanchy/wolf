@@ -12,7 +12,9 @@ jobs:
         docker image list
         docker system prune -af
         docker image list
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u lamanchy --password-stdin
+        echo "1"
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u lamanchy --password-stdin | echo "done"
+        echo "1"
         Get-PSDrive C | Select-Object Used,Free
         docker build . --file docker\wolf_base\windows.Dockerfile --tag lamanchy/wolf_base --force-rm
         Get-PSDrive C | Select-Object Used,Free
