@@ -3,7 +3,7 @@
 FROM lamanchy/wolf_base
 
 # prepare wolf app
-RUN cp -rf /wolf_lib/examples/app /wolf_app && `
+RUN cp -rf /wolf_lib/examples/app /wolf && `
 # configure release
     mkdir /wolf-build && `
     cd /wolf-build && `
