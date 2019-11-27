@@ -10,6 +10,6 @@ jobs:
     - name: Build the Docker image
       run: |
         docker login -u "lamanchy" -p "${{ secrets.DOCKER_PASSWORD }}"
-        docker build . --file docker/wolf_base/linux.Dockerfile --tag lamanchy/wolf_base
-        docker build . --file docker/wolf_app/linux.Dockerfile --tag lamanchy/wolf
-        docker push lamanchy/wolf
+#        docker build . --file docker/wolf_base/linux.Dockerfile --tag lamanchy/wolf_base
+#        docker build . --file docker/wolf_app/linux.Dockerfile --tag lamanchy/wolf
+#        docker push lamanchy/wolf
