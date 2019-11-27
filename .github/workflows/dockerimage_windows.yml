@@ -9,15 +9,15 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build the Docker image
       run: |
-        docker image list
-        docker system prune -af
-        docker image list
         echo "1"
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u lamanchy --password-stdin | echo "done"
         echo "1"
+        docker image list
+        docker system prune -af
+        docker image list
         Get-PSDrive C | Select-Object Used,Free
         docker build . --file docker\wolf_base\windows.Dockerfile --tag lamanchy/wolf_base --force-rm
         Get-PSDrive C | Select-Object Used,Free
-        docker build . --file docker\wolf_app\windows.Dockerfile --tag lamanchy/wolf --force-rm
+        docker build . --file docker\wolf_app\windows.Dockerfile --tag lamanchy/wolf_win --force-rm
         Get-PSDrive C | Select-Object Used,Free
-        docker push lamanchy/wolf
+        docker push lamanchy/wolf_win
