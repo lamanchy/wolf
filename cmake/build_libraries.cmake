@@ -29,4 +29,7 @@ if (NOT WOLF_SKIP_LIBRARY_BUILD)
         message(FATAL_ERROR "Library build failed")
     endif ()
     set(WOLF_SKIP_LIBRARY_BUILD ON CACHE BOOL "Set to skip building of libraries")
+    # once libs are build, source files can be removed
+    message(STATUS "Removing library source files")
+    file(REMOVE_RECURSE ${WOLF_LIB_SOURCE})
 endif ()

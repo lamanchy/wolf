@@ -8,8 +8,6 @@ RUN cp -r -fo C:\wolf_lib\examples\app C:\wolf; `
     mkdir C:\wolf-build; `
     cd C:\wolf-build; `
     cmake.exe -DWOLF_PATH=C:/wolf_lib -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/wolf/install/windows-docker -G 'Visual Studio 15 2017 Win64' C:\wolf; `
-    # remove downloaded files to save space
-    rm -r -fo wolf_lib\lib_source; `
 # build release
     cmake.exe --build . --target install --config Release
 

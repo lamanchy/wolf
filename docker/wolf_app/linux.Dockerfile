@@ -8,8 +8,6 @@ RUN cp -rf /wolf_lib/examples/app /wolf && `
     mkdir /wolf-build && `
     cd /wolf-build && `
     cmake -DWOLF_PATH=/wolf_lib -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/wolf/install/linux-docker -G "CodeBlocks - Unix Makefiles" /wolf && `
-    # remove downloaded files to save space
-    rm -rf wolf_lib/lib_source && `
 # build release
     cmake --build . --target install -- -j 4
 
