@@ -57,11 +57,9 @@ void base_plugin::buffer(json &&message) {
 }
 
 void base_plugin::do_stop() {
-  logger.trace("stopping " + std::string(typeid(*this).name()));
   if (num_of_parents > 0)
     return;
 
-  logger.trace("no parents");
   sleeper sleeper;
   while (not q.is_empty())
     sleeper.increasing_sleep();

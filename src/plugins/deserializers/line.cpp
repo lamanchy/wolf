@@ -3,7 +3,6 @@
 #include <mutex>
 #include <plugins/deserializers/line.h>
 void wolf::from::line::process(json &&message) {
-  logger.trace("line");
   std::lock_guard<std::mutex> lg(m);
   std::string string = message.get_string();
   auto begin = string.begin();

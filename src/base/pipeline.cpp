@@ -131,10 +131,6 @@ void pipeline::wait() {
       break;
     }
     pipeline_status::pipeline_sleeper.sleep();
-//    pipeline_status::pipeline_sleeper.sleep_for(std::chrono::seconds(1));
-//    for_each_plugin([this](base_plugin&plugin){
-//      logger.trace(std::string(typeid(plugin).name()) + " has size " + std::to_string(plugin.q.get_size()));
-//    });
   }
 }
 
