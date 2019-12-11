@@ -4,7 +4,13 @@
 #include <plugins/deserializers/line.h>
 void wolf::from::line::process(json &&message) {
   std::string string = message.get_string();
-  std::string _previous = std::string(previous);
+  unsigned p = 0;
+  auto partition = message.metadata.find("partition");
+  if (partition != nullptr) {
+    p = partition->get_unsigned();
+  }
+  std::string _previous = this->get_previous(p);
+
   auto begin = string.begin();
   auto mark = string.begin();
   auto end = string.end();
@@ -27,5 +33,7 @@ void wolf::from::line::process(json &&message) {
   if (begin != end) {
     _previous += std::string(begin, end);
   }
-  previous = _previous;
+  if (!_previous.empty()) {
+    this->put_previous(p, _previous);
+  }
 }

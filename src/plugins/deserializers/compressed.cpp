@@ -5,7 +5,12 @@ namespace from {
 void compressed::process(json &&next) {
   bool is_gzip = false;
   bool is_line = false;
-  std::string _message = std::string(message);
+  unsigned p = 0;
+  auto partition = next.metadata.find("partition");
+  if (partition != nullptr) {
+    p = partition->get_unsigned();
+  }
+  std::string _message = this->get_previous(p);
   _message.append(next.get_string());
   while (true) {
     if (not is_line and not is_gzip) {
@@ -47,7 +52,10 @@ void compressed::process(json &&next) {
       is_gzip = false;
     }
   }
-  message = _message;
+
+  if (!_message.empty()) {
+    this->put_previous(p, _message);
+  }
 }
 
 }
