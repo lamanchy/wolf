@@ -11,10 +11,8 @@ class line : public base_plugin {
   void process(json &&message) override;
  private:
   std::map<unsigned, std::string> previous;
-  std::mutex m;
 
   std::string get_previous(unsigned partition) {
-    std::lock_guard<std::mutex> lg(m);
     auto prev = previous.find(partition);
     if (prev == previous.end())
       return std::string();
@@ -24,7 +22,6 @@ class line : public base_plugin {
   }
 
   void put_previous(unsigned partition, const std::string& prev) {
-    std::lock_guard<std::mutex> lg(m);
     previous.emplace(partition, prev);
   }
 };
