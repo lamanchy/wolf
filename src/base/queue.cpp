@@ -138,6 +138,8 @@ namespace serializer = tao::json::cbor;
 
 void queue::empty_front_queue() {
   // front_queue_mutex is locked, must be unlocked
+  if (persistent_queue == nullptr)
+    persistent_queue = std::unique_ptr<stxxl::queue<char>>(new stxxl::queue<char>());
   // to be loading stuff to pq, not swappable anymore
   swappable = false;
   front_processing_mutex.lock();
@@ -155,8 +157,6 @@ void queue::empty_front_queue() {
   tmp_front_buffer1.clear();
 
   persistent_queue_mutex.lock();
-  if (persistent_queue == nullptr)
-    persistent_queue = std::unique_ptr<stxxl::queue<char>>(new stxxl::queue<char>());
   for (char c: extras::gzip::get_serialized_size(tmp_front_buffer2.size())) persistent_queue->push(c);
   for (char c: tmp_front_buffer2) persistent_queue->push(c);
   persistent_queue_mutex.unlock();
