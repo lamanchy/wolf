@@ -11,8 +11,9 @@ void queue::push(json &&message) {
   front_queue_mutex.lock();
   size += message.size;
   front_queue.push(std::move(message));
+//  std::cout << "size: " << std::to_string(size) << "fqm size" << std::to_string(front_queue.size()) << "persistent" << std::to_string(pipeline_status::is_persistent()) << "buffersize" << std::to_string(pipeline_status::get_buffer_size()) << std::endl;
 
-  if (pipeline_status::is_persistent() and front_queue.size() >= pipeline_status::get_buffer_size()) {
+  if (pipeline_status::is_persistent() and size >= pipeline_status::get_buffer_size()) {
     empty_front_queue(); // unlocks fqm
     return;
   }
@@ -159,6 +160,7 @@ void queue::empty_front_queue() {
     persistent_queue = std::unique_ptr<stxxl::queue<char>>(new stxxl::queue<char>());
   for (char c: extras::gzip::get_serialized_size(tmp_front_buffer2.size())) persistent_queue->push(c);
   for (char c: tmp_front_buffer2) persistent_queue->push(c);
+  std::cout << "pq size " << std::to_string(persistent_queue->size()) << std::endl;
   persistent_queue_mutex.unlock();
   tmp_front_buffer2.clear();
   front_processing_mutex.unlock();
