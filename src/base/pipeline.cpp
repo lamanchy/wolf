@@ -52,11 +52,9 @@ void pipeline::setup_persistency() {
   std::string fileio = path[path.size() - 1] == '/' ? "syscall" : "wincall";
   stxxl::disk_config disk(path + "queue.tmp", 0, fileio);
   disk.autogrow = true;
-  disk.unlink_on_open = true;
   disk.delete_on_exit = true;
   disk.direct = stxxl::disk_config::DIRECT_TRY;
   cfg->add_disk(disk);
-
 }
 
 template<typename T>
