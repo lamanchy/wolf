@@ -4,8 +4,8 @@ Base of this repository was created with `wolf_win (wolf_linux)` docker image.
 
 You can build if either with docker:
 ```
-docker run --rm -v ${PWD}:C:\wolf wolf_win
-docker run --rm -v ${PWD}:/wolf wolf_linux
+docker run --rm -v ${PWD}:C:\wolf lamanchy/wolf_win
+docker run --rm -v ${PWD}:/wolf lamanchy/wolf_linux
 ```
 
 or natively:
