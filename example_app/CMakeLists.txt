@@ -40,7 +40,7 @@ foreach(executable ${executables})
     install(TARGETS ${target} DESTINATION ${WOLF_TARGET_DIR}/)
 
     # example of installing config files
-    #    if (${target} STREQUAL wolf_example)
-    #        install(FILES configs/example_config DESTINATION ${WOLF_TARGET_DIR}/)
-    #    endif ()
+    # if (${target} STREQUAL wolf_example)
+    #     install(FILES configs/example_config DESTINATION ${WOLF_TARGET_DIR}/)
+    # endif ()
 endforeach ()
