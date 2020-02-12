@@ -3,7 +3,7 @@
 FROM lamanchy/wolf_base
 
 # prepare wolf app
-RUN cp -rf /wolf_lib/examples/app /wolf && `
+RUN cp -rf /wolf_lib/example_app /wolf && `
 # configure release
     mkdir /wolf-build && `
     cd /wolf-build && `
@@ -13,7 +13,7 @@ RUN cp -rf /wolf_lib/examples/app /wolf && `
 
 SHELL ["/bin/bash", "-c"]
 CMD echo 'Initializing wolf app?' && `
-    if [ -z "$(ls -A /wolf)" ]; then echo True; cp -rf /wolf_lib/examples/app/* /wolf; else echo False; fi && `
+    if [ -z "$(ls -A /wolf)" ]; then echo True; cp -rf /wolf_lib/example_app/* /wolf; else echo False; fi && `
     cd /wolf-build && `
     cmake --build . --target install -- -j 4
 
