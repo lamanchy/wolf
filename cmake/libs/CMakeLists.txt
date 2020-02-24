@@ -117,6 +117,7 @@ ExternalProject_Add(_librdkafka
         -DRDKAFKA_BUILD_STATIC=ON
         -DRDKAFKA_BUILD_EXAMPLES=OFF
         -DRDKAFKA_BUILD_TESTS=OFF
+        -DWITH_SSL=OFF
         BUILD_IN_SOURCE OFF
         LOG_DOWNLOAD ON
         LOG_UPDATE ON
