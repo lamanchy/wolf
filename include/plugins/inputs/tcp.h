@@ -9,7 +9,6 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <extras/logger.h>
-#include <plugins/json_to_string.h>
 #include <base/options/base_option.h>
 
 namespace wolf {
