@@ -52,11 +52,9 @@ void pipeline::setup_persistency() {
   std::string fileio = path[path.size() - 1] == '/' ? "syscall" : "wincall";
   stxxl::disk_config disk(path + "queue.tmp", 0, fileio);
   disk.autogrow = true;
-  disk.unlink_on_open = true;
   disk.delete_on_exit = true;
   disk.direct = stxxl::disk_config::DIRECT_TRY;
   cfg->add_disk(disk);
-
 }
 
 template<typename T>
@@ -131,10 +129,6 @@ void pipeline::wait() {
       break;
     }
     pipeline_status::pipeline_sleeper.sleep();
-//    pipeline_status::pipeline_sleeper.sleep_for(std::chrono::seconds(1));
-//    for_each_plugin([this](base_plugin&plugin){
-//      logger.trace(std::string(typeid(plugin).name()) + " has size " + std::to_string(plugin.q.get_size()));
-//    });
   }
 }
 

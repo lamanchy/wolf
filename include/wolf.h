@@ -25,13 +25,6 @@
 #include <plugins/deserializers/line.h>
 #include <plugins/deserializers/string.h> // NOLINT(modernize-deprecated-headers,hicpp-deprecated-headers)
 
-#include <plugins/ysoft/add_local_info.h>
-#include <plugins/ysoft/normalize_nlog_logs.h>
-#include <plugins/ysoft/normalize_serilog_logs.h>
-#include <plugins/ysoft/normalize_log4j2_logs.h>
-#include <plugins/ysoft/get_elapsed_preevents.h>
-#include <plugins/ysoft/count_logs.h>
-
 #include <plugins/lambda.h>
 #include <plugins/collate.h>
 #include <plugins/copy.h>

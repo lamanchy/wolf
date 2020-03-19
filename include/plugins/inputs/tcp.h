@@ -10,6 +10,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <extras/logger.h>
 #include <plugins/json_to_string.h>
+#include <base/options/base_option.h>
 
 namespace wolf {
 namespace tcp {
@@ -46,8 +47,8 @@ class input : public threaded_plugin {
    public:
     using pointer = typename boost::shared_ptr<tcp_connection>;
 
-    static pointer create(input *p, asio::io_context &io_context) {
-      return pointer(new tcp_connection(p, io_context));
+    static pointer create(unsigned partition, input *p, asio::io_context &io_context) {
+      return pointer(new tcp_connection(partition, p, io_context));
     }
 
     asio::ip::tcp::socket &socket() {
@@ -65,9 +66,10 @@ class input : public threaded_plugin {
 
    private:
     input *p;
+    unsigned partition;
 
-    tcp_connection(input *p, asio::io_context &io_context)
-        : p(p), socket_(io_context) {}
+    tcp_connection(unsigned partition, input *p, asio::io_context &io_context)
+        : p(p), partition(partition), socket_(io_context) {}
 
     void handle_write(const asio::error_code &error,
                       size_t bytes_transferred) {
@@ -78,7 +80,8 @@ class input : public threaded_plugin {
         json message(std::string(asio::buffers_begin(bufs), asio::buffers_begin(bufs) + message_.size()));
         message.metadata = {
             {"source", "tcp"},
-            {"port", p->port}
+            {"port", p->port},
+            {"partition", partition}
         };
         p->output(std::move(message));
       }
@@ -99,14 +102,15 @@ class input : public threaded_plugin {
         : p(p), acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
       start_accept();
     }
-    Logger &logger = Logger::getLogger();  
+    Logger &logger = Logger::getLogger();
    private:
     input *p;
     using pointer = typename tcp_connection::pointer;
+    unsigned current_partition = 0;
 
     void start_accept() {
       pointer new_connection =
-          tcp_connection::create(p, acceptor_.get_executor().context());
+          tcp_connection::create(current_partition++, p, acceptor_.get_executor().context());
 
       acceptor_.async_accept(new_connection->socket(),
                              boost::bind(&tcp_server::handle_accept, this, new_connection,
