@@ -54,7 +54,7 @@ class output : public base_plugin {
         asio::write(socket_, asio::buffer(write_msgs_.front().data(),
                                           write_msgs_.front().length()));
       } catch (std::exception &e) {
-        logger.warn("sending of tcp message failed: " + std::string(e.what()));
+        logger.warn("[tcp_out] sending of tcp message failed: " + std::string(e.what()));
         do_connect();
         continue;
       }
@@ -73,8 +73,9 @@ class output : public base_plugin {
       asio::ip::tcp::resolver resolver(io_context_);
       auto endpoints = resolver.resolve(host, port);
       asio::connect(socket_, endpoints);
+      logger.info("[tcp_out] Successfully connected to " + host + ":" + port);
     } catch (std::exception &e) {
-      logger.warn("tcp connect failed: " + std::string(e.what()));
+      logger.warn("[tcp_out] tcp connect failed: " + std::string(e.what()));
       std::this_thread::sleep_for(std::chrono::seconds(1));
     }
   }

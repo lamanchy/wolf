@@ -101,7 +101,7 @@ class output : public threaded_plugin {
       resolve_results = results;
 
       if (ec) {
-        logger.warn("http out resolve error: " + ec.message());
+        logger.warn("[http_out] http out resolve error: " + ec.message());
         retry();
         return;
       }
@@ -138,7 +138,7 @@ class output : public threaded_plugin {
 
     void on_connect(asio::error_code ec) {
       if (ec) {
-        logger.warn("http out connect error: " + ec.message());
+        logger.warn("[http_out] http out connect error: " + ec.message());
         retry();
         return;
       }
@@ -159,7 +159,7 @@ class output : public threaded_plugin {
 //      boost::ignore_unused(bytes_transferred);
 
       if (ec) {
-        logger.warn("http out write error: " + ec.message());
+        logger.warn("[http_out] http out write error: " + ec.message());
         retry();
         return;
       }
@@ -180,7 +180,7 @@ class output : public threaded_plugin {
       result.commit(bytes_transferred);
 
       if (ec) {
-        logger.warn("http out read error: " + ec.message());
+        logger.warn("[http_out] http out read error: " + ec.message());
         retry();
         return;
       }
@@ -193,7 +193,7 @@ class output : public threaded_plugin {
       std::string status_message;
       std::getline(response_stream, status_message);
       if (!response_stream || http_version.substr(0, 5) != "HTTP/") {
-        logger.error("Invalid http response");
+        logger.error("[http_out] Invalid http response");
       } else if (status_code != 200 and status_code != 201 and status_code != 202 and status_code != 203
           and status_code != 204) {
         asio::streambuf::const_buffers_type bufs = result.data();
@@ -201,7 +201,7 @@ class output : public threaded_plugin {
         std::cout << "size " << result.size() << ", transfered: " << bytes_transferred << ", string size: "
                   << str.size() << std::endl;
 
-        logger.error("Http response not in 200-204");
+        logger.error("[http_out] Http response not in 200-204");
         logger.error(str);
       }
 
@@ -210,7 +210,7 @@ class output : public threaded_plugin {
 
       // not_connected happens sometimes so don't bother reporting it.
       if (ec && ec != asio::error::not_connected) {
-        logger.warn("http out shutdown error, not retrying: " + ec.message());
+        logger.warn("[http_out] http out shutdown error, not retrying: " + ec.message());
         return;
       }
       // If we get here then the connection is closed gracefully

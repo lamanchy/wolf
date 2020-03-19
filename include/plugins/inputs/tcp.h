@@ -28,7 +28,7 @@ class input : public threaded_plugin {
       io_context.run();
     }
     catch (std::exception &e) {
-      logger.error("Tcp in run failed:" + std::string(e.what()));
+      logger.error("[tcp_in:" + std::to_string(port) + "] Tcp in run failed:" + std::string(e.what()));
     }
   }
 
@@ -101,7 +101,7 @@ class input : public threaded_plugin {
         : p(p), acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
       start_accept();
     }
-
+    Logger &logger = Logger::getLogger();
    private:
     input *p;
     using pointer = typename tcp_connection::pointer;
@@ -119,6 +119,7 @@ class input : public threaded_plugin {
     void handle_accept(pointer new_connection,
                        const std::error_code &error) {
       if (not error) {
+        logger.info("[tcp_in:" + std::to_string(p->port) + "] Handling new connection from " + new_connection->socket().remote_endpoint().address().to_string());
         new_connection->start();
       }
 
