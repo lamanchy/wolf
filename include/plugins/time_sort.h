@@ -7,7 +7,7 @@ namespace wolf {
 class time_sort : public mutexed_threaded_plugin {
  public:
   explicit time_sort(
-      const option<int> &seconds_to_wait
+      const static_option<int> &seconds_to_wait
   ) : seconds_to_wait(seconds_to_wait->value()) {}
 
  protected:

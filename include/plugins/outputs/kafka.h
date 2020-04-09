@@ -10,8 +10,8 @@ namespace kafka {
 
 class output : public threaded_plugin {
  public:
-  output(event_option<std::string> topic,
-         const option<int> &partitions,
+  output(option<std::string> topic,
+         const static_option<int> &partitions,
          cppkafka::Configuration conf)
       : topic(std::move(topic)),
         partitions(partitions->value()),
@@ -52,7 +52,7 @@ class output : public threaded_plugin {
   }
 
   producer p;
-  event_option<std::string> topic;
+  option<std::string> topic;
   int partitions;
   std::atomic<int> current_partition{0};
 };

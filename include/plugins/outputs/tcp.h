@@ -9,8 +9,8 @@ namespace tcp {
 
 class output : public base_plugin {
  public:
-  output(const option<std::string> &host,
-         const option<std::string> &port)
+  output(const static_option<std::string> &host,
+         const static_option<std::string> &port)
       : base_plugin(),
         io_context_(),
         socket_(io_context_),

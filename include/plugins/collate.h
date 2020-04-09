@@ -6,8 +6,8 @@ namespace wolf {
 
 class collate : public mutexed_threaded_plugin {
  public:
-  collate(const option<unsigned int> &secondsToWait = 1,
-          const option<unsigned int> &maxEvents = 10000) :
+  collate(const static_option<unsigned int> &secondsToWait = 1,
+          const static_option<unsigned int> &maxEvents = 10000) :
       max_events(maxEvents->value()),
       seconds_to_wait(secondsToWait->value()) {
   }
