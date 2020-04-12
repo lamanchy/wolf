@@ -6,7 +6,7 @@
 #include <plugins/drop.h>
 #include <base/options/base_option.h>
 #include <cxxopts.hpp>
-#include <base/options/command.h>
+#include <base/options/input.h>
 #include <base/options/options.h>
 #include <base/sleeper.h>
 

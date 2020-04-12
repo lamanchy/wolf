@@ -5,7 +5,7 @@
 namespace wolf {
 
 template<typename T>
-class command : public not_event_option_type<T> {
+class input : public static_option_type<T> {
  public:
   T value() override {
     if (not validated)
@@ -42,10 +42,10 @@ class command : public not_event_option_type<T> {
   }
 
  private:
-  // command can be only created with opts.add<command<T>>()
+  // input can be only created with opts.add<input<T>>()
   friend class options;
-  command(std::string name, std::string desc, std::string default_value = "",
-          std::function<bool(const T &)> validator = [](const T &) { return true; }) :
+  input(std::string name, std::string desc, std::string default_value = "",
+        std::function<bool(const T &)> validator = [](const T &) { return true; }) :
       name(std::move(name)),
       desc(std::move(desc)),
       validator(std::move(validator)),

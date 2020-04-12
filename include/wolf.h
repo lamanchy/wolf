@@ -4,7 +4,7 @@
 #include <base/pipeline.h>
 #include <base/plugins/base_plugin.h>
 #include <base/options/options.h>
-#include <base/options/command.h>
+#include <base/options/input.h>
 #include <base/options/event.h>
 
 #include <plugins/inputs/tcp.h>

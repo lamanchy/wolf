@@ -6,7 +6,7 @@ namespace wolf {
 
 class elapsed : public mutexed_threaded_plugin {
  public:
-  explicit elapsed(const option<int> &max_seconds_to_keep) :
+  explicit elapsed(const static_option<int> &max_seconds_to_keep) :
       max_seconds_to_keep(max_seconds_to_keep->value()) {}
 
  public:

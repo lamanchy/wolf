@@ -12,7 +12,7 @@ namespace kafka {
 
 class input : public threaded_plugin {
  public:
-  input(const option<std::string> &topic,
+  input(const static_option<std::string> &topic,
         config conf)
       : topic(topic->value()),
         consumer(std::move(conf)) {

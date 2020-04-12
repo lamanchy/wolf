@@ -16,7 +16,7 @@ namespace tcp {
 
 class input : public threaded_plugin {
  public:
-  explicit input(const option<unsigned short> &port) : port(port->value()) {
+  explicit input(const static_option<unsigned short> &port) : port(port->value()) {
     should_never_buffer();
     non_processors_should_block();
   }

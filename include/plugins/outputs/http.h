@@ -14,9 +14,9 @@ namespace wolf {
 namespace http {
 class output : public threaded_plugin {
  public:
-  output(const option<std::string> &host,
-         const option<std::string> &port,
-         const option<std::string> &url) :
+  output(const static_option<std::string> &host,
+         const static_option<std::string> &port,
+         const static_option<std::string> &url) :
       host(host->value()),
       port(port->value()),
       url(url->value()) {};

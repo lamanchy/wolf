@@ -32,21 +32,8 @@ template<typename T>
 class constant;
 
 template<typename T>
-class event_option : public std::shared_ptr<option_type<T>> {
+class option : public std::shared_ptr<option_type<T>> {
   using constructor = std::shared_ptr<option_type<T>>;
-  using constructor::constructor;
-
- public:
-  event_option(const T &value) : event_option(make<constant<T>>(value)) {}
-  event_option(const char *value) : event_option(make<constant<T>>(std::string(value))) {}
-};
-
-template<typename T>
-class not_event_option_type : public option_type<T> {};
-
-template<typename T>
-class option : public std::shared_ptr<not_event_option_type<T>> {
-  using constructor = std::shared_ptr<not_event_option_type<T>>;
   using constructor::constructor;
 
  public:
@@ -55,7 +42,20 @@ class option : public std::shared_ptr<not_event_option_type<T>> {
 };
 
 template<typename T>
-class constant : public not_event_option_type<T> {
+class static_option_type : public option_type<T> {};
+
+template<typename T>
+class static_option : public std::shared_ptr<static_option_type<T>> {
+  using constructor = std::shared_ptr<static_option_type<T>>;
+  using constructor::constructor;
+
+ public:
+  static_option(const T &value) : static_option(make<constant<T>>(value)) {}
+  static_option(const char *value) : static_option(make<constant<T>>(std::string(value))) {}
+};
+
+template<typename T>
+class constant : public static_option_type<T> {
  public:
   explicit constant(const T &value) : _value(value) {}
 
