@@ -121,6 +121,10 @@ void pipeline::start() {
   for (unsigned i = 0; i < number_of_processors; ++i)
     processors.emplace_back(&pipeline::process, this, i);
 
+  if (is_test) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    ++interrupt_received;
+  }
 }
 
 void pipeline::wait() {
@@ -160,6 +164,8 @@ void pipeline::evaluate_options() {
       <input<unsigned>>(options::general_config_group_name, "t,threads",
                         "How many threads wolf uses to process events",
                         std::to_string(std::thread::hardware_concurrency()));
+  auto is_test_config = opts.add_grouped
+      <input<bool>>(options::general_config_group_name, "test", "Run Wolf and exit automatically after 1 second");
 
   opts.parse_options();
   opts.print_options();
@@ -169,6 +175,7 @@ void pipeline::evaluate_options() {
   pipeline_status::persistent = persistent_config->value();
   pipeline_status::buffer_size = buffer_size_config->value();
   number_of_processors = thread_processors_config->value();
+  is_test = is_test_config->value();
 }
 
 }
