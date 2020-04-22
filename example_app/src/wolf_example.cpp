@@ -6,7 +6,7 @@ int main(int argc, char *argv[]) {
   using std::string;
 
   options opts = options(argc, argv);
-  auto name = opts.add<command<string>>("name", "Type your name", "no one");
+  auto name = opts.add<input<string>>("name", "Type your name", "no one");
 
   pipeline p(opts);
 

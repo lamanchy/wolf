@@ -16,13 +16,13 @@ class line : public base_plugin {
     auto prev = previous.find(partition);
     if (prev == previous.end())
       return std::string();
-    std::string res = prev->second;
+    std::string res(std::move(prev->second));
     previous.erase(prev);
     return res;
   }
 
-  void put_previous(unsigned partition, const std::string& prev) {
-    previous.emplace(partition, prev);
+  void put_previous(unsigned partition, std::string&& prev) {
+    previous.emplace(partition, std::move(prev));
   }
 };
 
