@@ -110,7 +110,10 @@ void queue::load_from_persistent_queue() {
 
     tao::json::events::to_value consumer;
     tao::json::cbor::events::from_string(consumer, tao::basic_string_view<char>(ptr, deserialized_size));
-    back_processing_queue.push(std::move(consumer.value));
+    json event(std::move(consumer.value["json"]));
+    event.metadata = std::move(consumer.value["metadata"]);
+    event.size = consumer.value["size"].get_unsigned();
+    back_processing_queue.push(std::move(event));
     ptr += deserialized_size;
   }
   // all is prepared in bpq, if we try again, we find unswappable fq and bq,
@@ -148,7 +151,11 @@ void queue::empty_front_queue() {
 
   // serialize and decompress events to pq
   while (!front_processing_queue.empty()) {
-    std::string s(serializer::to_string(front_processing_queue.front()));
+    std::string s(serializer::to_string(json({
+                                                 {"json", front_processing_queue.front()},
+                                                 {"metadata", front_processing_queue.front().metadata},
+                                                 {"size", front_processing_queue.front().size},
+    })));
     for (char c: extras::gzip::get_serialized_size(s.size())) tmp_front_buffer1.push_back(c);
     tmp_front_buffer1.insert(tmp_front_buffer1.end(), s.begin(), s.end());
     front_processing_queue.pop();
