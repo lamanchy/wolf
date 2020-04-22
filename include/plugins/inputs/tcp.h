@@ -82,6 +82,7 @@ class input : public threaded_plugin {
             {"port", p->port},
             {"partition", partition}
         };
+        message.size = message_.size() / 1000
         p->output(std::move(message));
       }
       message_.consume(bytes_transferred);
