@@ -23,8 +23,9 @@ class output : public base_plugin {
   void process(json &&message) override {
     lock.lock();
     bool write_in_progress = not write_msgs_.empty();
-    write_msgs_.push_back(message.get_string());
-    check_if_full();
+    std::string m(std::move(message.get_string()));
+    _size += m.size();
+    write_msgs_.push_back(std::move(m));
     lock.unlock();
 
     if (not write_in_progress) {
@@ -44,7 +45,7 @@ class output : public base_plugin {
   }
 
   bool is_full() override {
-    return is_full_;
+    return _size > 65536;
   }
 
  private:
@@ -60,8 +61,8 @@ class output : public base_plugin {
       }
 
       std::lock_guard<std::mutex> lg(lock);
+      _size -= write_msgs_.front().size();
       write_msgs_.pop_front();
-      check_if_full();
       if (write_msgs_.empty()) {
         break;
       }
@@ -80,22 +81,11 @@ class output : public base_plugin {
     }
   }
 
-  void check_if_full() {
-    is_full_ = size() > 64000;
-  }
-
-  size_t size() {
-    size_t sum = 0;
-    for (const auto &ss : write_msgs_)
-      sum += ss.length();
-    return sum;
-  }
-
   asio::io_context io_context_;
   asio::ip::tcp::socket socket_;
   std::deque<std::string> write_msgs_;
   std::mutex lock;
-  std::atomic<bool> is_full_{false};
+  std::atomic<unsigned int> _size{0};
 
   std::string host;
   std::string port;
