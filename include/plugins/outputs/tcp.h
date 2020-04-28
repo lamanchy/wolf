@@ -23,9 +23,8 @@ class output : public base_plugin {
   void process(json &&message) override {
     lock.lock();
     bool write_in_progress = not write_msgs_.empty();
-    std::string m(std::move(message.get_string()));
-    _size += m.size();
-    write_msgs_.push_back(std::move(m));
+    _size += message.get_string().size();
+    write_msgs_.push_back(std::move(message));
     lock.unlock();
 
     if (not write_in_progress) {
@@ -51,17 +50,18 @@ class output : public base_plugin {
  private:
   void do_write() {
     while (true) {
+      auto &front = write_msgs_.front().get_string();
       try {
-        asio::write(socket_, asio::buffer(write_msgs_.front().data(),
-                                          write_msgs_.front().length()));
+        asio::write(socket_, asio::buffer(front.data(),
+                                          front.length()));
       } catch (std::exception &e) {
         logger.warn("[tcp_out] sending of tcp message failed: " + std::string(e.what()));
         do_connect();
         continue;
       }
 
+      _size -= front.size();
       std::lock_guard<std::mutex> lg(lock);
-      _size -= write_msgs_.front().size();
       write_msgs_.pop_front();
       if (write_msgs_.empty()) {
         break;
@@ -83,7 +83,7 @@ class output : public base_plugin {
 
   asio::io_context io_context_;
   asio::ip::tcp::socket socket_;
-  std::deque<std::string> write_msgs_;
+  std::deque<json> write_msgs_;
   std::mutex lock;
   std::atomic<unsigned int> _size{0};
 

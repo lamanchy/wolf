@@ -32,7 +32,7 @@ void compressed::process(json &&next) {
     if (is_line) {
       auto pos = _message.find('\n');
       if (pos == std::string::npos) break;
-      output(json(_message.substr(0, pos + 1)).copy_metadata(next));
+      output(json(_message.substr(0, pos + 1), next.metadata, 1));
       _message = _message.substr(pos + 1);
       is_line = false;
     }

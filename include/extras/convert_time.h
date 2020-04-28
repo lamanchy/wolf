@@ -13,11 +13,11 @@ std::chrono::time_point<std::chrono::system_clock> string_to_time(const std::str
 
 std::uint64_t convert_time(std::chrono::duration<uint64_t> input);
 
-std::string convert_time(const std::string &input);
+std::string utc_time(const std::string &input, const std::string &);
 
-std::string convert_time(const std::uint64_t &input);
+std::string utc_time(const std::uint64_t &input);
 
-std::string convert_time(const std::uint64_t &seconds, const std::uint64_t &nanos);
+std::string utc_time(const std::uint64_t &seconds, const std::uint64_t &nanos);
 
 }
 }

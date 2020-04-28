@@ -7,12 +7,13 @@
 namespace wolf {
 namespace to {
 void compressed::process(json &&next) {
-  std::string s = next.get_string();
+  std::string &s = next.get_string();
   std::string result = gzip::compress(s.data(), s.size(), Z_BEST_SPEED);
 
-  result = extras::gzip::get_prefix() + extras::gzip::get_serialized_size(result.size()) + result;
-
-  output(json(result).copy_all(next));
+  output(json(
+      extras::gzip::get_prefix() + extras::gzip::get_serialized_size(result.size()) + std::move(result),
+      next
+  ));
 }
 }
 }

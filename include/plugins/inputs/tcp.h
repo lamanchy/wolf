@@ -10,6 +10,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <extras/logger.h>
 #include <base/options/base_option.h>
+#include <plugins/deserializers/line.h>
 
 namespace wolf {
 namespace tcp {

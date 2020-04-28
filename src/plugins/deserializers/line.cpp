@@ -3,13 +3,13 @@
 #include <mutex>
 #include <plugins/deserializers/line.h>
 void wolf::from::line::process(json &&message) {
-  std::string string(std::move(message.get_string()));
+  std::string &string = message.get_string();
   unsigned p = 0;
   auto partition = message.metadata.find("partition");
   if (partition != nullptr) {
     p = partition->get_unsigned();
   }
-  std::string _previous(this->get_previous(p));
+  std::string &_previous = this->get_previous(p);
   bool previous_empty = _previous.empty();
 
   auto begin = string.begin();
@@ -18,26 +18,19 @@ void wolf::from::line::process(json &&message) {
   while (mark != end) {
     if (*mark == '\n') {
       if (!previous_empty) {
-        output(json(_previous + std::string(begin, mark)).copy_metadata(message));
+        output(json(_previous + std::string(begin, mark), message.metadata, 1));
         _previous.clear();
         previous_empty = true;
       } else if (begin != mark) {
-        output(json(std::string(begin, mark)).copy_metadata(message));
+        output(json(std::string(begin, mark), message.metadata, 1));
       }
       begin = ++mark;
     } else {
       ++mark;
     }
   }
-  if (begin != end) {
-    if (previous_empty) {
-      _previous = std::string(begin, end);
-      previous_empty = false;
-    } else {
-      _previous += std::string(begin, end);
-    }
-  }
-  if (!previous_empty) {
-    this->put_previous(p, std::move(_previous));
+  _previous.append(begin, end);
+  if (_previous.empty()) {
+    clear_previous(p);
   }
 }
