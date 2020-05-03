@@ -23,17 +23,23 @@ class input : public threaded_plugin {
   void setup() override {
     using namespace cppkafka;
     // Print the assigned partitions on assignment
-    consumer.set_assignment_callback([](const TopicPartitionList &partitions) {
-      std::cout << "Got assigned: " << partitions << std::endl;
+    consumer.set_assignment_callback([this](const TopicPartitionList &partitions) {
+      std::ostringstream s;
+      s << "Got assigned: " << partitions;
+      logger.info(s.str());
     });
 
     // Print the revoked partitions on revocation
-    consumer.set_revocation_callback([](const TopicPartitionList &partitions) {
-      std::cout << "Got revoked: " << partitions << std::endl;
+    consumer.set_revocation_callback([this](const TopicPartitionList &partitions) {
+      std::ostringstream s;
+      s << "Got revoked: " << partitions << std::endl;
+      logger.info(s.str());
     });
 
     // Subscribe to the topic
     consumer.subscribe({topic});
+
+    strategy = std::unique_ptr<cppkafka::RoundRobinPollStrategy>(new cppkafka::RoundRobinPollStrategy(consumer));
 
     logger.info("Consuming messages from topic " + topic);
   }
@@ -41,7 +47,7 @@ class input : public threaded_plugin {
   void loop() override {
     using namespace cppkafka;
     // Try to consume a message
-    Message msg = consumer.poll(std::chrono::milliseconds(0));
+    Message msg = strategy->poll(std::chrono::milliseconds(0));
     if (msg) {
       // If we managed to get a message
       if (msg.get_error()) {
@@ -62,8 +68,9 @@ class input : public threaded_plugin {
         output(std::move(j));
 //                        consumer.commit(msg);
       }
+      get_loop_sleeper().decrease_sleep_time();
     } else {
-      get_loop_sleeper().sleep_for(std::chrono::seconds(1));
+      get_loop_sleeper().increasing_sleep();
     }
 
   }
@@ -71,6 +78,7 @@ class input : public threaded_plugin {
  private:
   std::string topic;
   cppkafka::Consumer consumer;
+  std::unique_ptr<cppkafka::RoundRobinPollStrategy> strategy{nullptr};
 };
 
 }
