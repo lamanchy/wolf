@@ -72,7 +72,6 @@ class input : public threaded_plugin {
     } else {
       get_loop_sleeper().increasing_sleep();
     }
-
   }
 
  private:

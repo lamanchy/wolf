@@ -87,7 +87,7 @@ class elapsed : public mutexed_threaded_plugin {
   std::map<std::string, json> storage;
   unsigned int max_seconds_to_keep;
 
-  std::string get_key(json &message) {
+  static std::string get_key(json &message) {
     return message["uniqueId"].get_string() + "-" + message["elapsedId"].get_string();
   }
 };

@@ -19,9 +19,7 @@ class time_sort : public mutexed_threaded_plugin {
 
   void locked_loop() override {
     using namespace std::chrono;
-    std::sort(events.begin(), events.end(), [this](const json &lhs, const json &rhs) -> bool {
-      return lhs.find("@timestamp")->get_string() < rhs.find("@timestamp")->get_string();
-    });
+    sort();
 
     bool is_first = true;
     time_point<system_clock> prev_time;
@@ -54,6 +52,13 @@ class time_sort : public mutexed_threaded_plugin {
     get_loop_sleeper().sleep_for(std::chrono::seconds(1));
   }
 
+  void flush() override {
+    sort();
+    for (auto event_i = events.begin(); event_i != events.end();) {
+      output(std::move(*event_i));
+    }
+  }
+
   void process(json &&message) override {
     message.metadata["time_sort_inserted_time"] = std::chrono::system_clock::now().time_since_epoch().count();
     events.push_back(std::move(message));
@@ -62,6 +67,12 @@ class time_sort : public mutexed_threaded_plugin {
  private:
   int seconds_to_wait;
   std::vector<json> events;
+
+  void sort() {
+    std::sort(events.begin(), events.end(), [this](const json &lhs, const json &rhs) -> bool {
+      return lhs.find("@timestamp")->get_string() < rhs.find("@timestamp")->get_string();
+    });
+  }
 };
 
 }

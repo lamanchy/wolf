@@ -21,7 +21,7 @@ class collate : public mutexed_threaded_plugin {
   }
 
   void flush() override {
-    empty();
+    locked_loop();
   }
 
   void process(json &&message) override {
