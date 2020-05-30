@@ -7,7 +7,7 @@ namespace wolf {
 
 class stats : public threaded_plugin {
  public:
-  explicit stats(std::string description, unsigned interval = 60) :
+  stats(std::string description, unsigned interval = 60) :
       description(std::move(description)), interval(interval) {}
   stats() : stats("stats") {}
 
