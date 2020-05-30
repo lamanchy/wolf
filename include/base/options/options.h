@@ -20,7 +20,7 @@ class options {
   template<typename T, typename... Args>
   std::shared_ptr<T> add_grouped(const std::string &group, Args &&... args) {
     if (pipeline_status::is_initialized())
-      logger.fatal("Cannot add options after pipeline creation");
+      logger.fatal << "Cannot add options after pipeline creation" << std::endl;
 
     auto opt = std::shared_ptr<T>(new T(std::forward<Args>(args)...));
 
@@ -40,7 +40,7 @@ class options {
   char **argv;
   cxxopts::Options g_opts;
   std::vector<std::shared_ptr<base_option>> all_options;
-  Logger &logger = Logger::getLogger();
+  Logger logger{"options"};
 };
 
 }

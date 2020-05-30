@@ -50,10 +50,10 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
  protected:
   base_plugin() {
     if (!pipeline_status::is_initialized())
-      logger.fatal("Cannot create plugin before pipeline initialization");
+      logger.fatal << "Cannot create plugin before pipeline initialization" << std::endl;
 
     if (pipeline_status::was_started())
-      logger.fatal("Cannot create plugin when pipeline was already started");
+      logger.fatal << "Cannot create plugin when pipeline was already started" << std::endl;
 
     id = id_counter++;
   }
@@ -105,9 +105,8 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
 
   plugin register_named_output(const std::string &output_name, const plugin &plugin);
 
-  Logger &logger = Logger::getLogger();
-
  private:
+  Logger logger{"base_plugin"};
   using id_type = unsigned;
   friend class pipeline;
 

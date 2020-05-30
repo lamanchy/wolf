@@ -13,7 +13,7 @@ class stats : public threaded_plugin {
 
  protected:
   void loop() override {
-    logger.info(description + " speed " + std::to_string(int(i * 60 / interval)) + " events per min.");
+    logger.info << description << " speed " << int(i * 60 / interval) << " events per min." << std::endl;
     i = 0;
     get_loop_sleeper().sleep_for(std::chrono::seconds(interval));
   }
@@ -24,6 +24,7 @@ class stats : public threaded_plugin {
   }
 
  private:
+  Logger logger{"stats"};
   std::atomic<unsigned long> i{0};
   std::string description;
   unsigned interval = 60;

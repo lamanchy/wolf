@@ -9,14 +9,14 @@ class input : public static_option_type<T> {
  public:
   T value() override {
     if (not validated)
-      logger.fatal("Cannot access values before validation - pipeline initialization");
+      logger.fatal << "Cannot access values before validation - pipeline initialization" << std::endl;
     return _value;
   }
 
   void print_info() override {
     std::string nam = name;
     while (nam.size() < 30) nam.push_back(' ');
-    logger.info("    " + nam + value_to_string());
+    logger.info << "    " << nam << value_to_string() << std::endl;
   }
 
   void add_options(cxxopts::OptionAdder &&opts) override {
@@ -27,7 +27,7 @@ class input : public static_option_type<T> {
         opts(name, desc, cxxopts::value<T>(_value)->default_value(default_value));
       }
     } catch (cxxopts::option_exists_error &) {
-      logger.fatal("Option " + name + " cannot be registered, it already exists");
+      logger.fatal << "Option " << name << " cannot be registered, it already exists" << std::endl;
     }
   }
 
@@ -35,8 +35,8 @@ class input : public static_option_type<T> {
     validate(res);
 
     if (not validator(_value))
-      logger.fatal("Custom validation of option '" + name +
-          "' failed, inputted value was '" + value_to_string() + "'");
+      logger.fatal << "Custom validation of option '" << name <<
+                   "' failed, inputted value was '" << value_to_string() << "'" << std::endl;
 
     validated = true;
   }
@@ -61,9 +61,9 @@ class input : public static_option_type<T> {
   template<typename U>
   void validate_impl(const cxxopts::ParseResult &res, U *) {
     if (res.count(name) == 0 and default_value == "")
-      logger.fatal("Missing option " + name);
+      logger.fatal << "Missing option " << name << std::endl;
     if (res.count(name) > 1)
-      logger.fatal("Duplicate option " + name);
+      logger.fatal << "Duplicate option " << name << std::endl;
   }
   template<typename U>
   void validate_impl(const cxxopts::ParseResult &res, std::vector<U> *) {}
@@ -83,12 +83,10 @@ class input : public static_option_type<T> {
     return ss.str();
   }
   std::string value_to_string_impl(bool *) {
-    std::stringstream ss;
-    ss << (_value ? "true" : "false");
-    return ss.str();
+    return _value ? "true" : "false";
   }
 
-  Logger &logger = Logger::getLogger();
+  Logger logger{"options"};
   T _value;
   std::string default_value;
   std::string name, desc;

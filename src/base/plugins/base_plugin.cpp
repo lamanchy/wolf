@@ -18,8 +18,11 @@ void base_plugin::safe_prepare(json &&message) {
   try {
     prepare(std::move(message));
   } catch (std::exception &ex) {
-    logger.error("error in " + std::string(typeid(*this).name()) +
-        " when processing message: " + std::string(ex.what()));
+    logger.error << "error in "
+                 << std::string(typeid(*this).name())
+                 << " when processing message: "
+                 << std::string(ex.what())
+                 << std::endl;
   }
 }
 
@@ -85,12 +88,12 @@ std::vector<base_plugin::id_type> base_plugin::get_all_outputs_ids() {
 plugin base_plugin::register_named_output(const std::string &output_name, const plugin &plugin) {
   auto it = outputs.find(output_name);
   if (it != outputs.end())
-    logger.fatal("plugin already registered output named: " + output_name);
+    logger.fatal << "plugin already registered output named: " << output_name << std::endl;
 
   auto ids = plugin->get_all_outputs_ids();
   auto it2 = std::find(ids.begin(), ids.end(), id);
   if (it2 != ids.end())
-    logger.fatal("Cannot register plugins into a loop.");
+    logger.fatal << "Cannot register plugins into a loop." << std::endl;
 
   plugin->num_of_parents += 1;
   outputs.emplace(std::make_pair(output_name, plugin));

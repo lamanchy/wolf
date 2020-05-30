@@ -7,7 +7,7 @@ wolf::options::options(int argc, char **argv) :
     argv(argv) {}
 
 void wolf::options::print_help() {
-  logger.info(g_opts.help(g_opts.groups()));
+  logger.info << g_opts.help(g_opts.groups()) << std::endl;
 }
 
 void wolf::options::parse_options() {
@@ -24,7 +24,7 @@ void wolf::options::parse_options() {
     auto result = g_opts.parse(argc, argv);
 
     if (not should_print_help)
-      logger.fatal("Error parsing options: " + std::string(ex.what()));
+      logger.fatal << "Error parsing options: " << ex.what() << std::endl;
 
     print_help();
     exit(0);
@@ -33,9 +33,9 @@ void wolf::options::parse_options() {
 const std::string wolf::options::general_config_group_name{"General configuration"};
 
 void wolf::options::print_options() {
-  logger.info("Provided options:");
+  logger.info << "Provided options:" << std::endl;
   for (const auto &o : all_options)
     o->print_info();
 
-  logger.info("");
+  logger.info << std::endl;
 }

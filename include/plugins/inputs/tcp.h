@@ -8,6 +8,7 @@
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <utility>
 #include <extras/logger.h>
 #include <base/options/base_option.h>
 #include <plugins/deserializers/line.h>
@@ -17,7 +18,9 @@ namespace tcp {
 
 class input : public threaded_plugin {
  public:
-  explicit input(const static_option<unsigned short> &port) : port(port->value()) {
+  explicit input(const static_option<unsigned short> &port) :
+  port(port->value()),
+  logger(Logger("tcp::input:" + std::to_string(port->value()))) {
     should_never_buffer();
     non_processors_should_block();
   }
@@ -25,11 +28,11 @@ class input : public threaded_plugin {
  protected:
   void setup() override {
     try {
-      tcp_server server(this, io_context, port);
+      tcp_server server(this, io_context, port, logger);
       io_context.run();
     }
     catch (std::exception &e) {
-      logger.error("[tcp_in:" + std::to_string(port) + "] Tcp in run failed:" + std::string(e.what()));
+      logger.error << "Tcp in run failed:" << e.what() << std::endl;
     }
   }
 
@@ -39,6 +42,7 @@ class input : public threaded_plugin {
   }
 
  private:
+  Logger logger;
   unsigned short port{};
   asio::io_context io_context;
 
@@ -99,11 +103,12 @@ class input : public threaded_plugin {
 
   class tcp_server {
    public:
-    tcp_server(input *p, asio::io_context &io_context, unsigned short port)
-        : p(p), acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)) {
+    tcp_server(input *p, asio::io_context &io_context, unsigned short port, Logger logger)
+        : p(p), acceptor_(io_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
+          logger(std::move(logger)) {
       start_accept();
     }
-    Logger &logger = Logger::getLogger();
+    Logger logger;
    private:
     input *p;
     using pointer = typename tcp_connection::pointer;
@@ -121,7 +126,7 @@ class input : public threaded_plugin {
     void handle_accept(pointer new_connection,
                        const std::error_code &error) {
       if (not error) {
-        logger.info("[tcp_in:" + std::to_string(p->port) + "] Handling new connection from " + new_connection->socket().remote_endpoint().address().to_string());
+        logger.info << "Handling new connection from " << new_connection->socket().remote_endpoint().address() << std::endl;
         new_connection->start();
       }
 

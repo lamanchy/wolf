@@ -24,16 +24,12 @@ class input : public threaded_plugin {
     using namespace cppkafka;
     // Print the assigned partitions on assignment
     consumer.set_assignment_callback([this](const TopicPartitionList &partitions) {
-      std::ostringstream s;
-      s << "Got assigned: " << partitions;
-      logger.info(s.str());
+      logger.info << "Got assigned: " << partitions << std::endl;
     });
 
     // Print the revoked partitions on revocation
     consumer.set_revocation_callback([this](const TopicPartitionList &partitions) {
-      std::ostringstream s;
-      s << "Got revoked: " << partitions << std::endl;
-      logger.info(s.str());
+      logger.info << "Got revoked: " << partitions << std::endl;
     });
 
     // Subscribe to the topic
@@ -41,7 +37,7 @@ class input : public threaded_plugin {
 
     strategy = std::unique_ptr<cppkafka::RoundRobinPollStrategy>(new cppkafka::RoundRobinPollStrategy(consumer));
 
-    logger.info("Consuming messages from topic " + topic);
+    logger.info << "Consuming messages from topic " << topic << std::endl;
   }
 
   void loop() override {
@@ -53,7 +49,7 @@ class input : public threaded_plugin {
       if (msg.get_error()) {
         // Ignore EOF notifications from rdkafka
         if (not msg.is_eof()) {
-          logger.warn("Received error notification: " + msg.get_error().to_string());
+          logger.warn << "Received error notification: " << msg.get_error().to_string() << std::endl;
         }
       } else {
         // Print the key (if any)
@@ -75,6 +71,7 @@ class input : public threaded_plugin {
   }
 
  private:
+  Logger logger{"kafka::input"};
   std::string topic;
   cppkafka::Consumer consumer;
   std::unique_ptr<cppkafka::RoundRobinPollStrategy> strategy{nullptr};

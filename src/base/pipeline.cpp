@@ -7,7 +7,7 @@ std::atomic<int> pipeline::interrupt_received{0};
 pipeline::pipeline(options _opts) :
     opts(std::move(_opts)) {
   if (pipeline_status::initialized) {
-    logger.error("Pipeline already initialized, cannot create two pipelines.");
+    logger.error << "Pipeline already initialized, cannot create two pipelines." << std::endl;
     exit(0);
   }
 
@@ -15,7 +15,7 @@ pipeline::pipeline(options _opts) :
   if (pipeline_status::persistent)
     setup_persistency();
 
-  logger.info("Pipeline initialized");
+  logger.info << "Pipeline initialized" << std::endl;
 
   pipeline_status::initialized = true;
 }
@@ -25,19 +25,19 @@ void pipeline::run() {
   std::signal(SIGBREAK, catch_signal);
 #endif
   std::signal(SIGINT, catch_signal);
-  logger.info("Starting pipeline");
+  logger.info << "Starting pipeline" << std::endl;
   start();
-  logger.info("Pipeline started");
+  logger.info << "Pipeline started" << std::endl;
   wait();
-  logger.info("Stopping pipeline");
+  logger.info << "Stopping pipeline" << std::endl;
   stop();
-  logger.info("Pipeline stopped");
+  logger.info << "Pipeline stopped" << std::endl;
 }
 
 void pipeline::setup_persistency() {
   std::string path = extras::get_executable_dir();
 
-  logger.info("Configuring STXXL");
+  logger.info << "Configuring STXXL" << std::endl;
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
   _putenv_s("STXXLLOGFILE", (logger.get_logging_dir() + "stxxl.log").c_str());
@@ -101,11 +101,11 @@ void pipeline::catch_signal(int signal) {
   ++interrupt_received;
 
   if (interrupt_received >= 2) {
-    Logger::getLogger().error("Second interrup signal received, suiciding now.");
+    Logger("pipeline").error << "Second interrup signal received, suiciding now." << std::endl;
     std::quick_exit(EXIT_FAILURE);
   }
 
-  Logger::getLogger().info("interrupt signal received, stopping wolf");
+  Logger("pipeline").info << "interrupt signal received, stopping wolf" << std::endl;
   pipeline_status::pipeline_sleeper.wake_up();
 }
 

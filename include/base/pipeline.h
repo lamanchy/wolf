@@ -15,7 +15,6 @@ namespace wolf {
 class pipeline {
  public:
   static std::atomic<int> interrupt_received;
-  Logger &logger = Logger::getLogger();
 
   explicit pipeline(options opts);
   pipeline(int argc, char **argv) : pipeline(options(argc, argv)) {}
@@ -56,6 +55,7 @@ class pipeline {
   }
 
  private:
+  Logger logger{"pipeline"};
   static void catch_signal(int signal);
 
   void evaluate_options();
