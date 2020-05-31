@@ -17,6 +17,7 @@ set(SOURCE_FILES
         plugins/serializers/line.cpp
         plugins/serializers/string.cpp
 
+        extras/logger.cpp
         extras/convert_time.cpp
         extras/get_executable_path.cpp
         extras/get_time.cpp

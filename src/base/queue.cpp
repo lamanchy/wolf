@@ -112,7 +112,7 @@ void queue::load_from_persistent_queue() {
     tao::json::cbor::events::from_string(consumer, tao::basic_string_view<char>(ptr, deserialized_size));
     json event(std::move(consumer.value["json"]));
     event.metadata = std::move(consumer.value["metadata"]);
-    event.size = consumer.value["size"].get_unsigned();
+    event.size = static_cast<unsigned long>(consumer.value["size"].get_unsigned());
     back_processing_queue.push(std::move(event));
     ptr += deserialized_size;
   }

@@ -78,7 +78,7 @@ class pipeline {
   unsigned number_of_processors = std::thread::hardware_concurrency();
   std::string config_dir;
   options opts;
-  bool is_test;
+  bool is_test = false;
 };
 
 }

@@ -11,31 +11,20 @@
 #include <mutex>
 #include <utility>
 #include <extras/get_executable_path.h>
+#include <extras/get_time.h>
 
 class BaseLogger {
  public:
-  std::string get_logging_dir() {
-    return logging_dir;
-  }
+  static BaseLogger &getLogger();
+  std::string get_logging_dir() { return logging_dir; }
 
-  static BaseLogger &getLogger() {
-    static BaseLogger instance;
-    return instance;
-  }
+  void set_logging_dir(const std::string &path);
 
-  template<typename T>
-  void set_empty(const T &message) {
-    empty = false;
-  }
-
-  void set_empty(std::ostream& (*message)(std::ostream&)) {
-    // value is std::endl
-    empty = true;
-  }
+  void check_file_rotation();
 
   template<typename T>
   void log(const std::string &level, const std::string &prefix, const T &message) {
-    std::lock_guard<std::mutex> lg(lock);
+    if (empty) lock.lock();
     if (level == "FATAL" or level == "ERROR") {
       do_log(std::cerr, prefix, level, message);
     } else {
@@ -49,22 +38,35 @@ class BaseLogger {
     }
 
     set_empty(message);
+    if (empty) lock.unlock();
 
     if (empty and level == "FATAL") {
       exit(1);
     }
   }
 
+  BaseLogger(const BaseLogger &) = delete;
+  void operator=(const BaseLogger &) = delete;
  private:
+  std::string get_file_path(const std::string & name);
+
+  void setup_files();
+
+  template<typename T>
+  void set_empty(const T &message) { empty = false; }
+
+  // value is std::endl
+  void set_empty(std::ostream &(*message)(std::ostream &)) { empty = true; }
+
   BaseLogger() {
     set_logging_dir(wolf::extras::get_executable_dir());
   }
 
-  std::ofstream info_file_;
-  std::ofstream trace_file_;
+  std::ofstream info_file_, trace_file_;
   std::mutex lock;
   std::string logging_dir;
-  bool empty = true;
+  std::string current_date = wolf::extras::get_date();
+  static thread_local bool empty;
 
   template<typename T>
   void do_log(std::ostream &stream,
@@ -84,19 +86,6 @@ class BaseLogger {
     }
   }
 
- public:
-  void set_logging_dir(const std::string &path) {
-    info_file_ = std::ofstream(path + "info.log", std::ofstream::out | std::ofstream::app);
-    trace_file_ = std::ofstream(path + "trace.log", std::ofstream::out | std::ofstream::app);
-    if (not info_file_ or not trace_file_) {
-      std::cerr << "Couldn't create log files!" << std::endl;
-      exit(1);
-    }
-    logging_dir = path;
-  }
-
-  BaseLogger(const BaseLogger &) = delete;
-  void operator=(const BaseLogger &) = delete;
 };
 
 class LogStream {
@@ -109,11 +98,11 @@ class LogStream {
     logger.log(level, prefix, message);
     return *this;
   }
-  LogStream &operator<<(std::ostream& (*message)(std::ostream&)) {
+  LogStream &operator<<(std::ostream &(*message)(std::ostream &)) {
     logger.log(level, prefix, message);
     return *this;
   }
- protected:
+ private:
   std::string prefix, level;
   BaseLogger &logger = BaseLogger::getLogger();
 };
@@ -135,12 +124,14 @@ class Logger {
       error(LogStream("ERROR", prefix)),
       fatal(LogStream("FATAL", prefix)) {}
 
-
   static std::string get_logging_dir() {
     return BaseLogger::getLogger().get_logging_dir();
   }
-  static void set_logging_dir(std::string path) {
+  static void set_logging_dir(const std::string& path) {
     BaseLogger::getLogger().set_logging_dir(path);
+  }
+  static void check_file_rotation() {
+    BaseLogger::getLogger().check_file_rotation();
   }
 };
 

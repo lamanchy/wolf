@@ -5,7 +5,7 @@
 namespace wolf {
 namespace extras {
 
-std::string get_date();
+std::string get_date(std::chrono::seconds timedelta = std::chrono::hours(0));
 
 }
 }

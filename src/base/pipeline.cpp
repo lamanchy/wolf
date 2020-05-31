@@ -40,11 +40,11 @@ void pipeline::setup_persistency() {
   logger.info << "Configuring STXXL" << std::endl;
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-  _putenv_s("STXXLLOGFILE", (logger.get_logging_dir() + "stxxl.log").c_str());
-  _putenv_s("STXXLERRLOGFILE", (logger.get_logging_dir() + "stxxl.errlog").c_str());
+  _putenv_s("STXXLLOGFILE", (Logger::get_logging_dir() + "stxxl.log").c_str());
+  _putenv_s("STXXLERRLOGFILE", (Logger::get_logging_dir() + "stxxl.errlog").c_str());
 #else
-  setenv("STXXLLOGFILE", (logger.get_logging_dir() + "stxxl.log").c_str(), 1);
-  setenv("STXXLERRLOGFILE", (logger.get_logging_dir() + "stxxl.errlog").c_str(), 1);
+  setenv("STXXLLOGFILE", (Logger::get_logging_dir() + "stxxl.log").c_str(), 1);
+  setenv("STXXLERRLOGFILE", (Logger::get_logging_dir() + "stxxl.errlog").c_str(), 1);
 #endif
 
   stxxl::config *cfg = stxxl::config::get_instance();
@@ -132,7 +132,8 @@ void pipeline::wait() {
     if (interrupt_received) {
       break;
     }
-    pipeline_status::pipeline_sleeper.sleep();
+    pipeline_status::pipeline_sleeper.sleep_for(std::chrono::minutes(1));
+    Logger::check_file_rotation();
   }
 }
 
@@ -171,7 +172,7 @@ void pipeline::evaluate_options() {
   opts.print_options();
 
   config_dir = config_config->value();
-  logger.set_logging_dir(logging_config->value());
+  Logger::set_logging_dir(logging_config->value());
   pipeline_status::persistent = persistent_config->value();
   pipeline_status::buffer_size = buffer_size_config->value();
   number_of_processors = thread_processors_config->value();

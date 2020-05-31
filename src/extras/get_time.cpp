@@ -3,10 +3,11 @@
 #include <ctime>
 #include <extras/get_time.h>
 
-std::string wolf::extras::get_date() {
+std::string wolf::extras::get_date(std::chrono::seconds timedelta) {
   typedef std::chrono::system_clock Clock;
 
   auto now = Clock::now();
+  now += timedelta;
   std::time_t now_c = Clock::to_time_t(now);
 
 #pragma warning( push )
