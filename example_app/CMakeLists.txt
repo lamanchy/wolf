@@ -38,6 +38,8 @@ foreach(executable ${executables})
     endif ()
 
     install(TARGETS ${target} DESTINATION ${WOLF_TARGET_DIR}/)
+    # copy source cpp file for convinience
+    install(FILES ${executable} DESTINATION ${WOLF_TARGET_DIR} RENAME source.txt)
 
     # example of installing config files
     # if (${target} STREQUAL wolf_example)
