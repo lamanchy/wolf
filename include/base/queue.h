@@ -32,14 +32,14 @@ class queue {
   void try_setting_swappable();
 
   Logger logger{"queue"};
-  std::queue<json> front_queue;
-  std::queue<json> front_processing_queue;
+  std::deque<json> front_queue;
+  std::deque<json> front_processing_queue;
   std::timed_mutex front_queue_mutex;
   std::mutex front_processing_mutex;
   std::unique_ptr<stxxl::queue<char>> persistent_queue = nullptr;
   std::mutex persistent_queue_mutex;
-  std::queue<json> back_queue;
-  std::queue<json> back_processing_queue;
+  std::deque<json> back_queue;
+  std::deque<json> back_processing_queue;
   std::mutex back_queue_mutex;
   std::mutex back_processing_mutex;
   std::atomic<bool> swappable{true};

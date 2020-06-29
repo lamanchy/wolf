@@ -15,6 +15,7 @@ class collate : public mutexed_threaded_plugin {
 
   void locked_loop() override {
     empty();
+    buffer.shrink_to_fit();
   }
   void unlocked_loop() override {
     get_loop_sleeper().sleep_for(std::chrono::seconds(seconds_to_wait));

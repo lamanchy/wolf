@@ -10,7 +10,7 @@ namespace wolf {
 void queue::push(json &&message) {
   front_queue_mutex.lock();
   size += message.size;
-  front_queue.push(std::move(message));
+  front_queue.push_back(std::move(message));
 
   if (pipeline_status::is_persistent() and size >= pipeline_status::get_buffer_size()) {
     empty_front_queue(); // unlocks fqm
@@ -113,7 +113,7 @@ void queue::load_from_persistent_queue() {
     json event(std::move(consumer.value["json"]));
     event.metadata = std::move(consumer.value["metadata"]);
     event.size = static_cast<unsigned long>(consumer.value["size"].get_unsigned());
-    back_processing_queue.push(std::move(event));
+    back_processing_queue.push_back(std::move(event));
     ptr += deserialized_size;
   }
   // all is prepared in bpq, if we try again, we find unswappable fq and bq,
@@ -158,7 +158,7 @@ void queue::empty_front_queue() {
     })));
     for (char c: extras::gzip::get_serialized_size(s.size())) tmp_front_buffer1.push_back(c);
     tmp_front_buffer1.insert(tmp_front_buffer1.end(), s.begin(), s.end());
-    front_processing_queue.pop();
+    front_processing_queue.pop_front();
   }
   tmp_front_buffer2.append(gzip::compress(tmp_front_buffer1.data(), tmp_front_buffer1.size(), Z_BEST_SPEED));
   tmp_front_buffer1.clear();
@@ -173,8 +173,11 @@ void queue::empty_front_queue() {
 
 void queue::do_pop(const std::function<void(json &&)> &fn) {
   json message = std::move(back_queue.front());
-  back_queue.pop();
+  back_queue.pop_front();
   size -= message.size;
+  if (size == 0) {
+    back_queue.shrink_to_fit();
+  }
   back_queue_mutex.unlock();
   fn(std::move(message));
 }

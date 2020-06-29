@@ -64,6 +64,7 @@ class output : public base_plugin {
       std::lock_guard<std::mutex> lg(lock);
       write_msgs_.pop_front();
       if (write_msgs_.empty()) {
+        write_msgs_.shrink_to_fit();
         break;
       }
     }
