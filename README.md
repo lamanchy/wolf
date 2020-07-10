@@ -1,17 +1,47 @@
 # Wolf library
 
-This project contains everything you need to build a create and build a Wolf pipeline:
+## What is Wolf?
+Wolf is a stream processing tool, designed to replace Logstash within Y Soft Corporation, but
+the core is kept public and open-source. 
 
-- Wolf core files
-- fetching and compilation of dependencies
-- Wolf common plugins
-- definition of Docker images for build of this library / Wolf pipeline
-- example Wolf pipeline, used to create new projects
+## How to create processing pipeline?
+Simplest way is by using prebuild docker image, create empty directory and run from within: 
+```
+docker run --rm -v ${PWD}:C:\wolf lamanchy/wolf_win
+docker run --rm -v ${PWD}:/wolf lamanchy/wolf_linux
+```
+The first run creates empty example pipeline, subsequent runs of the same command compiles
+any changes made to the pipeline.
 
-To create new wolf pipeline, simply create empty folder and run within it:
+If you need, you can also compile newly created project using CMake and a compiler, the provided
+CMake files not only compile Wolf library, but also download and compile all necessary dependencies.
 
-`docker run --rm -v ${PWD}:C:\wolf wolf_win`
+## Repository structure
 
-(available for linux as well)
-
-To recompile any changes made, run the command above again.
+- `.github`
+    - contains definition of github workflows which automatically build docker images
+- `cmake`
+    - all cmake files
+- `docker`
+    - definition of docker images
+    - `wolf_base`
+        - common image, describing system requirements
+    - `wolf_lib`
+        - image used to build static library out of wolf lib repository
+    - `wolf_app`
+        - image containing prebuilt wolf library, used to create wolf app and compile it
+- `example_app`
+    - source files for example application, these are copied when running `wolf_app` image over
+    directory, but can be copied manually as well
+- `include`
+    - header files
+    - `base`
+        - core Wolf files, pipeline, plugin, etc.
+    - `extras`
+        - helper functions, classes
+    - `libs`
+        - third-party libs without github (cannot be downloaded before build)
+    - `plugins`
+        - Wolf plugins used in pipeline
+- `src`
+    - source files
