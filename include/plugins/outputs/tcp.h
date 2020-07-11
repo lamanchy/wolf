@@ -82,7 +82,7 @@ class output : public base_plugin {
     }
   }
 
-  Logger logger{"tcp::output"};
+  logging::logger logger{"tcp::output"};
   asio::io_context io_context_;
   asio::ip::tcp::socket socket_;
   std::deque<json> write_msgs_;

@@ -59,7 +59,7 @@ class output : public threaded_plugin {
     asio::streambuf result;
     asio::steady_timer timer;
     tcp::resolver::results_type resolve_results;
-    Logger logger{"http::output"};
+    logging::logger logger{"http::output"};
 
    public:
     // Resolver and socket require an io_context

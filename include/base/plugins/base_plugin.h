@@ -106,7 +106,7 @@ class base_plugin : public std::enable_shared_from_this<base_plugin> {
   plugin register_named_output(const std::string &output_name, const plugin &plugin);
 
  private:
-  Logger logger{"base_plugin"};
+  logging::logger logger{"base_plugin"};
   using id_type = unsigned;
   friend class pipeline;
 

@@ -31,7 +31,7 @@ class queue {
   void load_from_persistent_queue();
   void try_setting_swappable();
 
-  Logger logger{"queue"};
+  logging::logger logger{"queue"};
   std::deque<json> front_queue;
   std::deque<json> front_processing_queue;
   std::timed_mutex front_queue_mutex;

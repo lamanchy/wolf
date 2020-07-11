@@ -13,9 +13,11 @@
 #include <extras/get_executable_path.h>
 #include <extras/get_time.h>
 
-class BaseLogger {
+namespace wolf {
+namespace logging {
+class base_logger {
  public:
-  static BaseLogger &getLogger();
+  static base_logger &get_logger();
   std::string get_logging_dir() { return logging_dir; }
 
   void set_logging_dir(const std::string &path);
@@ -45,8 +47,8 @@ class BaseLogger {
     }
   }
 
-  BaseLogger(const BaseLogger &) = delete;
-  void operator=(const BaseLogger &) = delete;
+  base_logger(const base_logger &) = delete;
+  void operator=(const base_logger &) = delete;
  private:
   std::string get_file_path(const std::string & name);
 
@@ -58,7 +60,7 @@ class BaseLogger {
   // value is std::endl
   void set_empty(std::ostream &(*message)(std::ostream &)) { empty = true; }
 
-  BaseLogger() {
+  base_logger() {
     set_logging_dir(wolf::extras::get_executable_dir());
   }
 
@@ -104,10 +106,10 @@ class LogStream {
   }
  private:
   std::string prefix, level;
-  BaseLogger &logger = BaseLogger::getLogger();
+  base_logger &logger = base_logger::get_logger();
 };
 
-class Logger {
+class logger {
  public:
   LogStream trace;
   LogStream debug;
@@ -116,7 +118,7 @@ class Logger {
   LogStream error;
   LogStream fatal;
 
-  explicit Logger(const std::string &prefix) :
+  explicit logger(const std::string &prefix) :
       trace(LogStream("TRACE", prefix)),
       debug(LogStream("DEBUG", prefix)),
       info(LogStream("INFO", prefix)),
@@ -125,13 +127,15 @@ class Logger {
       fatal(LogStream("FATAL", prefix)) {}
 
   static std::string get_logging_dir() {
-    return BaseLogger::getLogger().get_logging_dir();
+    return base_logger::get_logger().get_logging_dir();
   }
   static void set_logging_dir(const std::string& path) {
-    BaseLogger::getLogger().set_logging_dir(path);
+    base_logger::get_logger().set_logging_dir(path);
   }
   static void check_file_rotation() {
-    BaseLogger::getLogger().check_file_rotation();
+    base_logger::get_logger().check_file_rotation();
   }
 };
 
+}
+}

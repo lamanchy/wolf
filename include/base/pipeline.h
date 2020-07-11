@@ -55,7 +55,7 @@ class pipeline {
   }
 
  private:
-  Logger logger{"pipeline"};
+  logging::logger logger{"pipeline"};
   static void catch_signal(int signal);
 
   void evaluate_options();

@@ -40,7 +40,7 @@ class options {
   char **argv;
   cxxopts::Options g_opts;
   std::vector<std::shared_ptr<base_option>> all_options;
-  Logger logger{"options"};
+  logging::logger logger{"options"};
 };
 
 }

@@ -86,7 +86,7 @@ class input : public static_option_type<T> {
     return _value ? "true" : "false";
   }
 
-  Logger logger{"options"};
+  logging::logger logger{"options"};
   T _value;
   std::string default_value;
   std::string name, desc;

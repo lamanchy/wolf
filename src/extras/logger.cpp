@@ -1,20 +1,23 @@
 
 #include <extras/logger.h>
 
-thread_local bool BaseLogger::empty = true;
+namespace wolf {
+namespace logging {
 
-BaseLogger &BaseLogger::getLogger() {
-  static BaseLogger instance;
+thread_local bool base_logger::empty = true;
+
+base_logger &base_logger::get_logger() {
+  static base_logger instance;
   return instance;
 }
 
-void BaseLogger::set_logging_dir(const std::string &path) {
+void base_logger::set_logging_dir(const std::string &path) {
   std::lock_guard<std::mutex> lg(lock);
   logging_dir = path;
   setup_files();
 }
 
-void BaseLogger::check_file_rotation() {
+void base_logger::check_file_rotation() {
   if (current_date != wolf::extras::get_date()) {
     std::lock_guard<std::mutex> lg(lock);
     //close
@@ -38,13 +41,16 @@ void BaseLogger::check_file_rotation() {
     current_date = wolf::extras::get_date();
   }
 }
-std::string BaseLogger::get_file_path(const std::string &name) {
+std::string base_logger::get_file_path(const std::string &name) {
   return logging_dir + name;
 }
-void BaseLogger::setup_files() {
+void base_logger::setup_files() {
   info_file_ = std::ofstream(get_file_path("info.log"), std::ofstream::out | std::ofstream::app);
   trace_file_ = std::ofstream(get_file_path("trace.log"), std::ofstream::out | std::ofstream::app);
   if (not info_file_ or not trace_file_) {
     std::cerr << "Couldn't create log files!" << std::endl;
   }
+}
+
+}
 }

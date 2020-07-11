@@ -71,7 +71,7 @@ class input : public threaded_plugin {
   }
 
  private:
-  Logger logger{"kafka::input"};
+  logging::logger logger{"kafka::input"};
   std::string topic;
   cppkafka::Consumer consumer;
   std::unique_ptr<cppkafka::RoundRobinPollStrategy> strategy{nullptr};

@@ -40,13 +40,13 @@ class regex : public base_plugin {
 
         auto it = line.find(':');
         if (it == std::string::npos) {
-          Logger("regex").fatal << "Cannot parsing file " << file_path << ", ':' is missing on line " << line << std::endl;
+          logger("regex").fatal << "Cannot parsing file " << file_path << ", ':' is missing on line " << line << std::endl;
         }
         result.emplace_back(line.substr(0, it), line.substr(it + 1));
       }
       file.close();
     } else {
-      Logger("regex").fatal << "Cannot open file " << file_path << " for regexes." << std::endl;
+      logger("regex").fatal << "Cannot open file " << file_path << " for regexes." << std::endl;
     }
 
     return result;
@@ -80,7 +80,7 @@ class regex : public base_plugin {
     output(std::move(message));
   }
  private:
-  Logger logger{"regex"};
+  logging::logger logger{"regex"};
   re2::RE2::Set regex_set;
   std::map<int, std::pair<std::string, std::shared_ptr<re2::RE2>>> regexes;
 };

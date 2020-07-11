@@ -40,11 +40,11 @@ void pipeline::setup_persistency() {
   logger.info << "Configuring STXXL" << std::endl;
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-  _putenv_s("STXXLLOGFILE", (Logger::get_logging_dir() + "stxxl.log").c_str());
-  _putenv_s("STXXLERRLOGFILE", (Logger::get_logging_dir() + "stxxl.errlog").c_str());
+  _putenv_s("STXXLLOGFILE", (logger::get_logging_dir() + "stxxl.log").c_str());
+  _putenv_s("STXXLERRLOGFILE", (logger::get_logging_dir() + "stxxl.errlog").c_str());
 #else
-  setenv("STXXLLOGFILE", (Logger::get_logging_dir() + "stxxl.log").c_str(), 1);
-  setenv("STXXLERRLOGFILE", (Logger::get_logging_dir() + "stxxl.errlog").c_str(), 1);
+  setenv("STXXLLOGFILE", (logging::logger::get_logging_dir() + "stxxl.log").c_str(), 1);
+  setenv("STXXLERRLOGFILE", (logging::logger::get_logging_dir() + "stxxl.errlog").c_str(), 1);
 #endif
 
   stxxl::config *cfg = stxxl::config::get_instance();
@@ -101,11 +101,11 @@ void pipeline::catch_signal(int signal) {
   ++interrupt_received;
 
   if (interrupt_received >= 2) {
-    Logger("pipeline").error << "Second interrup signal received, suiciding now." << std::endl;
+    logging::logger("pipeline").error << "Second interrup signal received, suiciding now." << std::endl;
     std::quick_exit(EXIT_FAILURE);
   }
 
-  Logger("pipeline").info << "interrupt signal received, stopping wolf" << std::endl;
+  logging::logger("pipeline").info << "interrupt signal received, stopping wolf" << std::endl;
   pipeline_status::pipeline_sleeper.wake_up();
 }
 
@@ -133,7 +133,7 @@ void pipeline::wait() {
       break;
     }
     pipeline_status::pipeline_sleeper.sleep_for(std::chrono::minutes(1));
-    Logger::check_file_rotation();
+    logging::logger::check_file_rotation();
   }
 }
 
@@ -172,7 +172,7 @@ void pipeline::evaluate_options() {
   opts.print_options();
 
   config_dir = config_config->value();
-  Logger::set_logging_dir(logging_config->value());
+  logging::logger::set_logging_dir(logging_config->value());
   pipeline_status::persistent = persistent_config->value();
   pipeline_status::buffer_size = buffer_size_config->value();
   number_of_processors = thread_processors_config->value();

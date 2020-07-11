@@ -24,7 +24,7 @@ class stats : public threaded_plugin {
   }
 
  private:
-  Logger logger{"stats"};
+  logging::logger logger{"stats"};
   std::atomic<unsigned long> i{0};
   std::string description;
   unsigned interval = 60;
