@@ -2,7 +2,6 @@
 
 #include <base/plugins/base_plugin.h>
 #include <asio.hpp>
-#include <base/pipeline_status.h>
 
 namespace wolf {
 namespace tcp {

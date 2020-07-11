@@ -40,13 +40,13 @@ class regex : public base_plugin {
 
         auto it = line.find(':');
         if (it == std::string::npos) {
-          logger("regex").fatal << "Cannot parsing file " << file_path << ", ':' is missing on line " << line << std::endl;
+          logging::logger("regex").fatal << "Cannot parsing file " << file_path << ", ':' is missing on line " << line << std::endl;
         }
         result.emplace_back(line.substr(0, it), line.substr(it + 1));
       }
       file.close();
     } else {
-      logger("regex").fatal << "Cannot open file " << file_path << " for regexes." << std::endl;
+      logging::logger("regex").fatal << "Cannot open file " << file_path << " for regexes." << std::endl;
     }
 
     return result;

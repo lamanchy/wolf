@@ -20,7 +20,7 @@ class input : public threaded_plugin {
  public:
   explicit input(const static_option<unsigned short> &port) :
   port(port->value()),
-  logger(logger("tcp::input:" + std::to_string(port->value()))) {
+  logger(logging::logger("tcp::input:" + std::to_string(port->value()))) {
     should_never_buffer();
     non_processors_should_block();
   }
