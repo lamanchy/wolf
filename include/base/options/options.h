@@ -24,7 +24,7 @@ class options {
 
     auto opt = std::shared_ptr<T>(new T(std::forward<Args>(args)...));
 
-    opt->add_options(g_opts.add_options(group));
+    opt->add_option(g_opts.add_options(group));
     all_options.push_back(opt);
     return opt;
   }

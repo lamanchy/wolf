@@ -19,7 +19,7 @@ class input : public static_option_type<T> {
     logger.info << "    " << nam << value_to_string() << std::endl;
   }
 
-  void add_options(cxxopts::OptionAdder &&opts) override {
+  void add_option(cxxopts::OptionAdder &&opts) override {
     try {
       if (default_value == "") {
         opts(name, desc, cxxopts::value<T>(_value));
@@ -31,7 +31,7 @@ class input : public static_option_type<T> {
     }
   }
 
-  void validate_options(const cxxopts::ParseResult &res) override {
+  void validate_option(const cxxopts::ParseResult &res) override {
     validate(res);
 
     if (not validator(_value))

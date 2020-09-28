@@ -10,8 +10,8 @@ namespace wolf {
 
 class base_option {
  public:
-  virtual void add_options(cxxopts::OptionAdder &&opts) {}
-  virtual void validate_options(const cxxopts::ParseResult &opts) {}
+  virtual void add_option(cxxopts::OptionAdder &&opts) {}
+  virtual void validate_option(const cxxopts::ParseResult &opts) {}
   virtual void print_info() {};
 };
 

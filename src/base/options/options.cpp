@@ -15,7 +15,7 @@ void wolf::options::parse_options() {
     auto result = g_opts.parse(argc, argv);
 
     for (const auto &o : all_options)
-      o->validate_options(result);
+      o->validate_option(result);
 
   } catch (cxxopts::option_not_exists_exception &ex) {
     bool should_print_help;

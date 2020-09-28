@@ -90,17 +90,17 @@ class base_logger {
 
 };
 
-class LogStream {
+class log_stream {
  public:
-  explicit LogStream(std::string level, std::string prefix) :
+  explicit log_stream(std::string level, std::string prefix) :
       prefix(std::move(prefix)), level(std::move(level)) {}
 
   template<typename T>
-  LogStream &operator<<(const T &message) {
+  log_stream &operator<<(const T &message) {
     logger.log(level, prefix, message);
     return *this;
   }
-  LogStream &operator<<(std::ostream &(*message)(std::ostream &)) {
+  log_stream &operator<<(std::ostream &(*message)(std::ostream &)) {
     logger.log(level, prefix, message);
     return *this;
   }
@@ -111,20 +111,20 @@ class LogStream {
 
 class logger {
  public:
-  LogStream trace;
-  LogStream debug;
-  LogStream info;
-  LogStream warn;
-  LogStream error;
-  LogStream fatal;
+  log_stream trace;
+  log_stream debug;
+  log_stream info;
+  log_stream warn;
+  log_stream error;
+  log_stream fatal;
 
   explicit logger(const std::string &prefix) :
-      trace(LogStream("TRACE", prefix)),
-      debug(LogStream("DEBUG", prefix)),
-      info(LogStream("INFO", prefix)),
-      warn(LogStream("WARN", prefix)),
-      error(LogStream("ERROR", prefix)),
-      fatal(LogStream("FATAL", prefix)) {}
+      trace(log_stream("TRACE", prefix)),
+      debug(log_stream("DEBUG", prefix)),
+      info(log_stream("INFO", prefix)),
+      warn(log_stream("WARN", prefix)),
+      error(log_stream("ERROR", prefix)),
+      fatal(log_stream("FATAL", prefix)) {}
 
   static std::string get_logging_dir() {
     return base_logger::get_logger().get_logging_dir();
