@@ -63,7 +63,7 @@ ExternalProject_Add(_boost_h
 ExternalProject_Add(_date
         PREFIX date
         GIT_REPOSITORY https://github.com/HowardHinnant/date.git
-        # GIT_TAG needs master >{
+        GIT_TAG v3.0.0
         CONFIGURE_COMMAND ""
         BUILD_IN_SOURCE 1
         BUILD_COMMAND ""
@@ -211,7 +211,7 @@ ExternalProject_Add(_stxxl
 ExternalProject_Add(_cxxopts
         PREFIX cxxopts
         GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
-        # GIT_TAG needs master >{
+        GIT_TAG v2.2.1
         CMAKE_ARGS
         -DCMAKE_INSTALL_PREFIX=${WOLF_LIBS_PATH}
         -DCMAKE_CXX_FLAGS_RELEASE=${DEFAULT_CMAKE_CXX_FLAGS_RELEASE}
