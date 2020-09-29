@@ -40,8 +40,8 @@ void pipeline::setup_persistency() {
   logger.info << "Configuring STXXL" << std::endl;
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-  _putenv_s("STXXLLOGFILE", (logger::get_logging_dir() + "stxxl.log").c_str());
-  _putenv_s("STXXLERRLOGFILE", (logger::get_logging_dir() + "stxxl.errlog").c_str());
+  _putenv_s("STXXLLOGFILE", (logging::logger::get_logging_dir() + "stxxl.log").c_str());
+  _putenv_s("STXXLERRLOGFILE", (logging::logger::get_logging_dir() + "stxxl.errlog").c_str());
 #else
   setenv("STXXLLOGFILE", (logging::logger::get_logging_dir() + "stxxl.log").c_str(), 1);
   setenv("STXXLERRLOGFILE", (logging::logger::get_logging_dir() + "stxxl.errlog").c_str(), 1);
