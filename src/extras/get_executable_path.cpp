@@ -32,6 +32,11 @@ std::string wolf::extras::get_executable_dir() {
 std::string wolf::extras::get_executable_name() {
   return get_executable_path()[1];
 }
-std::string wolf::extras::get_separator() {
-  return get_executable_path()[2];
+char wolf::extras::get_separator() {
+  return get_executable_path()[2][0];
+}
+std::string wolf::extras::normalize_path(std::string path) {
+  if (path[path.size() - 1] != get_separator())
+    return path + get_separator();
+  return path;
 }

@@ -11,7 +11,8 @@ namespace extras {
 
 std::string get_executable_dir();
 std::string get_executable_name();
-std::string get_separator();
+char get_separator();
+std::string normalize_path(std::string path);
 
 }
 }

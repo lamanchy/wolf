@@ -171,8 +171,8 @@ void pipeline::evaluate_options() {
   opts.parse_options();
   opts.print_options();
 
-  config_dir = config_config->value();
-  logging::logger::set_logging_dir(logging_config->value());
+  config_dir = extras::normalize_path(config_config->value());
+  logging::logger::set_logging_dir(extras::normalize_path(logging_config->value()));
   pipeline_status::persistent = persistent_config->value();
   pipeline_status::buffer_size = buffer_size_config->value();
   number_of_processors = thread_processors_config->value();
