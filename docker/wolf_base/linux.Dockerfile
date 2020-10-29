@@ -1,6 +1,6 @@
 # escape=`
 
-FROM ubuntu:20.04
+FROM ubuntu:16.04
 RUN apt update -y && `
     apt install git g++ python3 python3-pip wget -y && `
     python3 -m pip install --upgrade pip && `
